@@ -37,28 +37,39 @@ public class Connection
 
     public void OnRecvCompleted(object _sender, SocketAsyncEventArgs _args)
     {
-        if (_args.BytesTransferred > 0 && _args.SocketError == SocketError.Success)
-        {
-            byte[] buf =  _args.Buffer;
-            PacketReader reader = new PacketReader();
-            reader.SetBuffer(m_ringBuffer);
-            reader.GetPacketType();
-            string str = reader.GetString();
-            byte result = reader.GetByte();
-            Debug.Log(str);
-            Debug.Log("BytesTransferred : " + _args.BytesTransferred);
-            m_ringBuffer.MoveWritePos(_args.BytesTransferred);
+        if(_args.BytesTransferred == 0 || _args.SocketError != SocketError.Success)
+		{
+			ActionQueue.Inst.Enqueue(() => UIManager.Inst.ShowPopupUI(Define.UIPopup.UIDisconnectPopup, "서버와의 연결이 끊어졌습니다!\n" + _args.SocketError.ToString()));
 
-            RegisterRecv();
+			Disconnect();
+            return;
         }
-        else
-            Disconnect();
+
+        PacketReader reader = new PacketReader();
+        reader.SetBuffer(m_ringBuffer);
+
+        ActionQueue.Inst.Enqueue(() =>
+        {
+            PacketHandler.Handle(reader);
+            m_ringBuffer.MoveReadPos(reader.Size);
+			});
+
+        m_ringBuffer.MoveWritePos(_args.BytesTransferred);
+
+        RegisterRecv();
     }
 
     public void Disconnect()
     {
-        m_socket.Shutdown(SocketShutdown.Both);
-        m_socket.Close();
+        try
+		{
+			m_socket.Shutdown(SocketShutdown.Both);
+			m_socket.Close();
+		} catch (SocketException ex)
+        {
+            Debug.Log(ex.ErrorCode);
+		}
+
         Debug.Log("Disconnected");
     }
 }
