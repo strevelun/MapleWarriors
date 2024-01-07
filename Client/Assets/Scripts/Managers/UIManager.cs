@@ -2,23 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
+using static Define;
 
 public class UIManager
 {
+	private static UIManager s_inst = null;
+	public static UIManager Inst
+	{
+		get
+		{
+			if (s_inst == null) s_inst = new UIManager();
+			return s_inst;
+		}
+	}
 	// 씬 전환 시 밀기
 
 	int m_order = 10;
 
 	UIScene m_scene = null;
-	Dictionary<string, GameObject> m_dicPopupPrefab = new Dictionary<string, GameObject>();
+	Dictionary<string, UIPopup> m_dicPopup = new Dictionary<string, UIPopup>();
+	Dictionary<string, UIPopup> m_dicPopupInDestructible = new Dictionary<string, UIPopup>();
 
 	public GameObject Root
 	{
 		get
 		{
 			GameObject root = GameObject.Find("@UIRoot");
-			if (!root) root = new GameObject { name = "@UIRoot" };
+			if (!root)
+			{
+				root = new GameObject { name = "@UIRoot" };
+				GameObject.DontDestroyOnLoad(root);
+			}
 			
 			return root;
 		}
@@ -40,73 +56,98 @@ public class UIManager
 
 	public UIScene SetSceneUI(Define.Scene _sceneName)
 	{
-		string curSceneType = Managers.Scene.CurScene.SceneType.ToString();
+		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
 
-		GameObject obj = Managers.Resource.Instantiate("UI/Scene/" + curSceneType + "/UI" + _sceneName.ToString());
+		GameObject obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/UI" + _sceneName.ToString());
 		m_scene = obj.GetComponent<UIScene>();
 		return m_scene;
 	}
 
-	public GameObject FindPopupUI(Define.UIPopup _prefabName)
+	public UIPopup FindPopupUI(Define.UIPopup _prefabName)
 	{
 		string name = _prefabName.ToString();
-		GameObject popup;
-		if (!m_dicPopupPrefab.TryGetValue(name, out popup)) return null;
+		UIPopup popup;
+		m_dicPopup.TryGetValue(name, out popup);
+		if(!popup) m_dicPopupInDestructible.TryGetValue(name, out popup);
+		if (!popup) return null;
 		
 		return popup;
 	}
 
-	public T AddPopupUI<T>(Define.UIPopup _prefabName) where T : UIPopup
+
+	public UIPopup AddPopupUI(Define.UIPopup _prefabName, bool _isOnScene = true)
 	{
 		string name = _prefabName.ToString();
-		string curSceneType = Managers.Scene.CurScene.SceneType.ToString();
-		GameObject popup = FindPopupUI(_prefabName);
-		if (!popup)
+		UIPopup uiPopup = FindPopupUI(_prefabName);
+		if (uiPopup) return uiPopup;
+		GameObject popup;
+
+		string finalPath;
+
+		if (_isOnScene)
 		{
-			popup = Managers.Resource.Instantiate("UI/Scene/" + curSceneType + "/Popup/" + name);
-			m_dicPopupPrefab.Add(name, popup);
-			popup.transform.SetParent(Root.transform);
+			string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
+			finalPath = "UI/Scene/" + curSceneType + "/Popup/";
 		}
+		else
+		{
+			finalPath = "UI/Popup/";
+		}
+
+		popup = ResourceManager.Inst.Instantiate(finalPath + name);
+		uiPopup = popup.GetComponent<UIPopup>();
+
+		if (_isOnScene)
+			m_dicPopup.Add(name, uiPopup);
+		else
+		{
+			m_dicPopupInDestructible.Add(name, uiPopup);
+			uiPopup.SetDestroyOnLoad();
+		}
+
+		popup.transform.SetParent(Root.transform);
 		popup.SetActive(false);
-		return popup.GetComponent<T>();
+		return uiPopup;
 	}
 
 	public void ShowPopupUI(Define.UIPopup _prefabName)
 	{
-		GameObject popup = FindPopupUI(_prefabName);
+		UIPopup popup = FindPopupUI(_prefabName);
 		if (!popup) return;
 
-		SetCanvas(popup, true);
-		popup.SetActive(true);
+		GameObject obj = popup.gameObject;
+		SetCanvas(obj, true);
+		obj.SetActive(true);
 	}
 
 	public void ShowPopupUI(Define.UIPopup _prefabName, string _description)
 	{
-		GameObject popup = FindPopupUI(_prefabName);
+		UIPopup popup = FindPopupUI(_prefabName);
 		if (!popup) return;
 
-		GameObject go = Util.FindChild(popup, true, "Content");
+		GameObject obj = popup.gameObject;
+		GameObject go = Util.FindChild(obj, true, "Content");
 		TextMeshProUGUI tmp = go.GetComponent<TextMeshProUGUI>();
 		if(tmp) tmp.text = _description;
 
-		SetCanvas(popup, true);
-		popup.SetActive(true);
+		SetCanvas(obj, true);
+		obj.SetActive(true);
 	}
 
 	public void HidePopupUI(Define.UIPopup _prefabName)
 	{
-		GameObject popup = FindPopupUI(_prefabName);
+		UIPopup popup = FindPopupUI(_prefabName);
 		if (!popup) return;
 
-		popup.SetActive(false);
+		popup.gameObject.SetActive(false);
 	}
 
 	public void Clear()
 	{
-		foreach(GameObject obj in m_dicPopupPrefab.Values)
+		foreach(UIPopup popup in m_dicPopup.Values)
 		{
-			Managers.Resource.Destroy(obj);
+			ResourceManager.Inst.Destroy(popup.gameObject);
 		}
-		m_dicPopupPrefab.Clear();
+		m_dicPopup.Clear();
 	}
 }

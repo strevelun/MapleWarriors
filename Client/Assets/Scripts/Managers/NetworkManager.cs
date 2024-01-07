@@ -4,11 +4,22 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using UnityEditor.PackageManager;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Windows;
 
 public class NetworkManager
 {
+	private static NetworkManager s_inst = null;
+	public static NetworkManager Inst
+	{
+		get
+		{
+			if (s_inst == null) s_inst = new NetworkManager();
+			return s_inst;
+		}
+	}
+
 	Connection m_connection = null;
 
 	public void Connect(string _serverIp, int _port)
@@ -24,7 +35,7 @@ public class NetworkManager
 			m_connection = new Connection(socket);
 		} catch(SocketException e)
 		{
-			Managers.UI.ShowPopupUI(Define.UIPopup.UIConnectFailPopup, "서버와 연결할 수 없습니다.\n(오류코드 : " + e.SocketErrorCode + ")");
+			UIManager.Inst.ShowPopupUI(Define.UIPopup.UIConnectFailPopup, "서버와 연결할 수 없습니다.\n(오류코드 : " + e.SocketErrorCode + ")");
 		}
 	}
 
@@ -32,4 +43,6 @@ public class NetworkManager
 	{
 		m_connection?.Send(_packet);
 	}
+	
+	
 }

@@ -3,44 +3,60 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Windows;
 
 public class LoginScene : BaseScene
 {
-	// SceneManagerEx.LoadScene("LobbyScene");
+	private TMP_InputField m_input;
 
 	protected override void Init()
 	{
-		base.Init();	
+		base.Init();
 
 		SceneType = Define.Scene.Login;
 		GameObject obj, child;
 		UIButton uiBtn;
 
-		obj = Managers.UI.SetSceneUI(Define.Scene.Login).gameObject;
+		obj = UIManager.Inst.SetSceneUI(Define.Scene.Login).gameObject;
 		if (obj)
 		{
 			child = Util.FindChild(obj, true, "LoginInput");
-			if(child)
+			if (child)
 			{
 				uiBtn = Util.FindChild<UIButton>(obj, true);
-				TMP_InputField input = child.GetComponent<TMP_InputField>();
-				uiBtn.Init(() => OnLoginButtonClicked(input));
+				m_input = child.GetComponent<TMP_InputField>();
+				m_input.onEndEdit.AddListener(OnEndEdit);
+				uiBtn.Init(() => OnLoginButtonClicked());
 			}
 		}
 
-		UIPopup popupOK = Managers.UI.AddPopupUI<UIPopup>(Define.UIPopup.UILoginFailPopup);
-		popupOK.SetButtonAction("OKBtn", () => Managers.UI.HidePopupUI(Define.UIPopup.UILoginFailPopup));
+		UIPopup popup = UIManager.Inst.AddPopupUI(Define.UIPopup.UILoginFailPopup_WrongInput);
+		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopup.UILoginFailPopup_WrongInput));
 
-		popupOK = Managers.UI.AddPopupUI<UIPopup>(Define.UIPopup.UIConnectFailPopup);
-		popupOK.SetButtonAction("OKBtn", () =>  OnConnectFailButtonClicked() );
-		
+		popup = UIManager.Inst.AddPopupUI(Define.UIPopup.UILoginFailPopup_AlreadyLoggedIn);
+		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopup.UILoginFailPopup_AlreadyLoggedIn));
+
+		popup = UIManager.Inst.AddPopupUI(Define.UIPopup.UIConnectFailPopup);
+		popup.SetButtonAction("OKBtn", () => OnConnectFailButtonClicked());
+
+		popup = UIManager.Inst.AddPopupUI(Define.UIPopup.UIDisconnectPopup, false);
+		popup.SetButtonAction("OKBtn", () => { 
+			UIManager.Inst.HidePopupUI(Define.UIPopup.UIDisconnectPopup);
+#if UNITY_EDITOR
+			UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif
+		});
+
+		NetworkManager.Inst.Connect("192.168.219.107", 30001);
+
+		//InputManager.Inst.KeyAction += OnKeyboardEnter;
 	}
 
 	public override void Clear()
 	{
-		Managers.UI.Clear();
-		Managers.Action.Clear();
+		UIManager.Inst.Clear();
+		ActionQueue.Inst.Clear();
 	}
 
 	void Start()
@@ -53,25 +69,35 @@ public class LoginScene : BaseScene
 
 	}
 
-	void OnLoginButtonClicked(TMP_InputField _input)
+	void OnLoginButtonClicked()
 	{
-		if (string.IsNullOrEmpty(_input.text) || _input.text.Contains(" "))
+		if (string.IsNullOrEmpty(m_input.text) || m_input.text.Contains(" "))
 		{
-			Managers.UI.ShowPopupUI(Define.UIPopup.UILoginFailPopup);
+			UIManager.Inst.ShowPopupUI(Define.UIPopup.UILoginFailPopup_WrongInput);
 			return;
 		}
 
-		Packet packet = LoginPacketMaker.CheckNickname(_input.text);
-		Managers.Network.Send(packet);
+		UserData.Inst.Nickname = m_input.text;
+		Debug.Log("just sent : " + UserData.Inst.Nickname);
+		Packet packet = LoginPacketMaker.CheckNickname();
+		NetworkManager.Inst.Send(packet);
 	}
 
 	void OnConnectFailButtonClicked()
 	{
-		Managers.UI.HidePopupUI(Define.UIPopup.UIConnectFailPopup);
+		UIManager.Inst.HidePopupUI(Define.UIPopup.UIConnectFailPopup);
 #if UNITY_EDITOR
 		UnityEditor.EditorApplication.isPlaying = false;
 #else
     Application.Quit();
 #endif
+	}
+
+	private void OnEndEdit(string _text)
+	{
+		if (Input.GetKeyDown(KeyCode.Return))
+		{
+			OnLoginButtonClicked();
+		}
 	}
 }

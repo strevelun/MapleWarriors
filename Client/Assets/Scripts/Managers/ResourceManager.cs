@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class ResourceManager 
 {
+	private static ResourceManager s_inst = null;
+    public static ResourceManager Inst {  get 
+        { 
+            if (s_inst == null) s_inst = new ResourceManager(); 
+            return s_inst; 
+        } 
+    }
+
     public T Load<T>(string _path) where T : Object
     {
         return Resources.Load<T>(_path);

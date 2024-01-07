@@ -10,7 +10,9 @@ public class LobbyScene : BaseScene
 
 		SceneType = Define.Scene.Lobby;
 
-		//Managers.UI.ShowSceneUI<UI_Lobby>();
+        UIManager.Inst.SetSceneUI(Define.Scene.Lobby);
+
+		//UIManager.Inst.ShowSceneUI<UI_Lobby>();
 	}
 	public override void Clear()
     {

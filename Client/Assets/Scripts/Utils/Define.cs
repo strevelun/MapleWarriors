@@ -21,7 +21,9 @@ public class Define
 
 	public enum UIPopup
 	{
-		UILoginFailPopup,
+		UILoginFailPopup_WrongInput,
+		UILoginFailPopup_AlreadyLoggedIn,
 		UIConnectFailPopup,
+		UIDisconnectPopup,
 	}
 }

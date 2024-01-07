@@ -14,8 +14,9 @@ public class RingBuffer
 	private bool m_bIsTempUsed = false;
 	private int m_writtenBytes = 0;
 
-	public byte[] ReadAddr { get { return m_bIsTempUsed ? m_tempBuffer : m_buffer.Skip(m_readPos).ToArray(); } }
-	public byte[] WriteAddr { get { return m_buffer.Skip(m_writePos).ToArray(); } }
+	//public byte[] ReadAddr { get { return m_bIsTempUsed ? m_tempBuffer : m_buffer.Skip(m_readPos).ToArray(); } }
+	// byte[] WriteAddr { get { return m_buffer.Skip(m_writePos).ToArray(); } }
+	public ArraySegment<byte> ReadAddr { get { return new ArraySegment<byte>(m_bIsTempUsed ? m_tempBuffer : m_buffer, m_readPos, m_buffer.Length - m_readPos); }}
 	public int WritableSize
 	{
 		get

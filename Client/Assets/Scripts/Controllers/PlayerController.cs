@@ -42,8 +42,8 @@ public class PlayerController : MonoBehaviour
 		m_rb = GetComponent<Rigidbody2D>();
 		m_anim = GetComponent<Animator>();
 
-		Managers.Input.KeyAction -= InputKeyboard;
-		Managers.Input.KeyAction += InputKeyboard;
+		InputManager.Inst.KeyAction -= InputKeyboard;
+		InputManager.Inst.KeyAction += InputKeyboard;
 	}
 
 	void Update()

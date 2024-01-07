@@ -10,7 +10,7 @@ public class PacketReader
 	private byte[] m_buffer = null;
 	private int m_getPos = Define.PacketSize;
 	
-	public uint Size 
+	public int Size 
 	{ 
 		get 
 		{
@@ -21,7 +21,7 @@ public class PacketReader
 
 	public void SetBuffer(RingBuffer buffer)
 	{
-		m_buffer = buffer.ReadAddr;
+		m_buffer = buffer.ReadAddr.ToArray();
 		m_getPos = Define.PacketSize;
 	}
 
@@ -30,7 +30,7 @@ public class PacketReader
 		int readableSize = buffer.ReadableSize;
 		if (readableSize < Define.PacketSize)	return false;
 
-		ushort packetSize = BitConverter.ToUInt16(buffer.ReadAddr, 0);
+		ushort packetSize = BitConverter.ToUInt16(buffer.ReadAddr.ToArray(), 0);
 		if (packetSize > readableSize)			return false;
 
 		return true;
@@ -72,7 +72,6 @@ public class PacketReader
 	public string GetString()
 	{
 		int pos = m_getPos;
-		//m_getPos = Array.IndexOf(m_buffer, (byte)0, pos);
 		for (int i = pos; i < m_buffer.Length - 1; i += 2)
 		{
 			if (m_buffer[i] == 0 && m_buffer[i + 1] == 0)

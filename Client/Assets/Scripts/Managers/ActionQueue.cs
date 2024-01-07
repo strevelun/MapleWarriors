@@ -3,11 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActionQueue 
+public class ActionQueue : MonoBehaviour
 {
-	Queue<Action> m_actionDelayed = new Queue<Action>();
+	private static ActionQueue s_inst = null;
+	public static ActionQueue Inst
+	{
+		get
+		{
+			return s_inst;
+		}
+	}
 
-	public void Update()
+	Queue<Action> m_action = new Queue<Action>();
+
+	private void Awake()
+	{
+		DontDestroyOnLoad(this);
+		s_inst = GetComponent<ActionQueue>();
+	}
+
+	private void Update()
 	{
 		while (true)
 		{
@@ -20,20 +35,20 @@ public class ActionQueue
 
 	public void Enqueue(Action _action)
 	{
-		m_actionDelayed.Enqueue(_action);
+		m_action.Enqueue(_action);
 	}
 
 	public Action Dequeue()
 	{
-		if (m_actionDelayed.Count <= 0) return null;
+		if (m_action.Count <= 0) return null;
 
-		return m_actionDelayed.Dequeue();
+		return m_action.Dequeue();
 	}
 
 	public void Clear()
 	{
-		if (m_actionDelayed.Count <= 0) return;
+		if (m_action.Count <= 0) return;
 
-		m_actionDelayed.Clear();
+		m_action.Clear();
 	}
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 public class UIPopup : MonoBehaviour
 {
 	Dictionary<string, UIButton> m_dicButton = new Dictionary<string, UIButton>();
+	public bool IsDestroyedOnLoad { private set; get; } = false;
 
 	private void Awake()
 	{
@@ -23,5 +24,11 @@ public class UIPopup : MonoBehaviour
 		{
 			btn.Init(_action);
 		}
+	}
+
+	public void SetDestroyOnLoad()
+	{
+		DontDestroyOnLoad(this);
+		IsDestroyedOnLoad = true;
 	}
 }

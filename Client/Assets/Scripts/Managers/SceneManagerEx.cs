@@ -5,7 +5,17 @@ using UnityEngine.SceneManagement;
 
 public class SceneManagerEx
 {
-    public BaseScene CurScene { get { return GameObject.FindObjectOfType<BaseScene>(); } }
+	private static SceneManagerEx s_inst = null;
+	public static SceneManagerEx Inst
+	{
+		get
+		{
+			if (s_inst == null) s_inst = new SceneManagerEx();
+			return s_inst;
+		}
+	}
+
+	public BaseScene CurScene { get; set; }
 
     public void LoadScene(Define.Scene _type)
     {
@@ -13,7 +23,7 @@ public class SceneManagerEx
         SceneManager.LoadScene(GetSceneName(_type));
     }
 
-    string GetSceneName(Define.Scene _type)
+    private string GetSceneName(Define.Scene _type)
     {
         return System.Enum.GetName(typeof(Define.Scene), _type);
     }

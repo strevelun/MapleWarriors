@@ -8,8 +8,9 @@ public class PacketType
 	{
 		None = 0,
 		Test,
-		LoginReqOK,
-		LoginReqFail,
+		LoginFailure,
+		LoginSuccess,
+		Chat,
 	}
 
 	public enum Client : ushort
@@ -17,5 +18,6 @@ public class PacketType
 		None = 0,
 		Test,
 		LoginReq,
+		Chat,
 	}
 }
