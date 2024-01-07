@@ -3,13 +3,12 @@
 
 public static class LoginPacketMaker
 {
-	public static Packet CheckNickname(string _nickname)
+	public static Packet CheckNickname()
 	{
 		Packet packet = new Packet();
 		packet
 			.Add(PacketType.Client.LoginReq)
-			.Add(_nickname)
-			.Add(77);
+			.Add(UserData.Inst.Nickname);
 		return packet;
 	}
 }
