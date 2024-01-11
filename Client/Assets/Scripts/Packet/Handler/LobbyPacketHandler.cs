@@ -2,17 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LobbyPacketHandler : MonoBehaviour
+public static class LobbyPacketHandler
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	public static void LobbyChat(PacketReader _reader)
+	{
+		string chat = _reader.GetString();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+		ActionQueue.Inst.Enqueue(() =>
+		{
+			UIManager.Inst.AddChat(Define.UIChat.UILobbyChat, chat);
+		});
+	}
 }

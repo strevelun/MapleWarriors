@@ -10,7 +10,7 @@ public class PacketType
 		Test,
 		LoginFailure,
 		LoginSuccess,
-		Chat,
+		LobbyChat,
 	}
 
 	public enum Client : ushort
@@ -18,6 +18,6 @@ public class PacketType
 		None = 0,
 		Test,
 		LoginReq,
-		Chat,
+		LobbyChat,
 	}
 }

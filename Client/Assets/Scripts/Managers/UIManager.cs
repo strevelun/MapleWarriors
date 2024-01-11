@@ -1,10 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Rendering;
-using static Define;
+using UnityEngine.UI;
 
 public class UIManager
 {
@@ -21,9 +18,10 @@ public class UIManager
 
 	int m_order = 10;
 
-	UIScene m_scene = null;
+	public UIScene SceneUI { private set; get; }
 	Dictionary<string, UIPopup> m_dicPopup = new Dictionary<string, UIPopup>();
 	Dictionary<string, UIPopup> m_dicPopupInDestructible = new Dictionary<string, UIPopup>();
+	Dictionary<Define.UIChat, GameObject> m_dicUIChat = new Dictionary<Define.UIChat, GameObject>();
 
 	public GameObject Root
 	{
@@ -59,10 +57,11 @@ public class UIManager
 		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
 
 		GameObject obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/UI" + _sceneName.ToString());
-		m_scene = obj.GetComponent<UIScene>();
-		return m_scene;
+		SceneUI = obj.GetComponent<UIScene>();
+		return SceneUI;
 	}
 
+	#region PopupUI
 	public UIPopup FindPopupUI(Define.UIPopup _prefabName)
 	{
 		string name = _prefabName.ToString();
@@ -74,8 +73,7 @@ public class UIManager
 		return popup;
 	}
 
-
-	public UIPopup AddPopupUI(Define.UIPopup _prefabName, bool _isOnScene = true)
+	public UIPopup AddUI(Define.UIPopup _prefabName, bool _isOnScene = true)
 	{
 		string name = _prefabName.ToString();
 		UIPopup uiPopup = FindPopupUI(_prefabName);
@@ -141,6 +139,38 @@ public class UIManager
 
 		popup.gameObject.SetActive(false);
 	}
+#endregion
+
+	#region ChatUI
+	public void AddUI(Define.UIChat _eChat)
+	{
+		GameObject obj;
+		if (m_dicUIChat.TryGetValue(_eChat, out obj)) return;
+
+		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
+		obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/" + _eChat.ToString(), UIManager.Inst.SceneUI.gameObject.transform);
+		//obj.transform.parent = UIManager.Inst.SceneUI.gameObject.transform;
+		GameObject content = Util.FindChild(obj, true, "Content");
+
+		m_dicUIChat.Add(_eChat, content);
+	}
+
+	public void AddChat(Define.UIChat _eChat, string _text)
+	{
+		GameObject content;
+		if (!m_dicUIChat.TryGetValue(_eChat, out content)) return;
+
+		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
+		GameObject obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/UILobbyChatItem");
+		TextMeshProUGUI tmp = obj.GetComponent<TextMeshProUGUI>();
+		tmp.text = "[" + UserData.Inst.Nickname + "] : " + _text;
+		obj.transform.SetParent(content.transform);
+		
+		obj = content.transform.parent.parent.parent.gameObject;
+		UIChat uichat = obj.GetComponent<UIChat>();
+		uichat.SetScrollbarDown();
+	}
+	#endregion
 
 	public void Clear()
 	{

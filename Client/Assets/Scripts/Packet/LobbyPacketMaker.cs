@@ -8,7 +8,7 @@ public static class LobbyPacketMaker
 	{
 		Packet packet = new Packet();
 		packet
-			.Add(PacketType.Client.Chat)
+			.Add(PacketType.Client.LobbyChat)
 			.Add(_text);
 		return packet;
 	}

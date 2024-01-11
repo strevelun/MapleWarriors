@@ -18,8 +18,11 @@ public static class PacketHandler
 			case PacketType.Server.LoginSuccess:
 				LoginPacketHandler.LoginSuccess(_reader);
 				break;
-				#endregion
-				#region Lobby
+			#endregion
+			#region Lobby
+			case PacketType.Server.LobbyChat:
+				LobbyPacketHandler.LobbyChat(_reader);
+				break;
 				#endregion
 		}
 	}

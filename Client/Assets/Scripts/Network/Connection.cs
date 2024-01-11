@@ -47,14 +47,14 @@ public class Connection
 
         PacketReader reader = new PacketReader();
         reader.SetBuffer(m_ringBuffer);
+        m_ringBuffer.MoveWritePos(_args.BytesTransferred);
 
         ActionQueue.Inst.Enqueue(() =>
         {
             PacketHandler.Handle(reader);
             m_ringBuffer.MoveReadPos(reader.Size);
-			});
+		});
 
-        m_ringBuffer.MoveWritePos(_args.BytesTransferred);
 
         RegisterRecv();
     }

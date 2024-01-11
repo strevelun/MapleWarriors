@@ -26,4 +26,9 @@ public class Define
 		UIConnectFailPopup,
 		UIDisconnectPopup,
 	}
+
+	public enum UIChat
+	{
+		UILobbyChat,
+	}
 }
