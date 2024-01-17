@@ -21,4 +21,12 @@ public abstract class BaseScene : MonoBehaviour
 	}
 
 	public abstract void Clear();
+
+	private void OnApplicationQuit()
+	{
+		Packet pkt = LoginPacketMaker.ExitGame();
+		NetworkManager.Inst.Send(pkt);
+
+		Debug.Log("OnApplicationQuit");
+	}
 }

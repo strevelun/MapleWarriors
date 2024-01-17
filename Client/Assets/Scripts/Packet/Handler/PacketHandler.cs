@@ -6,22 +6,31 @@ public static class PacketHandler
 {
     public static void Handle(PacketReader _reader)
     {
-		PacketType.Server type = _reader.GetPacketType();
-		Debug.Log(type);
+		PacketType.eServer type = _reader.GetPacketType();
+		//Debug.Log(type.ToString());
 
 		switch (type)
         {
-				#region Login
-            case PacketType.Server.LoginFailure:
-				LoginPacketHandler.LoginFailure(_reader);
+			#region Login
+            case PacketType.eServer.LoginFailure_AlreadyLoggedIn:
+				LoginPacketHandler.LoginFailure_AlreadyLoggedIn(_reader);
                 break;
-			case PacketType.Server.LoginSuccess:
+			case PacketType.eServer.LoginFailure_Full:
+				LoginPacketHandler.LoginFailure_Full(_reader);
+				break;
+			case PacketType.eServer.LoginSuccess:
 				LoginPacketHandler.LoginSuccess(_reader);
 				break;
 			#endregion
 			#region Lobby
-			case PacketType.Server.LobbyChat:
+			case PacketType.eServer.LobbyChat:
 				LobbyPacketHandler.LobbyChat(_reader);
+				break;
+			case PacketType.eServer.LobbyUpdateInfo_UserList:
+				LobbyPacketHandler.LobbyUpdateInfo_UserList(_reader);
+				break;
+			case PacketType.eServer.LobbyUpdateInfo_RoomList:
+				LobbyPacketHandler.LobbyUpdateInfo_RoomList(_reader);
 				break;
 				#endregion
 		}

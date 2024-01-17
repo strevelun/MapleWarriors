@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class UIManager
 {
@@ -21,7 +22,8 @@ public class UIManager
 	public UIScene SceneUI { private set; get; }
 	Dictionary<string, UIPopup> m_dicPopup = new Dictionary<string, UIPopup>();
 	Dictionary<string, UIPopup> m_dicPopupInDestructible = new Dictionary<string, UIPopup>();
-	Dictionary<Define.UIChat, GameObject> m_dicUIChat = new Dictionary<Define.UIChat, GameObject>();
+	Dictionary<Define.UIChat, UIChat> m_dicUIChat = new Dictionary<Define.UIChat, UIChat>();
+	Dictionary<Define.UI, GameObject> m_dicUI = new Dictionary<Define.UI, GameObject>();
 
 	public GameObject Root
 	{
@@ -139,45 +141,57 @@ public class UIManager
 
 		popup.gameObject.SetActive(false);
 	}
-#endregion
+	#endregion
 
 	#region ChatUI
 	public void AddUI(Define.UIChat _eChat)
 	{
-		GameObject obj;
-		if (m_dicUIChat.TryGetValue(_eChat, out obj)) return;
+		UIChat chat;
+		if (m_dicUIChat.TryGetValue(_eChat, out chat)) return;
 
 		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
-		obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/" + _eChat.ToString(), UIManager.Inst.SceneUI.gameObject.transform);
-		//obj.transform.parent = UIManager.Inst.SceneUI.gameObject.transform;
-		GameObject content = Util.FindChild(obj, true, "Content");
+		GameObject obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/" + _eChat.ToString(), UIManager.Inst.SceneUI.gameObject.transform);
 
-		m_dicUIChat.Add(_eChat, content);
+		m_dicUIChat.Add(_eChat, obj.GetComponent<UIChat>());
 	}
 
-	public void AddChat(Define.UIChat _eChat, string _text)
+	public UIChat FindUI(Define.UIChat _eChat)
 	{
-		GameObject content;
-		if (!m_dicUIChat.TryGetValue(_eChat, out content)) return;
+		UIChat chat;
+		if (!m_dicUIChat.TryGetValue(_eChat, out chat)) return null;
 
-		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
-		GameObject obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/UILobbyChatItem");
-		TextMeshProUGUI tmp = obj.GetComponent<TextMeshProUGUI>();
-		tmp.text = "[" + UserData.Inst.Nickname + "] : " + _text;
-		obj.transform.SetParent(content.transform);
-		
-		obj = content.transform.parent.parent.parent.gameObject;
-		UIChat uichat = obj.GetComponent<UIChat>();
-		uichat.SetScrollbarDown();
+		return chat;
 	}
 	#endregion
+
+	public GameObject AddUI(Define.UI _eUI)
+	{
+		GameObject obj;
+		if (m_dicUI.TryGetValue(_eUI, out obj)) return null;
+
+		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
+		obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/" + _eUI.ToString(), UIManager.Inst.SceneUI.gameObject.transform);
+
+		m_dicUI.Add(_eUI, obj);
+		return obj;
+	}
+
+	public GameObject FindUI(Define.UI _eUI)
+	{
+		GameObject obj;
+		if (!m_dicUI.TryGetValue(_eUI, out obj)) return null;
+
+		return obj;
+	}
 
 	public void Clear()
 	{
 		foreach(UIPopup popup in m_dicPopup.Values)
 		{
+			// 씬 전환시 Clear()가 호출되는데 수동으로 해줘야하나
 			ResourceManager.Inst.Destroy(popup.gameObject);
 		}
 		m_dicPopup.Clear();
+		m_dicUIChat.Clear();
 	}
 }

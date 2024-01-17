@@ -12,7 +12,7 @@ public class LoginScene : BaseScene
 	{
 		base.Init();
 
-		Screen.SetResolution(1600, 1200, false);
+		Screen.SetResolution(1280, 720, false);
 		SceneType = Define.Scene.Login;
 		GameObject obj, child;
 		UIButton uiBtn;
@@ -79,7 +79,7 @@ public class LoginScene : BaseScene
 		}
 
 		UserData.Inst.Nickname = m_input.text;
-		Debug.Log("just sent : " + UserData.Inst.Nickname);
+		//Debug.Log("just sent : " + UserData.Inst.Nickname);
 		Packet packet = LoginPacketMaker.CheckNickname();
 		NetworkManager.Inst.Send(packet);
 	}
@@ -87,6 +87,7 @@ public class LoginScene : BaseScene
 	void OnConnectFailButtonClicked()
 	{
 		UIManager.Inst.HidePopupUI(Define.UIPopup.UIConnectFailPopup);
+
 #if UNITY_EDITOR
 		UnityEditor.EditorApplication.isPlaying = false;
 #else

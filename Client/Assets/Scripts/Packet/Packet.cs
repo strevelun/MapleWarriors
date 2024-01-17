@@ -23,7 +23,7 @@ public class Packet
 	public Packet Add(ushort _type) { return Add(GetBytes(_type)); }
 	public Packet Add(uint _type) { return Add(GetBytes(_type)); }
 	public Packet Add(ulong _type) { return Add(GetBytes(_type)); }
-	public Packet Add(PacketType.Client _type) { return Add(GetBytes(_type)); }
+	public Packet Add(PacketType.eClient _type) { return Add(GetBytes(_type)); }
 	public Packet Add(string _type) 
 	{
 		Packet p = Add(GetBytes(_type));
@@ -49,5 +49,5 @@ public class Packet
 	private byte[] GetBytes(uint _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(ulong _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(string _type) { return Encoding.Unicode.GetBytes((string)(object)_type); }
-	private byte[] GetBytes(PacketType.Client _type) { return BitConverter.GetBytes((ushort)_type); }
+	private byte[] GetBytes(PacketType.eClient _type) { return BitConverter.GetBytes((ushort)_type); }
 }

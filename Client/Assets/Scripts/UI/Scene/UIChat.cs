@@ -9,11 +9,11 @@ public class UIChat : MonoBehaviour
 	private TMP_InputField			m_input;
 	private Scrollbar				m_scrollbar;
 	private UIButton				m_btn;
-	private RectTransform			m_content;
+	private GameObject				m_content;
 
-	private uint					m_inputEnterCount = 0;
-	private float					m_scrollbarValue = 0f;
-	private bool					m_isUserScrolling = false;
+	private const int m_chatLimit = 10;
+
+	public uint ChatCount { get; set; } = 0;
 
 	private void Init()
 	{
@@ -21,15 +21,16 @@ public class UIChat : MonoBehaviour
 		m_input.onEndEdit.AddListener(OnEndEdit);
 
 		m_scrollbar = Util.FindChild<Scrollbar>(gameObject, true);
-		m_scrollbar.onValueChanged.AddListener(OnScrollbarValueChanged);
+		//m_scrollbar.onValueChanged.AddListener(OnScrollbarValueChanged);
 
 		GameObject obj = Util.FindChild(gameObject, true, "SendBtn");
 		m_btn = obj.GetComponent<UIButton>();
 		m_btn.Init(() => OnSendButtonClicked());
 
-		m_content = Util.FindChild(gameObject, true, "Content").GetComponent<RectTransform>();
+		m_content = Util.FindChild(gameObject, true, "Content");
 
 		// 버튼 클릭 이벤트
+
 	}
 
 	void Start()
@@ -39,15 +40,14 @@ public class UIChat : MonoBehaviour
 
     void Update()
 	{ 
-    }
-
-	private void OnScrollbarValueChanged(float _value)
-	{
-		m_scrollbarValue = _value;
-
-		if (m_scrollbarValue > 0f)
+		//if(Input.GetKeyDown(KeyCode.Return))
 		{
-			m_isUserScrolling = true;
+			//UIManager.Inst.AddChat(Define.UIChat.UILobbyChat, "TEST");
+		}
+
+		if (m_chatLimit < ChatCount)
+		{
+			--ChatCount;
 		}
 	}
 
@@ -55,18 +55,8 @@ public class UIChat : MonoBehaviour
 	{
 		//if (m_inputEnterCount == 0 && m_scrollbarValue > 0f) return;
 
-		if (m_inputEnterCount != 0 && !m_isUserScrolling)
-		{
-			StartCoroutine(SetScrollbarAfterLayoutRebuild());
-		}
-	}
+		m_scrollbar.value = -0.8f;
 
-	private IEnumerator SetScrollbarAfterLayoutRebuild()
-	{
-		LayoutRebuilder.ForceRebuildLayoutImmediate(m_content);
-		yield return new WaitForEndOfFrame();
-		m_scrollbar.value = 0;
-		m_isUserScrolling = false;
 	}
 
 	void OnSendButtonClicked()
@@ -79,7 +69,7 @@ public class UIChat : MonoBehaviour
 		m_input.Select();
 		m_input.ActivateInputField();
 
-		++m_inputEnterCount;
+		//++m_inputEnterCount;
 	}
 
 	private void OnEndEdit(string _text)
@@ -90,5 +80,30 @@ public class UIChat : MonoBehaviour
 		{
 			OnSendButtonClicked();
 		}
+	}
+
+	public void AddChat(string _nickname, string _text)
+	{
+		GameObject obj;
+		TextMeshProUGUI tmp;
+
+		if (ChatCount < m_chatLimit)
+		{
+			string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
+			obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/UILobbyChatItem");
+			tmp = obj.GetComponent<TextMeshProUGUI>();
+			tmp.text = "[" + _nickname + "] : " + _text;
+			obj.transform.SetParent(m_content.transform);
+
+			++ChatCount;
+		}
+		else
+		{
+			Transform t = m_content.transform.GetChild(0);
+			obj = t.gameObject;
+			tmp = obj.GetComponent<TextMeshProUGUI>();
+			tmp.text = "[" + _nickname + "] : " + _text;
+			t.SetAsLastSibling();
+		} 
 	}
 }

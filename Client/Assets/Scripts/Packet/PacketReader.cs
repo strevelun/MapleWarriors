@@ -15,30 +15,31 @@ public class PacketReader
 		get 
 		{
 			if (m_buffer == null) return 0;
+
 			return BitConverter.ToUInt16(m_buffer, 0); 
 		} 
 	}
 
-	public void SetBuffer(RingBuffer buffer)
+	public void SetBuffer(RingBuffer _buffer)
 	{
-		m_buffer = buffer.ReadAddr.ToArray();
+		m_buffer = _buffer.ReadAddr.ToArray();
 		m_getPos = Define.PacketSize;
 	}
 
-	public bool IsBufferReadable(RingBuffer buffer)
+	public bool IsBufferReadable(RingBuffer _buffer)
 	{
-		int readableSize = buffer.ReadableSize;
+		int readableSize = _buffer.ReadableSize;
 		if (readableSize < Define.PacketSize)	return false;
 
-		ushort packetSize = BitConverter.ToUInt16(buffer.ReadAddr.ToArray(), 0);
+		ushort packetSize = BitConverter.ToUInt16(_buffer.ReadAddr.ToArray(), 0);
 		if (packetSize > readableSize)			return false;
 
 		return true;
 	}
 
-	public PacketType.Server GetPacketType()
+	public PacketType.eServer GetPacketType()
 	{
-		return (PacketType.Server)GetUShort();
+		return (PacketType.eServer)GetUShort();
 	}
 
 	public byte GetByte()

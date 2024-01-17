@@ -4,20 +4,27 @@ using UnityEngine;
 
 public class PacketType
 {
-	public enum Server : ushort
+	public enum eServer : ushort
 	{
 		None = 0,
 		Test,
-		LoginFailure,
+		LoginFailure_AlreadyLoggedIn,
+		LoginFailure_Full,
 		LoginSuccess,
 		LobbyChat,
+		LobbyUpdateInfo_UserList,
+		LobbyUpdateInfo_RoomList,
 	}
 
-	public enum Client : ushort
+	public enum eClient : ushort
 	{
 		None = 0,
 		Test,
+		Exit,
 		LoginReq,
 		LobbyChat,
+		LobbyUpdateInfo,
+		UserListGetPageInfo,
+		RoomListGetPageInfo
 	}
 }
