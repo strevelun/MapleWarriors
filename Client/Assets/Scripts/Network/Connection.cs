@@ -1,5 +1,6 @@
 using System;
 using System.Net.Sockets;
+using System.Threading;
 using UnityEngine;
 
 public class Connection 
@@ -27,12 +28,14 @@ public class Connection
         ArraySegment<byte> seg;
         if(!m_ringBuffer.SetWriteSegment(out seg))
         {
+            Debug.Log("버퍼에 공간이 없습니다");
             return;
         }
         m_recvArgs.SetBuffer(seg.Array, seg.Offset, seg.Count);
+        //Debug.Log("offset : " + seg.Offset + ", Count : " + seg.Count);
 
         bool pending = m_socket.ReceiveAsync(m_recvArgs);
-        if (!pending) OnRecvCompleted(null, m_recvArgs);
+        if (!pending)       OnRecvCompleted(null, m_recvArgs);
     }
 
     public void OnRecvCompleted(object _sender, SocketAsyncEventArgs _args)
@@ -45,18 +48,26 @@ public class Connection
             return;
         }
 
-        PacketReader reader = new PacketReader();
-        reader.SetBuffer(m_ringBuffer);
+		PacketReader reader = null;
         m_ringBuffer.MoveWritePos(_args.BytesTransferred);
 
-        ActionQueue.Inst.Enqueue(() =>
+        do
         {
-            PacketHandler.Handle(reader);
-            m_ringBuffer.MoveReadPos(reader.Size);
-		});
+			reader = new PacketReader();
+            if (!reader.IsBufferReadable(m_ringBuffer)) break;
 
-
-        RegisterRecv();
+            reader.SetBuffer(m_ringBuffer);
+			var readerCopy = reader;
+			ActionQueue.Inst.Enqueue(() =>
+            {
+                PacketHandler.Handle(readerCopy);
+            });
+            m_ringBuffer.MoveReadPos(readerCopy.Size);
+		} while (true);
+        
+		m_ringBuffer.HandleVerge();
+		
+		RegisterRecv();
     }
 
     public void Disconnect()
