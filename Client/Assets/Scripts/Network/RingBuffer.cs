@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class RingBuffer 
 {
-	object m_lock = new object();
-
     private byte[] m_buffer = new byte[Define.BufferMax];
     private byte[] m_tempBuffer = new byte[Define.BufferMax];
 	private int m_readPos = 0;
@@ -66,50 +64,41 @@ public class RingBuffer
 
 	public void MoveReadPos(int _readBytes)
 	{
-		lock (m_lock)
+		//Debug.Log("READ중!!!!! : " + m_writtenBytes);
+		m_writtenBytes -= _readBytes;
+		m_readPos = (_readBytes + m_readPos) % Define.BufferMax;
+		if (m_bIsTempUsed)
 		{
-			//Debug.Log("READ중!!!!! : " + m_writtenBytes);
-			m_writtenBytes -= _readBytes;
-			m_readPos = (_readBytes + m_readPos) % Define.BufferMax;
-			if (m_bIsTempUsed)
-			{
-				m_bIsTempUsed = false;
-				m_tempPos = 0;
-			}
+			m_bIsTempUsed = false;
+			m_tempPos = 0;
 		}
 	}
 
 	public void MoveWritePos(int _recvBytes)
 	{
-		lock (m_lock)
-		{
-			m_writtenBytes += _recvBytes;
-			m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
-			if (m_bIsTempUsed) m_tempPos += _recvBytes;
-			//Debug.Log("writePos : " + m_writePos);
-		}
+		m_writtenBytes += _recvBytes;
+		m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
+		if (m_bIsTempUsed) m_tempPos += BitConverter.ToUInt16(m_tempBuffer, 0) - m_tempPos; // temp에 패킷의 일부가 쓰인 상태일땐 해당 패킷의 나머지 크기만큼만
+		//Debug.Log("writePos : " + m_writePos);
 	}
 
 	public void HandleVerge()
 	{
 		if (m_bIsTempUsed) return;
 
-		lock (m_lock)
-		{
-			int readableSize = ReadableSize;
-			ushort cpySize = 0;
-			if (readableSize >= sizeof(ushort))
-				cpySize = BitConverter.ToUInt16(m_buffer, m_readPos);
-			//Debug.Log("패킷사이즈 : " + cpySize + "현재 readPos : " + m_readPos);
+		int readableSize = ReadableSize;
+		ushort cpySize = 0;
+		if (readableSize >= Define.PacketSize)
+			cpySize = BitConverter.ToUInt16(m_buffer, m_readPos);
+		//Debug.Log("패킷사이즈 : " + cpySize + "현재 readPos : " + m_readPos);
 
-			// 만약 r w MAX 이렇게 되어있을땐?
-			if (readableSize == 1 || m_readPos + cpySize > Define.BufferMax)
-			{
-				m_tempPos = Define.BufferMax - m_readPos;
-				Buffer.BlockCopy(m_buffer, m_readPos, m_tempBuffer, 0, m_tempPos);
-				m_bIsTempUsed = true;
-				//Debug.Log(cpySize + ", " + m_readPos + ", " + m_writePos + " : TEMPUSED");
-			}
+		// 만약 r w MAX 이렇게 되어있을땐?
+		if (readableSize == 1 || m_readPos + cpySize > Define.BufferMax)
+		{
+			m_tempPos = Define.BufferMax - m_readPos;
+			Buffer.BlockCopy(m_buffer, m_readPos, m_tempBuffer, 0, m_tempPos);
+			m_bIsTempUsed = true;
+			Debug.Log(cpySize + ", " + m_readPos + ", " + m_writePos + " : TEMPUSED");
 		}
 	}
 }

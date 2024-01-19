@@ -48,21 +48,21 @@ public class Connection
             return;
         }
 
-		PacketReader reader = null;
         m_ringBuffer.MoveWritePos(_args.BytesTransferred);
+
+       // Debug.Log(_args.BytesTransferred);
 
         do
         {
-			reader = new PacketReader();
+			PacketReader reader = new PacketReader();
             if (!reader.IsBufferReadable(m_ringBuffer)) break;
 
             reader.SetBuffer(m_ringBuffer);
-			var readerCopy = reader;
 			ActionQueue.Inst.Enqueue(() =>
             {
-                PacketHandler.Handle(readerCopy);
+                PacketHandler.Handle(reader);
             });
-            m_ringBuffer.MoveReadPos(readerCopy.Size);
+            m_ringBuffer.MoveReadPos(reader.Size);
 		} while (true);
         
 		m_ringBuffer.HandleVerge();

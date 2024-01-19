@@ -31,6 +31,9 @@ public static class PacketHandler
 				break;
 			case PacketType.eServer.LobbyUpdateInfo_RoomList:
 				LobbyPacketHandler.LobbyUpdateInfo_RoomList(_reader);
+				break;		
+			case PacketType.eServer.CreateRoom:
+				LobbyPacketHandler.CreateRoom(_reader);
 				break;
 				#endregion
 		}

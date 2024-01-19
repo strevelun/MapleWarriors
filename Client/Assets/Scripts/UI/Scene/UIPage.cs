@@ -8,7 +8,7 @@ public class UIPage : MonoBehaviour
 
 	public int ActiveItemCount { get; set; } = 0;
 
-	private byte m_curPage;
+	private byte m_curPage = 0;
 	public byte CurPage
 	{
 		get { return m_curPage; }

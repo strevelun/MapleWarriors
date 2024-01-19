@@ -33,6 +33,11 @@ public class PacketReader
 
 		ushort packetSize = BitConverter.ToUInt16(_buffer.ReadAddr.ToArray(), 0);
 		if (packetSize > readableSize)			return false;
+		if (packetSize > Define.PacketBufferMax)
+		{
+			Debug.Log("패킷 사이즈 에러");
+			return false;
+		}
 
 		return true;
 	}

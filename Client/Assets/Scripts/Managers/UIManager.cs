@@ -116,6 +116,8 @@ public class UIManager
 		if (!popup) return;
 
 		GameObject obj = popup.gameObject;
+		if (obj.activeSelf) return;
+
 		SetCanvas(obj, true);
 		obj.SetActive(true);
 	}
@@ -126,6 +128,8 @@ public class UIManager
 		if (!popup) return;
 
 		GameObject obj = popup.gameObject;
+		if (obj.activeSelf) return;
+
 		GameObject go = Util.FindChild(obj, true, "Content");
 		TextMeshProUGUI tmp = go.GetComponent<TextMeshProUGUI>();
 		if(tmp) tmp.text = _description;

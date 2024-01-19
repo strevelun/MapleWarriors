@@ -15,7 +15,9 @@ public class Define
 	public const int UserListPageMax = 30;
 	public const int UserListMaxItemInPage = 10;
 	public const int RoomListPageMax = 50;
-	public const int RoomListMaxItemInPage = 6;
+	public const int RoomListMaxItemInPage = 4;
+
+	public const int RoomTitleMaxCount = 17;
 
 	public enum Scene
 	{
@@ -33,6 +35,7 @@ public class Define
 		UILoginFailPopup_Full,
 		UIConnectFailPopup,
 		UIDisconnectPopup,
+		UICreateRoomPopup,
 	}
 
 	public enum UIChat

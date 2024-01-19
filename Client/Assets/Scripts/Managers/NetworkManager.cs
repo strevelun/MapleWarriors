@@ -44,5 +44,9 @@ public class NetworkManager
 		m_connection?.Send(_packet);
 	}
 	
-	
+	public void Disconnect()
+	{
+		m_connection.Disconnect();
+		m_connection = null;
+	}
 }

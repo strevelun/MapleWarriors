@@ -20,7 +20,7 @@ public class LoginScene : BaseScene
 		obj = UIManager.Inst.SetSceneUI(Define.Scene.Login).gameObject;
 		if (obj)
 		{
-			child = Util.FindChild(obj, true, "LoginInput");
+			child = Util.FindChild(obj, true, "Input");
 			if (child)
 			{
 				uiBtn = Util.FindChild<UIButton>(obj, true);
@@ -35,6 +35,9 @@ public class LoginScene : BaseScene
 
 		popup = UIManager.Inst.AddUI(Define.UIPopup.UILoginFailPopup_AlreadyLoggedIn);
 		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopup.UILoginFailPopup_AlreadyLoggedIn));
+		
+		popup = UIManager.Inst.AddUI(Define.UIPopup.UILoginFailPopup_Full);
+		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopup.UILoginFailPopup_Full));
 
 		popup = UIManager.Inst.AddUI(Define.UIPopup.UIConnectFailPopup);
 		popup.SetButtonAction("OKBtn", () => OnConnectFailButtonClicked());
@@ -50,6 +53,7 @@ public class LoginScene : BaseScene
 		});
 
 		NetworkManager.Inst.Connect("192.168.219.107", 30001);
+		//NetworkManager.Inst.Connect("220.121.252.109", 30001);
 
 		//InputManager.Inst.KeyAction += OnKeyboardEnter;
 	}

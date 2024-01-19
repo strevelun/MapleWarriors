@@ -17,7 +17,6 @@ public static class LobbyPacketMaker
 		Packet packet = new Packet();
 		packet
 			.Add(PacketType.eClient.LobbyChat)
-			.Add(UserData.Inst.Nickname)
 			.Add(_text);
 		return packet;
 	}
@@ -29,6 +28,32 @@ public static class LobbyPacketMaker
 			.Add(PacketType.eClient.LobbyUpdateInfo)
 			.Add(_userListPage)
 			.Add(_roomListPage);
+		return pkt;
+	}
+
+	public static Packet UserListGetPageInfo(int _page)
+	{
+		Packet pkt = new Packet();
+		pkt.Add(PacketType.eClient.UserListGetPageInfo)
+			.Add((byte)_page);
+		return pkt;
+	}
+
+	public static Packet RoomListGetPageInfo(int _page)
+	{
+		Packet pkt = new Packet();
+		pkt.Add(PacketType.eClient.RoomListGetPageInfo)
+			.Add((byte)_page);
+		return pkt;
+	}
+
+	public static Packet CreateRoom(string _title)
+	{
+
+
+		Packet pkt = new Packet();
+		pkt.Add(PacketType.eClient.CreateRoom)
+			.Add(_title);
 		return pkt;
 	}
 }

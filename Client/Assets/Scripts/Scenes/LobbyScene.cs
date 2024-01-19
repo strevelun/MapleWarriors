@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,6 +43,20 @@ public class LobbyScene : BaseScene
 			obj = Util.FindChild(parentObj, false, "NextBtn");
 			btn = obj.GetComponent<Button>();
 			btn.onClick.AddListener(OnUserListNextBtnClicked);
+		}
+
+		{
+			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UICreateRoomPopup);
+			popup.SetButtonAction("OKBtn", () =>
+			{
+				Packet pkt = LobbyPacketMaker.CreateRoom(popup.InputField.text);
+				NetworkManager.Inst.Send(pkt);
+			});
+			popup.SetButtonAction("CancelBtn", () => 
+			{
+				popup.InputField.text = string.Empty;
+				UIManager.Inst.HidePopupUI(Define.UIPopup.UICreateRoomPopup); 
+			});
 		}
 
         {
@@ -89,22 +104,17 @@ public class LobbyScene : BaseScene
 	void OnRoomListPrevBtnClicked()
     {
 		if (m_roomListPage.CurPage <= 0) return;
-		if (m_roomListPage.CurPage >= Define.RoomListPageMax) return;
 
-		Packet pkt = new Packet();
-		pkt.Add(PacketType.eClient.RoomListGetPageInfo)
-			.Add((byte)(m_roomListPage.CurPage - 1));
+		Packet pkt = LobbyPacketMaker.RoomListGetPageInfo(m_roomListPage.CurPage - 1);
 		NetworkManager.Inst.Send(pkt);
     }   
     
     void OnRoomListNextBtnClicked()
 	{
-		if (m_roomListPage.CurPage <= 0) return;
-		if (m_roomListPage.CurPage >= Define.RoomListPageMax) return;
+		if (m_roomListPage.ActiveItemCount < Define.RoomListMaxItemInPage) return;
+		if (m_roomListPage.CurPage >= Define.RoomListPageMax - 1) return;
 
-		Packet pkt = new Packet();
-		pkt.Add(PacketType.eClient.RoomListGetPageInfo)
-			.Add((byte)(m_roomListPage.CurPage + 1));
+		Packet pkt = LobbyPacketMaker.RoomListGetPageInfo(m_roomListPage.CurPage + 1);
 		NetworkManager.Inst.Send(pkt);
 	}
 
@@ -112,11 +122,8 @@ public class LobbyScene : BaseScene
 	{
 		if (m_userListPage.CurPage <= 0) return;
 
-		Packet pkt = new Packet();
-		pkt.Add(PacketType.eClient.UserListGetPageInfo)
-			.Add((byte)(m_userListPage.CurPage - 1));
+		Packet pkt = LobbyPacketMaker.UserListGetPageInfo(m_userListPage.CurPage - 1);
 		NetworkManager.Inst.Send(pkt);
-		//++m_userListPage.BtnClickCount;
 	}
 
 	void OnUserListNextBtnClicked()
@@ -125,21 +132,21 @@ public class LobbyScene : BaseScene
 		if (m_userListPage.ActiveItemCount < Define.UserListMaxItemInPage) return;
 		if (m_userListPage.CurPage >= Define.UserListPageMax - 1) return;
 
-		Packet pkt = new Packet();
-		pkt.Add(PacketType.eClient.UserListGetPageInfo)
-			.Add((byte)(m_userListPage.CurPage + 1));
+		Packet pkt = LobbyPacketMaker.UserListGetPageInfo(m_userListPage.CurPage + 1);
 		NetworkManager.Inst.Send(pkt);
-		//++m_userListPage.BtnClickCount;
-		Debug.Log("NextBtn");
+		//Debug.Log("NextBtn");
 	}
 
 	void OnCreateBtnClicked()
 	{
-
+		UIManager.Inst.ShowPopupUI(Define.UIPopup.UICreateRoomPopup);
 	}
 
 	void OnExitBtnClicked()
 	{
+		Packet pkt = LobbyPacketMaker.ExitGame();
+		NetworkManager.Inst.Send(pkt);
 
+		NetworkManager.Inst.Disconnect();
 	}
 }

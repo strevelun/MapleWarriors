@@ -17,7 +17,8 @@ public static class LobbyPacketHandler
 
 	public static void LobbyUpdateInfo_UserList(PacketReader _reader)
 	{
-		//Debug.Log("LobbyUpdateInfo_UserList");
+		// TODO : UIPage로 로직 옮기기
+
 		TextMeshProUGUI tmp;
 
 		byte page = _reader.GetByte();
@@ -58,7 +59,53 @@ public static class LobbyPacketHandler
 
 	public static void LobbyUpdateInfo_RoomList(PacketReader _reader)
 	{
-		
+		TextMeshProUGUI tmp;
+
+		byte page = _reader.GetByte();
+
+		GameObject roomListObj = UIManager.Inst.FindUI(Define.UI.UILobby_RoomList);
+		GameObject uiPageObj = Util.FindChild(roomListObj, false, "Page");
+		tmp = uiPageObj.GetComponent<TextMeshProUGUI>();
+		tmp.text = "페이지 : " + page;
+
+		UIPage uiPage = roomListObj.GetComponent<UIPage>();
+		uiPage.CurPage = page;
+
+		GameObject obj, item;
+		int roomCount = _reader.GetByte();
+		int i = 0;
+		int activeCount = 0;
+		for (; i < Define.RoomListMaxItemInPage; ++i)
+		{
+			item = uiPage.GetItem(i);
+			if (i < roomCount)
+			{
+				obj = Util.FindChild(item, false, "Title");
+				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+				tmp.text = _reader.GetString();
+				obj = Util.FindChild(item, false, "Owner");
+				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+				tmp.text = _reader.GetString();
+				obj = Util.FindChild(item, false, "Id");
+				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+				tmp.text = _reader.GetByte().ToString();
+
+				if (!item.activeSelf) item.SetActive(true);
+				++activeCount;
+			}
+			else
+			{
+				if (item.activeSelf) item.SetActive(false);
+			}
+		}
+		uiPage.ActiveItemCount = activeCount;
+		//Debug.Log("LobbyUpdateInfo_RoomList : " + roomCount);
+	}	
+	
+	// TODO : CreateRoom_Success
+	public static void CreateRoom(PacketReader _reader)
+	{
+		SceneManagerEx.Inst.LoadScene(Define.Scene.Room);
 	}
 
 	
