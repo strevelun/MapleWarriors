@@ -60,8 +60,7 @@ public class LoginScene : BaseScene
 
 	public override void Clear()
 	{
-		UIManager.Inst.Clear();
-		ActionQueue.Inst.Clear();
+		base.Clear();
 	}
 
 	void Start()

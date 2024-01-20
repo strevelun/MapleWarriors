@@ -16,10 +16,21 @@ public class LobbyScene : BaseScene
 		SceneType = Define.Scene.Lobby;
 
         UIScene uiScene = UIManager.Inst.SetSceneUI(Define.Scene.Lobby);
+		{
+			GameObject obj = Util.FindChild(uiScene.gameObject, false, "CreateRoomBtn");
+			Button btn = obj.GetComponent<Button>();
+			btn.onClick.AddListener(OnCreateBtnClicked);
+			obj = Util.FindChild(uiScene.gameObject, false, "ExitBtn");
+			btn = obj.GetComponent<Button>();
+			btn.onClick.AddListener(OnExitBtnClicked);
+		}
 
-        UIManager.Inst.AddUI(Define.UIChat.UILobbyChat);
+		{
+			UIChat uichat = UIManager.Inst.AddUI(Define.UIChat.UILobbyChat);
+			uichat.SetDefaultSendBtn(LobbyPacketMaker.SendChat);
+		}
 
-        {
+		{
             GameObject parentObj = UIManager.Inst.AddUI(Define.UI.UILobby_RoomList);
 			m_roomListPage = parentObj.GetComponent<UIPage>();
 			m_roomListPage.Init(Define.RoomListPageMax, Define.RoomListMaxItemInPage, "UI/Scene/Lobby/", Define.UI.UILobby_RoomList, "Content");
@@ -49,6 +60,8 @@ public class LobbyScene : BaseScene
 			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UICreateRoomPopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
+				popup.InputField.text = string.Empty;
+				UIManager.Inst.HidePopupUI(Define.UIPopup.UICreateRoomPopup);
 				Packet pkt = LobbyPacketMaker.CreateRoom(popup.InputField.text);
 				NetworkManager.Inst.Send(pkt);
 			});
@@ -57,24 +70,25 @@ public class LobbyScene : BaseScene
 				popup.InputField.text = string.Empty;
 				UIManager.Inst.HidePopupUI(Define.UIPopup.UICreateRoomPopup); 
 			});
-		}
-
-        {
-            GameObject obj = Util.FindChild(uiScene.gameObject, false, "CreateRoomBtn");
-            Button btn = obj.GetComponent<Button>();
-            btn.onClick.AddListener(OnCreateBtnClicked);
-            obj = Util.FindChild(uiScene.gameObject, false, "ExitBtn");
-			btn = obj.GetComponent<Button>();
-			btn.onClick.AddListener(OnExitBtnClicked);
+		}		
+		
+		{
+			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UICreateRoomFailPopup);
+			popup.SetButtonAction("OKBtn", () =>
+			{
+				UIManager.Inst.HidePopupUI(Define.UIPopup.UICreateRoomFailPopup);
+			});
 		}
 
 		StartCoroutine(UpdateLobbyInfoCoroutine());
 
 		UpdateLobbyInfo();
 	}
+
 	public override void Clear()
-    {
-    }
+	{
+		base.Clear();
+	}
 
     void Start()
     {

@@ -14,7 +14,11 @@ public class PacketType
 		LobbyChat,
 		LobbyUpdateInfo_UserList,
 		LobbyUpdateInfo_RoomList,
-		CreateRoom,
+		CreateRoom_Success,
+		CreateRoom_Fail,
+		ExitRoom,
+		StartGame_Success,
+		StartGame_Fail,
 	}
 
 	public enum eClient : ushort
@@ -28,5 +32,10 @@ public class PacketType
 		UserListGetPageInfo,
 		RoomListGetPageInfo,
 		CreateRoom,
+		ExitRoom,
+		StartGame,
+		RoomReady,
+		RoomStandby,
+		RoomChat,
 	}
 }

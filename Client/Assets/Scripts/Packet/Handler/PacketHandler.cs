@@ -32,9 +32,19 @@ public static class PacketHandler
 			case PacketType.eServer.LobbyUpdateInfo_RoomList:
 				LobbyPacketHandler.LobbyUpdateInfo_RoomList(_reader);
 				break;		
-			case PacketType.eServer.CreateRoom:
-				LobbyPacketHandler.CreateRoom(_reader);
+			case PacketType.eServer.CreateRoom_Success:
+				LobbyPacketHandler.CreateRoom_Success(_reader);
+				break;		
+			case PacketType.eServer.CreateRoom_Fail:
+				LobbyPacketHandler.CreateRoom_Fail(_reader);
 				break;
+			#endregion
+			#region Room
+			case PacketType.eServer.ExitRoom:
+				RoomPacketHandler.ExitRoom(_reader);
+				break;
+				#endregion
+				#region InGame
 				#endregion
 		}
 	}

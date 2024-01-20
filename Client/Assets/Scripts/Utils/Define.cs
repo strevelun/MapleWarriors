@@ -17,7 +17,7 @@ public class Define
 	public const int RoomListPageMax = 50;
 	public const int RoomListMaxItemInPage = 4;
 
-	public const int RoomTitleMaxCount = 17;
+	public const int RoomTitleMaxCount = 15;
 
 	public enum Scene
 	{
@@ -25,7 +25,7 @@ public class Define
 		Login,
 		Lobby,
 		Room,
-		Ingame
+		InGame
 	}
 
 	public enum UIPopup
@@ -36,16 +36,22 @@ public class Define
 		UIConnectFailPopup,
 		UIDisconnectPopup,
 		UICreateRoomPopup,
+		UICreateRoomFailPopup,
+		UIGameStartFailPopup,
+		UIMapChoicePopup,
 	}
 
 	public enum UIChat
 	{
 		UILobbyChat,
+		UIRoomChat,
 	}
 
 	public enum UI
 	{
 		UILobby_RoomList,
-		UILobby_UserList
+		UILobby_UserList,
+		UIRoom_Users,
+		UIRoom_GamePanel
 	}
 }

@@ -44,7 +44,7 @@ public static class LobbyPacketHandler
 				tmp.text = _reader.GetString();
 				obj = Util.FindChild(item, false, "Location");
 				tmp = obj.GetComponent<TextMeshProUGUI>();
-				tmp.text = _reader.GetByte().ToString();
+				tmp.text = _reader.GetByte().ToString(); 
 
 				if (!item.activeSelf) item.SetActive(true);
 				++activeCount;
@@ -80,13 +80,19 @@ public static class LobbyPacketHandler
 			item = uiPage.GetItem(i);
 			if (i < roomCount)
 			{
+				obj = Util.FindChild(item, false, "Id");
+				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+				tmp.text = _reader.GetByte().ToString();
 				obj = Util.FindChild(item, false, "Title");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 				tmp.text = _reader.GetString();
 				obj = Util.FindChild(item, false, "Owner");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 				tmp.text = _reader.GetString();
-				obj = Util.FindChild(item, false, "Id");
+				obj = Util.FindChild(item, false, "NumOfUser");
+				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+				tmp.text = _reader.GetByte().ToString() + "/4";
+				obj = Util.FindChild(item, false, "State");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 				tmp.text = _reader.GetByte().ToString();
 
@@ -103,10 +109,13 @@ public static class LobbyPacketHandler
 	}	
 	
 	// TODO : CreateRoom_Success
-	public static void CreateRoom(PacketReader _reader)
+	public static void CreateRoom_Success(PacketReader _reader)
 	{
 		SceneManagerEx.Inst.LoadScene(Define.Scene.Room);
 	}
 
-	
+	public static void CreateRoom_Fail(PacketReader _reader)
+	{
+		UIManager.Inst.ShowPopupUI(Define.UIPopup.UICreateRoomFailPopup);
+	}
 }

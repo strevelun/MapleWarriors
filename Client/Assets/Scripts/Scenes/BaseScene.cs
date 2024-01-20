@@ -20,7 +20,11 @@ public abstract class BaseScene : MonoBehaviour
 		SceneManagerEx.Inst.CurScene = FindObjectOfType<BaseScene>();
 	}
 
-	public abstract void Clear();
+	public virtual void Clear()
+	{
+		UIManager.Inst.Clear();
+		ActionQueue.Inst.Clear();
+	}
 
 	private void OnApplicationQuit()
 	{

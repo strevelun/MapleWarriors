@@ -148,15 +148,17 @@ public class UIManager
 	#endregion
 
 	#region ChatUI
-	public void AddUI(Define.UIChat _eChat)
+	public UIChat AddUI(Define.UIChat _eChat)
 	{
 		UIChat chat;
-		if (m_dicUIChat.TryGetValue(_eChat, out chat)) return;
+		if (m_dicUIChat.TryGetValue(_eChat, out chat)) return chat;
 
 		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
 		GameObject obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/" + _eChat.ToString(), UIManager.Inst.SceneUI.gameObject.transform);
 
-		m_dicUIChat.Add(_eChat, obj.GetComponent<UIChat>());
+		chat = obj.GetComponent<UIChat>();
+		m_dicUIChat.Add(_eChat, chat);
+		return chat;
 	}
 
 	public UIChat FindUI(Define.UIChat _eChat)
@@ -193,9 +195,10 @@ public class UIManager
 		foreach(UIPopup popup in m_dicPopup.Values)
 		{
 			// 씬 전환시 Clear()가 호출되는데 수동으로 해줘야하나
-			ResourceManager.Inst.Destroy(popup.gameObject);
+			//ResourceManager.Inst.Destroy(popup.gameObject);
 		}
 		m_dicPopup.Clear();
 		m_dicUIChat.Clear();
+		m_dicUI.Clear();
 	}
 }

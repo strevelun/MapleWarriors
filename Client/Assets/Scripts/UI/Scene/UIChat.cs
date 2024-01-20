@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -6,6 +7,7 @@ using UnityEngine.UI;
 
 public class UIChat : MonoBehaviour
 {
+	private Func<string, Packet>	m_sendBtnFunc;
 	private TMP_InputField			m_input;
 	private Scrollbar				m_scrollbar;
 	private UIButton				m_btn;
@@ -59,11 +61,17 @@ public class UIChat : MonoBehaviour
 
 	}
 
+	public void SetDefaultSendBtn(Func<string, Packet> _sendBtnFunc)
+	{
+		m_sendBtnFunc = _sendBtnFunc;
+	}
+
 	void OnSendButtonClicked()
 	{
 		if (string.IsNullOrWhiteSpace(m_input.text))			return;
+		if (m_sendBtnFunc == null)								return;
 
-		Packet packet = LobbyPacketMaker.SendChat(m_input.text);
+		Packet packet = m_sendBtnFunc.Invoke(m_input.text);
 		NetworkManager.Inst.Send(packet);
 		m_input.text = string.Empty;
 		m_input.Select();
