@@ -52,7 +52,7 @@ public class RingBuffer
 
 		if (m_bIsTempUsed)
 		{
-			int size = (m_tempPos < sizeof(ushort)) ? Define.PacketHeaderSize : BitConverter.ToUInt16(m_tempBuffer, 0);
+			int size = (m_tempPos < Define.PacketSize) ? Define.PacketHeaderSize : BitConverter.ToUInt16(m_tempBuffer, 0);
 			_seg = new ArraySegment<byte>(m_tempBuffer, m_tempPos, size - m_tempPos);
 		}
 		else
@@ -78,7 +78,7 @@ public class RingBuffer
 	{
 		m_writtenBytes += _recvBytes;
 		m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
-		if (m_bIsTempUsed) m_tempPos += BitConverter.ToUInt16(m_tempBuffer, 0) - m_tempPos; // temp에 패킷의 일부가 쓰인 상태일땐 해당 패킷의 나머지 크기만큼만
+		if (m_bIsTempUsed) m_tempPos += _recvBytes; 
 		//Debug.Log("writePos : " + m_writePos);
 	}
 
@@ -98,7 +98,7 @@ public class RingBuffer
 			m_tempPos = Define.BufferMax - m_readPos;
 			Buffer.BlockCopy(m_buffer, m_readPos, m_tempBuffer, 0, m_tempPos);
 			m_bIsTempUsed = true;
-			Debug.Log(cpySize + ", " + m_readPos + ", " + m_writePos + " : TEMPUSED");
+			Debug.Log(readableSize + ", " + cpySize + ", " + m_readPos + ", " + m_writePos + " : TEMPUSED");
 		}
 	}
 }
