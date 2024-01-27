@@ -14,6 +14,7 @@ public class InGameScene : BaseScene
 		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.Scene.InGame);
 
 
+		IsLoading = false;
 	}
 
 	public override void Clear()

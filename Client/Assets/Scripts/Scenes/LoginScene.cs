@@ -29,7 +29,6 @@ public class LoginScene : BaseScene
 				uiBtn.Init(() => OnLoginButtonClicked());
 			}
 		}
-
 		UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UILoginFailPopup_WrongInput);
 		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopup.UILoginFailPopup_WrongInput));
 
@@ -52,8 +51,11 @@ public class LoginScene : BaseScene
 #endif
 		});
 
-		NetworkManager.Inst.Connect("192.168.219.107", 30001);
-		//NetworkManager.Inst.Connect("220.121.252.109", 30001);
+		IsLoading = false;
+
+		//NetworkManager.Inst.Connect("192.168.219.107", 30001);
+		NetworkManager.Inst.Connect("192.168.219.165", 30001); // 포트포워딩
+		//NetworkManager.Inst.Connect("220.121.252.11", 30001); // gpm
 
 		//InputManager.Inst.KeyAction += OnKeyboardEnter;
 	}
@@ -65,6 +67,7 @@ public class LoginScene : BaseScene
 
 	void Start()
 	{
+		UIManager.Inst.ClearAll();
 		Init();
 	}
 

@@ -78,11 +78,24 @@ public static class LobbyPacketHandler
 		for (; i < Define.RoomListMaxItemInPage; ++i)
 		{
 			item = uiPage.GetItem(i);
+			UIButton uibtn = item.GetComponent<UIButton>();
+			if (uibtn.IsActive == false) uibtn.IsActive = true;
+
 			if (i < roomCount)
 			{
 				obj = Util.FindChild(item, false, "Id");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-				tmp.text = _reader.GetByte().ToString();
+				int id = _reader.GetByte();
+				uibtn.Init(() =>
+				{
+					if (uibtn.IsActive == false) return;
+
+					uibtn.IsActive = false;
+					Debug.Log("버튼 클릭");
+					Packet pkt = LobbyPacketMaker.EnterRoom(id);
+					NetworkManager.Inst.Send(pkt);
+				});
+				tmp.text = id.ToString();
 				obj = Util.FindChild(item, false, "Title");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 				tmp.text = _reader.GetString();
@@ -94,7 +107,7 @@ public static class LobbyPacketHandler
 				tmp.text = _reader.GetByte().ToString() + "/4";
 				obj = Util.FindChild(item, false, "State");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-				tmp.text = _reader.GetByte().ToString();
+				tmp.text = _reader.GetByte().ToString(); // 숫자 -> 문자열
 
 				if (!item.activeSelf) item.SetActive(true);
 				++activeCount;
@@ -117,5 +130,26 @@ public static class LobbyPacketHandler
 	public static void CreateRoom_Fail(PacketReader _reader)
 	{
 		UIManager.Inst.ShowPopupUI(Define.UIPopup.UICreateRoomFailPopup);
+	}
+
+	public static void EnterRoom_Success(PacketReader _reader)
+	{
+		// 씬 전환 후 룸에 있는 슬롯 갱신
+		SceneManagerEx.Inst.LoadScene(Define.Scene.Room);
+	}
+
+	public static void EnterRoom_Full(PacketReader _reader)
+	{
+		UIManager.Inst.ShowPopupUI(Define.UIPopup.UIEnterRoomFullPopup);
+	}
+
+	public static void EnterRoom_InGame(PacketReader _reader)
+	{
+		UIManager.Inst.ShowPopupUI(Define.UIPopup.UIEnterRoomInGamePopup);
+	}
+
+	public static void EnterRoom_NoRoom(PacketReader _reader)
+	{
+		UIManager.Inst.ShowPopupUI(Define.UIPopup.UIEnterRoomNopePopup);
 	}
 }

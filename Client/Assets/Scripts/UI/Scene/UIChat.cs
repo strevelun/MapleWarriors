@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Define;
 
 public class UIChat : MonoBehaviour
 {
@@ -12,13 +13,21 @@ public class UIChat : MonoBehaviour
 	private Scrollbar				m_scrollbar;
 	private UIButton				m_btn;
 	private GameObject				m_content;
+	string							m_curSceneType;
+	string							m_uiChat;
+	string							m_uiChatItemPath;
 
 	private const int m_chatLimit = 10;
 
 	public uint ChatCount { get; set; } = 0;
 
-	private void Init()
+	public void Init(Func<string, Packet> _sendBtnFunc, Define.UIChat _uiChat)
 	{
+		m_sendBtnFunc = _sendBtnFunc;
+		m_curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
+		m_uiChat = _uiChat.ToString();
+		m_uiChatItemPath = "UI/Scene/" + m_curSceneType + "/" + m_uiChat + "Item";
+
 		m_input = Util.FindChild<TMP_InputField>(gameObject);
 		m_input.onEndEdit.AddListener(OnEndEdit);
 
@@ -31,13 +40,13 @@ public class UIChat : MonoBehaviour
 
 		m_content = Util.FindChild(gameObject, true, "Content");
 
+		
 		// 버튼 클릭 이벤트
 
 	}
 
 	void Start()
     {
-		Init();
     }
 
     void Update()
@@ -59,11 +68,6 @@ public class UIChat : MonoBehaviour
 
 		m_scrollbar.value = -0.8f;
 
-	}
-
-	public void SetDefaultSendBtn(Func<string, Packet> _sendBtnFunc)
-	{
-		m_sendBtnFunc = _sendBtnFunc;
 	}
 
 	void OnSendButtonClicked()
@@ -97,8 +101,7 @@ public class UIChat : MonoBehaviour
 
 		if (ChatCount < m_chatLimit)
 		{
-			string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
-			obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/UILobbyChatItem");
+			obj = ResourceManager.Inst.Instantiate(m_uiChatItemPath);
 			tmp = obj.GetComponent<TextMeshProUGUI>();
 			tmp.text = "[" + _nickname + "] : " + _text;
 			obj.transform.SetParent(m_content.transform);

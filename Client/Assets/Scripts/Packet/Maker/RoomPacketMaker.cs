@@ -44,4 +44,12 @@ public static class RoomPacketMaker
 			.Add(_text);
 		return packet;
 	}
+
+	public static Packet ReqRoomUsersInfo()
+	{
+		Packet packet = new Packet();
+		packet
+			.Add(PacketType.eClient.ReqRoomUsersInfo);
+		return packet;
+	}
 }

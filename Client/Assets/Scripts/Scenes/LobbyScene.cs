@@ -27,7 +27,7 @@ public class LobbyScene : BaseScene
 
 		{
 			UIChat uichat = UIManager.Inst.AddUI(Define.UIChat.UILobbyChat);
-			uichat.SetDefaultSendBtn(LobbyPacketMaker.SendChat);
+			uichat.Init(LobbyPacketMaker.SendChat, Define.UIChat.UILobbyChat);
 		}
 
 		{
@@ -60,9 +60,9 @@ public class LobbyScene : BaseScene
 			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UICreateRoomPopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
-				popup.InputField.text = string.Empty;
 				UIManager.Inst.HidePopupUI(Define.UIPopup.UICreateRoomPopup);
 				Packet pkt = LobbyPacketMaker.CreateRoom(popup.InputField.text);
+				popup.InputField.text = string.Empty;
 				NetworkManager.Inst.Send(pkt);
 			});
 			popup.SetButtonAction("CancelBtn", () => 
@@ -78,11 +78,31 @@ public class LobbyScene : BaseScene
 			{
 				UIManager.Inst.HidePopupUI(Define.UIPopup.UICreateRoomFailPopup);
 			});
+
+			popup = UIManager.Inst.AddUI(Define.UIPopup.UIEnterRoomFullPopup);
+			popup.SetButtonAction("OKBtn", () =>
+			{
+				UIManager.Inst.HidePopupUI(Define.UIPopup.UIEnterRoomFullPopup);
+			});
+
+			popup = UIManager.Inst.AddUI(Define.UIPopup.UIEnterRoomInGamePopup);
+			popup.SetButtonAction("OKBtn", () =>
+			{
+				UIManager.Inst.HidePopupUI(Define.UIPopup.UIEnterRoomInGamePopup);
+			});
+
+			popup = UIManager.Inst.AddUI(Define.UIPopup.UIEnterRoomNopePopup);
+			popup.SetButtonAction("OKBtn", () =>
+			{
+				UIManager.Inst.HidePopupUI(Define.UIPopup.UIEnterRoomNopePopup);
+			});
 		}
 
 		StartCoroutine(UpdateLobbyInfoCoroutine());
 
 		UpdateLobbyInfo();
+
+		IsLoading = false;
 	}
 
 	public override void Clear()

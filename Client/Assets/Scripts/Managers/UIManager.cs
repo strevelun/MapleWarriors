@@ -11,7 +11,11 @@ public class UIManager
 	{
 		get
 		{
-			if (s_inst == null) s_inst = new UIManager();
+			if (s_inst == null)
+			{
+				s_inst = new UIManager();
+				s_inst.ClearAll();
+			}
 			return s_inst;
 		}
 	}
@@ -200,5 +204,11 @@ public class UIManager
 		m_dicPopup.Clear();
 		m_dicUIChat.Clear();
 		m_dicUI.Clear();
+	}
+
+	public void ClearAll()
+	{
+		Clear();
+		m_dicPopupInDestructible.Clear();
 	}
 }

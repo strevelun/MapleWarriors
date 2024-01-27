@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class RoomScene : BaseScene
 {
+	GameObject m_startBtn, m_readyBtn, m_standbyBtn;
+
 	protected override void Init()
 	{
 		base.Init();
@@ -22,7 +24,7 @@ public class RoomScene : BaseScene
 
 		{
 			UIChat uichat = UIManager.Inst.AddUI(Define.UIChat.UIRoomChat);
-			uichat.SetDefaultSendBtn(RoomPacketMaker.SendChat);
+			uichat.Init(RoomPacketMaker.SendChat, Define.UIChat.UIRoomChat);
 		}
 
 		UIManager.Inst.AddUI(Define.UI.UIRoom_Users);
@@ -33,16 +35,16 @@ public class RoomScene : BaseScene
 			Button btn = obj.GetComponent<Button>();
 			btn.onClick.AddListener(OnMapChoiceBtnClicked);
 
-			obj = Util.FindChild(parentObj, false, "StartBtn");
-			btn = obj.GetComponent<Button>();
+			m_startBtn = Util.FindChild(parentObj, false, "StartBtn");
+			btn = m_startBtn.GetComponent<Button>();
 			btn.onClick.AddListener(OnStartBtnClicked);
 
-			obj = Util.FindChild(parentObj, false, "ReadyBtn");
-			btn = obj.GetComponent<Button>();
+			m_readyBtn = Util.FindChild(parentObj, false, "ReadyBtn");
+			btn = m_readyBtn.GetComponent<Button>();
 			btn.onClick.AddListener(OnReadyBtnClicked);
 
-			obj = Util.FindChild(parentObj, false, "StandbyBtn");
-			btn = obj.GetComponent<Button>();
+			m_standbyBtn = Util.FindChild(parentObj, false, "StandbyBtn");
+			btn = m_standbyBtn.GetComponent<Button>();
 			btn.onClick.AddListener(OnStandbyBtnClicked);
 		}
 
@@ -58,8 +60,11 @@ public class RoomScene : BaseScene
 
 		{ 
 			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UIMapChoicePopup);
-
 		}
+
+		IsLoading = false;
+		Packet pkt = RoomPacketMaker.ReqRoomUsersInfo();
+		NetworkManager.Inst.Send(pkt);
 	}
 
 	public override void Clear()
@@ -71,6 +76,7 @@ public class RoomScene : BaseScene
 	{
 		Packet pkt = RoomPacketMaker.ExitRoom();
 		NetworkManager.Inst.Send(pkt);
+		Debug.Log("OnBackBtnClicked");
 	}
 
 	void OnMapChoiceBtnClicked()

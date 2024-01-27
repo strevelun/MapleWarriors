@@ -19,6 +19,7 @@ public class SceneManagerEx
 
     public void LoadScene(Define.Scene _type)
     {
+		CurScene.IsLoading = true;
         CurScene.Clear();
         SceneManager.LoadScene(GetSceneName(_type));
     }

@@ -6,7 +6,6 @@ using UnityEngine;
 public class Connection 
 {
     Socket m_socket;
-    RingBuffer m_ringBuffer = new RingBuffer();
 
     SocketAsyncEventArgs m_recvArgs = new SocketAsyncEventArgs();
 
@@ -26,7 +25,7 @@ public class Connection
     public void RegisterRecv()
     {
         ArraySegment<byte> seg;
-        if(!m_ringBuffer.SetWriteSegment(out seg))
+        if(!RingBuffer.Inst.SetWriteSegment(out seg))
         {
             Debug.Log("버퍼에 공간이 없습니다");
             return;
@@ -48,25 +47,10 @@ public class Connection
             return;
         }
 
-        m_ringBuffer.MoveWritePos(_args.BytesTransferred);
+		RingBuffer.Inst.MoveWritePos(_args.BytesTransferred);
 
-       // Debug.Log(_args.BytesTransferred);
+        Debug.Log("받은 바이트 수 : " + _args.BytesTransferred);
 
-        do
-        {
-			PacketReader reader = new PacketReader();
-            if (!reader.IsBufferReadable(m_ringBuffer)) break;
-
-            reader.SetBuffer(m_ringBuffer);
-			ActionQueue.Inst.Enqueue(() =>
-            {
-                PacketHandler.Handle(reader);
-            });
-            m_ringBuffer.MoveReadPos(reader.Size);
-		} while (true);
-        
-		m_ringBuffer.HandleVerge();
-		
 		RegisterRecv();
     }
 

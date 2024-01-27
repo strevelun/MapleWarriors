@@ -49,11 +49,17 @@ public static class LobbyPacketMaker
 
 	public static Packet CreateRoom(string _title)
 	{
-
-
 		Packet pkt = new Packet();
 		pkt.Add(PacketType.eClient.CreateRoom)
 			.Add(_title);
+		return pkt;
+	}
+
+	public static Packet EnterRoom(int _id)
+	{
+		Packet pkt = new Packet();
+		pkt.Add(PacketType.eClient.EnterRoom)
+			.Add((byte)_id);
 		return pkt;
 	}
 }

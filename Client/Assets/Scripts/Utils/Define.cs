@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Define
 {
-	// 버퍼에 공간이 없습니다 발생 : 8192
-	public const int BufferMax = 16384; 
+	public const int BufferMax = 10000; // 428 * 24
 	public const int PacketBufferMax = 512;
 	public const int PacketHeaderSize = 4;
 	public const int PacketSize = 2;
@@ -16,6 +15,7 @@ public class Define
 	public const int UserListMaxItemInPage = 10;
 	public const int RoomListPageMax = 50;
 	public const int RoomListMaxItemInPage = 4;
+	public const int RoomUserSlot = 4;
 
 	public const int RoomTitleMaxCount = 15;
 
@@ -39,6 +39,9 @@ public class Define
 		UICreateRoomFailPopup,
 		UIGameStartFailPopup,
 		UIMapChoicePopup,
+		UIEnterRoomFullPopup,
+		UIEnterRoomInGamePopup,
+		UIEnterRoomNopePopup,
 	}
 
 	public enum UIChat
@@ -53,5 +56,13 @@ public class Define
 		UILobby_UserList,
 		UIRoom_Users,
 		UIRoom_GamePanel
+	}
+
+	public enum UIBtn
+	{
+		MapChoiceBtn,
+		StartBtn,
+		ReadyBtn,
+		StandbyBtn,
 	}
 }

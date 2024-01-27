@@ -29,12 +29,16 @@ public class ActionQueue : MonoBehaviour
 			Action action = Dequeue();
 			if (action == null) break;
 
+			//Debug.Log("Invoke");
 			action.Invoke();
 		}
 	}
 
 	public void Enqueue(Action _action)
 	{
+		if (SceneManagerEx.Inst.CurScene.IsLoading) return;
+		//Debug.Log("Enqueue");
+
 		m_action.Enqueue(_action);
 	}
 
