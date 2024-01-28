@@ -49,7 +49,7 @@ public class Connection
 
 		RingBuffer.Inst.MoveWritePos(_args.BytesTransferred);
 
-        Debug.Log("받은 바이트 수 : " + _args.BytesTransferred);
+        //Debug.Log("받은 바이트 수 : " + _args.BytesTransferred);
 
 		RegisterRecv();
     }

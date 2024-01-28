@@ -39,15 +39,22 @@ public class RingBuffer : MonoBehaviour
 	{
 		get
 		{
-			if (IsFull()) return 0;
-			return (m_readPos <= m_writePos) ? Define.BufferMax - m_writePos : m_readPos - m_writePos;
+			int result = 0;
+			lock (m_lock)
+			{
+				if (m_writtenBytes < Define.BufferMax)
+				{
+					result = (m_readPos <= m_writePos) ? Define.BufferMax - m_writePos : m_readPos - m_writePos;
+				}
+			}
+			return result;
 		}
 	}
 	public int ReadableSize
 	{
 		get
 		{
-			if (IsFull()) return Define.BufferMax - m_readPos;
+			if (m_writtenBytes >= Define.BufferMax) return Define.BufferMax - m_readPos;
 			if (m_bIsTempUsed) return m_tempPos;
 
 			return (m_readPos <= m_writePos) ? m_writePos - m_readPos : Define.BufferMax - m_readPos;
@@ -75,8 +82,8 @@ public class RingBuffer : MonoBehaviour
 			++n;
 		}
 		HandleVerge();
-		if(n > 0)
-			Debug.Log("m_writtenSize : " + m_writtenBytes + ", m_readPos : " + m_readPos + ", m_writePos : " + m_writePos + ", 처리 패킷 수 : " + n);
+		//if(n > 0)
+			//Debug.Log("m_writtenSize : " + m_writtenBytes + ", m_readPos : " + m_readPos + ", m_writePos : " + m_writePos + ", 처리 패킷 수 : " + n);
 	}
 
 	// 현재 packetSize가 readableSize보다 큰 경우
@@ -105,8 +112,6 @@ public class RingBuffer : MonoBehaviour
 
 		return true;
 	}
-
-	public bool IsFull() => m_writtenBytes >= Define.BufferMax;
 
 	public bool SetWriteSegment(out ArraySegment<byte> _seg)
 	{
@@ -139,9 +144,9 @@ public class RingBuffer : MonoBehaviour
 		lock (m_lock)
 		{
 			m_writtenBytes -= _readBytes;
+			m_readPos = (_readBytes + m_readPos) % Define.BufferMax;
 		}
-		m_readPos = (_readBytes + m_readPos) % Define.BufferMax;
-		Debug.Log("읽음 : " + _readBytes);
+		//Debug.Log("읽음 : " + _readBytes);
 	}
 
 	public void MoveWritePos(int _recvBytes)
@@ -173,32 +178,5 @@ public class RingBuffer : MonoBehaviour
 			m_bIsTempUsed = true;
 			Debug.Log("복사");
 		}
-
-		/*
-		if (m_bIsTempUsed)
-		{
-			Debug.Log("HandleVerge에서 m_bIsTempUsed가 true");
-			return;
-		}
-
-		int readableSize = ReadableSize;
-		ushort cpySize = 0;
-		if (readableSize >= Define.PacketSize)
-			cpySize = BitConverter.ToUInt16(m_buffer, m_readPos);
-		//Debug.Log("패킷사이즈 : " + cpySize + "현재 readPos : " + m_readPos);
-
-		// 만약 r w MAX 이렇게 되어있을땐?
-		if (readableSize == 1 || m_readPos + cpySize > Define.BufferMax)
-		{
-			lock (m_lock)
-			{
-				m_tempPos = Define.BufferMax - m_readPos;
-				Buffer.BlockCopy(m_buffer, m_readPos, m_tempBuffer, 0, m_tempPos);
-				m_bIsTempUsed = true;
-			}
-			Debug.Log("리더블 : " + readableSize + ", readPos : " + m_readPos + ", writePos : " + m_writePos + ", copySize : " + cpySize + "  : TEMPUSED");
-		}
-		*/
-
 	}
 }
