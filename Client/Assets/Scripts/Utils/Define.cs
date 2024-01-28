@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Define
 {
-	public const int BufferMax = 131072; // 428 * 300 <= 65536
+	public const int BufferMax = 65536; // 428 * 300 <= 131072
 	public const int PacketBufferMax = 512;
 	public const int PacketHeaderSize = 4;
 	public const int PacketSize = 2;

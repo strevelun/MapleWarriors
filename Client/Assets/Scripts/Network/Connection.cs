@@ -35,9 +35,11 @@ public class Connection
 
         bool pending = m_socket.ReceiveAsync(m_recvArgs);
         if (!pending)       OnRecvCompleted(null, m_recvArgs);
-    }
+	}
 
-    public void OnRecvCompleted(object _sender, SocketAsyncEventArgs _args)
+	static int maxByte = 0;
+
+	public void OnRecvCompleted(object _sender, SocketAsyncEventArgs _args)
     {
         if(_args.BytesTransferred == 0 || _args.SocketError != SocketError.Success)
 		{
@@ -46,10 +48,9 @@ public class Connection
 			Disconnect();
             return;
         }
-
+        if (maxByte < _args.BytesTransferred) maxByte = _args.BytesTransferred;
 		RingBuffer.Inst.MoveWritePos(_args.BytesTransferred);
-
-        //Debug.Log("받은 바이트 수 : " + _args.BytesTransferred);
+        Debug.Log("받은 바이트 수 : " + _args.BytesTransferred + ", 최대바이트 : " + maxByte);
 
 		RegisterRecv();
     }
@@ -64,7 +65,7 @@ public class Connection
         {
             Debug.Log(ex.ErrorCode);
 		}
-
+        maxByte = 0;
         Debug.Log("Disconnected");
     }
 }
