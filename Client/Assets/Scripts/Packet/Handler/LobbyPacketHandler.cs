@@ -94,7 +94,6 @@ public static class LobbyPacketHandler
 		{
 			item = uiPage.GetItem(i);
 			UIButton uibtn = item.GetComponent<UIButton>();
-			if (uibtn.IsActive == false) uibtn.IsActive = true;
 
 			if (i < roomCount)
 			{
@@ -103,9 +102,9 @@ public static class LobbyPacketHandler
 				int id = _reader.GetByte();
 				uibtn.Init(() =>
 				{
-					if (uibtn.IsActive == false) return; // 갱신 도중 전송된 패킷은 무시됨
+					GameObject go = UIManager.Inst.FindUI(Define.UI.UILobby_RoomList_Block);
+					go.SetActive(true);
 
-					uibtn.IsActive = false;
 					Debug.Log("버튼 클릭");
 					Packet pkt = LobbyPacketMaker.EnterRoom(id);
 					NetworkManager.Inst.Send(pkt);
@@ -168,16 +167,22 @@ public static class LobbyPacketHandler
 
 	public static void EnterRoom_Full(PacketReader _reader)
 	{
+		GameObject go = UIManager.Inst.FindUI(Define.UI.UILobby_RoomList_Block);
+		go.SetActive(false);
 		UIManager.Inst.ShowPopupUI(Define.UIPopup.UIEnterRoomFullPopup);
 	}
 
 	public static void EnterRoom_InGame(PacketReader _reader)
 	{
+		GameObject go = UIManager.Inst.FindUI(Define.UI.UILobby_RoomList_Block);
+		go.SetActive(false);
 		UIManager.Inst.ShowPopupUI(Define.UIPopup.UIEnterRoomInGamePopup);
 	}
 
 	public static void EnterRoom_NoRoom(PacketReader _reader)
 	{
+		GameObject go = UIManager.Inst.FindUI(Define.UI.UILobby_RoomList_Block);
+		go.SetActive(false);
 		UIManager.Inst.ShowPopupUI(Define.UIPopup.UIEnterRoomNopePopup);
 	}
 }

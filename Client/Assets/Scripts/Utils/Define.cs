@@ -53,6 +53,7 @@ public class Define
 	public enum UI
 	{
 		UILobby_RoomList,
+		UILobby_RoomList_Block,
 		UILobby_UserList,
 
 		#region UIRoom

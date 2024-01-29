@@ -41,7 +41,13 @@ public class LobbyScene : BaseScene
             obj = Util.FindChild(parentObj, false, "NextBtn");
             btn = obj.GetComponent<Button>();
             btn.onClick.AddListener(OnRoomListNextBtnClicked);
-        }
+
+			obj = UIManager.Inst.AddUI(Define.UI.UILobby_RoomList_Block);
+			obj.transform.SetParent(parentObj.transform);
+			RectTransform rectTransform = obj.GetComponent<RectTransform>();
+			rectTransform.offsetMin = Vector2.zero;
+			rectTransform.offsetMax = Vector2.zero;
+		}
 
 		{
 			GameObject parentObj = UIManager.Inst.AddUI(Define.UI.UILobby_UserList);
