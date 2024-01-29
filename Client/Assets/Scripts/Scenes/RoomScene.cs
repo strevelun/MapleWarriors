@@ -107,11 +107,6 @@ public class RoomScene : BaseScene
 
 	void OnStartBtnClicked(GameObject _obj)
 	{
-		UIButton uibtn = _obj.GetComponent<UIButton>();
-		if (uibtn.IsActive == false) return;
-
-		uibtn.IsActive = false;
-
 		Packet pkt = RoomPacketMaker.StartGame();
 		NetworkManager.Inst.Send(pkt);
 	}

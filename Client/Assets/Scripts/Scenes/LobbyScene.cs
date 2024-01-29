@@ -60,6 +60,8 @@ public class LobbyScene : BaseScene
 			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UICreateRoomPopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
+				if (string.IsNullOrWhiteSpace(popup.InputField.text)) return;
+
 				UIManager.Inst.HidePopupUI(Define.UIPopup.UICreateRoomPopup);
 				Packet pkt = LobbyPacketMaker.CreateRoom(popup.InputField.text);
 				popup.InputField.text = string.Empty;

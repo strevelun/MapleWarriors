@@ -8,4 +8,12 @@ public static class InGamePacketMaker
 	{
 		return null;
 	}
+
+	public static Packet ReqInitInfo()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eClient.ReqInitInfo);
+		return pkt;
+	}
 }

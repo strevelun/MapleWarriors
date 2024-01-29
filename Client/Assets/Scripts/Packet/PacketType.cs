@@ -51,5 +51,6 @@ public class PacketType
 		RoomStandby,
 		RoomChat,
 		ReqRoomUsersInfo,
+		ReqInitInfo,
 	}
 }

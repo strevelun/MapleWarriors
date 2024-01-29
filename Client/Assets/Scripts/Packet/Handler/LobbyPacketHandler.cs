@@ -35,6 +35,7 @@ public static class LobbyPacketHandler
 		int userNum = _reader.GetByte();
 		int i = 0;
 		int activeCount = 0;
+		int roomID;
 		for (; i < Define.UserListMaxItemInPage; ++i)
 		{
 			item = uiPage.GetItem(i);
@@ -45,7 +46,20 @@ public static class LobbyPacketHandler
 				tmp.text = _reader.GetString();
 				obj = Util.FindChild(item, false, "Location");
 				tmp = obj.GetComponent<TextMeshProUGUI>();
-				tmp.text = _reader.GetByte().ToString(); 
+				Define.Scene eScene = (Define.Scene)_reader.GetByte();
+				string sceneName = "";
+				switch (eScene)
+				{
+					case Define.Scene.Lobby:
+						sceneName = "로비";
+						break;
+					case Define.Scene.Room:
+					case Define.Scene.InGame:
+						roomID = _reader.GetByte();
+						sceneName = roomID + "번방";
+						break;
+				}
+				tmp.text = sceneName;
 
 				if (!item.activeSelf) item.SetActive(true);
 				++activeCount;
@@ -80,7 +94,7 @@ public static class LobbyPacketHandler
 		{
 			item = uiPage.GetItem(i);
 			UIButton uibtn = item.GetComponent<UIButton>();
-			//if (uibtn.IsActive == false) uibtn.IsActive = true;
+			if (uibtn.IsActive == false) uibtn.IsActive = true;
 
 			if (i < roomCount)
 			{
@@ -89,9 +103,9 @@ public static class LobbyPacketHandler
 				int id = _reader.GetByte();
 				uibtn.Init(() =>
 				{
-					//if (uibtn.IsActive == false) return;
+					if (uibtn.IsActive == false) return; // 갱신 도중 전송된 패킷은 무시됨
 
-					//uibtn.IsActive = false;
+					uibtn.IsActive = false;
 					Debug.Log("버튼 클릭");
 					Packet pkt = LobbyPacketMaker.EnterRoom(id);
 					NetworkManager.Inst.Send(pkt);
@@ -108,7 +122,18 @@ public static class LobbyPacketHandler
 				tmp.text = _reader.GetByte().ToString() + "/4";
 				obj = Util.FindChild(item, false, "State");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-				tmp.text = _reader.GetByte().ToString(); // 숫자 -> 문자열
+				Define.RoomState eState = (Define.RoomState)_reader.GetByte();
+				string sceneName = "";
+				switch (eState)
+				{
+					case Define.RoomState.Standby:
+						sceneName = "대기";
+						break;
+					case Define.RoomState.InGame:
+						sceneName = "게임중";
+						break;
+				}
+				tmp.text = sceneName;
 
 				if (!item.activeSelf) item.SetActive(true);
 				++activeCount;

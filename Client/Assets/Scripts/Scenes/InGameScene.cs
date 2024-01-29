@@ -13,7 +13,8 @@ public class InGameScene : BaseScene
 
 		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.Scene.InGame);
 
-
+		Packet pkt = InGamePacketMaker.ReqInitInfo();
+		NetworkManager.Inst.Send(pkt);
 		IsLoading = false;
 	}
 

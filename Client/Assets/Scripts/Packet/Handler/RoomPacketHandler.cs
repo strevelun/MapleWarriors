@@ -131,12 +131,12 @@ public static class RoomPacketHandler
 
 	public static void StartGame_Success(PacketReader _reader)
 	{
-
+		SceneManagerEx.Inst.LoadScene(Define.Scene.InGame);
 	}
 
 	public static void StartGame_Fail(PacketReader _reader)
 	{
-
+		UIManager.Inst.ShowPopupUI(Define.UIPopup.UIGameStartFailPopup);
 	}
 
 	// 방장이 본인에게 양도되는 패킷이 온 후에 Ready 패킷이 도착한다면

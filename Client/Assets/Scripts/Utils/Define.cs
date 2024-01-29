@@ -75,4 +75,17 @@ public class Define
 		Ready,
 		Standby
 	}
+
+	public enum GameMap
+	{
+		None,
+		Test,
+	}
+
+	public enum RoomState
+	{
+		None,
+		Standby,
+		InGame,
+	}
 }
