@@ -5,10 +5,9 @@ using UnityEngine.UI;
 
 public class RoomScene : BaseScene
 {
-	GameObject m_startBtn, m_readyBtn, m_standbyBtn;
-
 	protected override void Init()
 	{
+		// TODO : 모든 버튼에 UIButton을
 		base.Init();
 
 		Screen.SetResolution(1280, 720, false);
@@ -35,17 +34,34 @@ public class RoomScene : BaseScene
 			Button btn = obj.GetComponent<Button>();
 			btn.onClick.AddListener(OnMapChoiceBtnClicked);
 
-			m_startBtn = Util.FindChild(parentObj, false, "StartBtn");
-			btn = m_startBtn.GetComponent<Button>();
-			btn.onClick.AddListener(OnStartBtnClicked);
+			obj = UIManager.Inst.AddUI(Define.UI.UIRoom_StartBtn);
+			obj.transform.SetParent(parentObj.transform);
+			RectTransform rectTransform = obj.GetComponent<RectTransform>();
+			rectTransform.offsetMin = Vector2.zero;
+			rectTransform.offsetMax = Vector2.zero;
+			if (!UserData.Inst.IsRoomOwner) obj.SetActive(false);
+			UIButton uibtn = obj.GetComponent<UIButton>();
+			uibtn.Init(OnStartBtnClicked, obj);
 
-			m_readyBtn = Util.FindChild(parentObj, false, "ReadyBtn");
-			btn = m_readyBtn.GetComponent<Button>();
-			btn.onClick.AddListener(OnReadyBtnClicked);
-
-			m_standbyBtn = Util.FindChild(parentObj, false, "StandbyBtn");
-			btn = m_standbyBtn.GetComponent<Button>();
-			btn.onClick.AddListener(OnStandbyBtnClicked);
+			obj = UIManager.Inst.AddUI(Define.UI.UIRoom_ReadyBtn);
+			obj.transform.SetParent(parentObj.transform);
+			rectTransform = obj.GetComponent<RectTransform>();
+			rectTransform.offsetMin = Vector2.zero;
+			rectTransform.offsetMax = Vector2.zero;
+			if (UserData.Inst.IsRoomOwner) obj.SetActive(false);
+			uibtn = obj.GetComponent<UIButton>();
+			obj.transform.SetParent(parentObj.transform);
+			uibtn.Init(OnReadyBtnClicked, obj);
+			
+			obj = UIManager.Inst.AddUI(Define.UI.UIRoom_StandbyBtn);
+			obj.transform.SetParent(parentObj.transform);
+			rectTransform = obj.GetComponent<RectTransform>();
+			rectTransform.offsetMin = Vector2.zero;
+			rectTransform.offsetMax = Vector2.zero;
+			obj.SetActive(false);
+			uibtn = obj.GetComponent<UIButton>();
+			obj.transform.SetParent(parentObj.transform);
+			uibtn.Init(OnStandbyBtnClicked, obj);
 		}
 
 		{
@@ -60,6 +76,12 @@ public class RoomScene : BaseScene
 
 		{ 
 			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UIMapChoicePopup);
+			GameObject obj = Util.FindChild(popup.gameObject, true, "CancelBtn");
+			Button btn = obj.GetComponent<Button>();
+			btn.onClick.AddListener(() =>
+			{
+				UIManager.Inst.HidePopupUI(Define.UIPopup.UIMapChoicePopup);
+			});
 		}
 
 		IsLoading = false;
@@ -76,7 +98,6 @@ public class RoomScene : BaseScene
 	{
 		Packet pkt = RoomPacketMaker.ExitRoom();
 		NetworkManager.Inst.Send(pkt);
-		Debug.Log("OnBackBtnClicked");
 	}
 
 	void OnMapChoiceBtnClicked()
@@ -84,20 +105,35 @@ public class RoomScene : BaseScene
 		UIManager.Inst.ShowPopupUI(Define.UIPopup.UIMapChoicePopup);
 	}
 
-	void OnStartBtnClicked()
+	void OnStartBtnClicked(GameObject _obj)
 	{
+		UIButton uibtn = _obj.GetComponent<UIButton>();
+		if (uibtn.IsActive == false) return;
+
+		uibtn.IsActive = false;
+
 		Packet pkt = RoomPacketMaker.StartGame();
 		NetworkManager.Inst.Send(pkt);
 	}
 
-	void OnReadyBtnClicked()
+	void OnReadyBtnClicked(GameObject _obj)
 	{
+		UIButton uibtn = _obj.GetComponent<UIButton>();
+		if (uibtn.IsActive == false) return;
+
+		uibtn.IsActive = false;
+
 		Packet pkt = RoomPacketMaker.RoomReady();
 		NetworkManager.Inst.Send(pkt);
 	}
 
-	void OnStandbyBtnClicked()
+	void OnStandbyBtnClicked(GameObject _obj)
 	{
+		UIButton uibtn = _obj.GetComponent<UIButton>();
+		if (uibtn.IsActive == false) return;
+
+		uibtn.IsActive = false;
+
 		Packet pkt = RoomPacketMaker.RoomStandby();
 		NetworkManager.Inst.Send(pkt);
 	}

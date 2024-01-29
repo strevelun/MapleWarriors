@@ -47,6 +47,15 @@ public static class PacketHandler
 				case PacketType.eServer.EnterRoom_Success:
 					LobbyPacketHandler.EnterRoom_Success(_reader);
 					break;
+				case PacketType.eServer.EnterRoom_Full:
+					LobbyPacketHandler.EnterRoom_Full(_reader);
+					break;
+				case PacketType.eServer.EnterRoom_InGame:
+					LobbyPacketHandler.EnterRoom_InGame(_reader);
+					break;
+				case PacketType.eServer.EnterRoom_NoRoom:
+					LobbyPacketHandler.EnterRoom_NoRoom(_reader);
+					break;
 			}
 		}
 		else if (eSceneType == Define.Scene.Room)
@@ -67,6 +76,24 @@ public static class PacketHandler
 					break;		
 				case PacketType.eServer.RoomUsersInfo:
 					RoomPacketHandler.RoomUsersInfo(_reader);
+					break;				
+				case PacketType.eServer.StartGame_Success:
+					RoomPacketHandler.StartGame_Success(_reader);
+					break;
+				case PacketType.eServer.StartGame_Fail:
+					RoomPacketHandler.StartGame_Fail(_reader);
+					break;
+				case PacketType.eServer.RoomReady:
+					RoomPacketHandler.RoomReady(_reader);
+					break;		
+				case PacketType.eServer.RoomReady_Fail:
+					RoomPacketHandler.RoomReady_Fail(_reader);
+					break;
+				case PacketType.eServer.RoomStandby:
+					RoomPacketHandler.RoomStandby(_reader);
+					break;		
+				case PacketType.eServer.RoomStandby_Fail:
+					RoomPacketHandler.RoomStandby_Fail(_reader);
 					break;
 			}
 		}

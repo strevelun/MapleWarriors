@@ -54,7 +54,7 @@ public class LoginScene : BaseScene
 		IsLoading = false;
 
 		//NetworkManager.Inst.Connect("192.168.219.107", 30001);
-		NetworkManager.Inst.Connect("192.168.219.165", 30001); // 포트포워딩
+		NetworkManager.Inst.Connect("192.168.219.173", 30001); // 포트포워딩
 		//NetworkManager.Inst.Connect("220.121.252.11", 30001); // gpm
 
 		//InputManager.Inst.KeyAction += OnKeyboardEnter;
@@ -67,7 +67,6 @@ public class LoginScene : BaseScene
 
 	void Start()
 	{
-		UIManager.Inst.ClearAll();
 		Init();
 	}
 

@@ -27,6 +27,10 @@ public class PacketType
 		NotifyRoomUserExit,
 		RoomChat,
 		RoomUsersInfo,
+		RoomReady,
+		RoomReady_Fail,
+		RoomStandby,
+		RoomStandby_Fail,
 	}
 
 	public enum eClient : ushort

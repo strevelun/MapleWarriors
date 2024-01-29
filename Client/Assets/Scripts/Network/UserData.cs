@@ -15,4 +15,6 @@ public class UserData
 	}
 
 	public string Nickname;
+	public int ConnectionID;
+	public bool IsRoomOwner;
 }

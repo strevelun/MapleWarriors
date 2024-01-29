@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static Define;
 
 public static class LobbyPacketHandler
 {
@@ -79,7 +80,7 @@ public static class LobbyPacketHandler
 		{
 			item = uiPage.GetItem(i);
 			UIButton uibtn = item.GetComponent<UIButton>();
-			if (uibtn.IsActive == false) uibtn.IsActive = true;
+			//if (uibtn.IsActive == false) uibtn.IsActive = true;
 
 			if (i < roomCount)
 			{
@@ -88,9 +89,9 @@ public static class LobbyPacketHandler
 				int id = _reader.GetByte();
 				uibtn.Init(() =>
 				{
-					if (uibtn.IsActive == false) return;
+					//if (uibtn.IsActive == false) return;
 
-					uibtn.IsActive = false;
+					//uibtn.IsActive = false;
 					Debug.Log("버튼 클릭");
 					Packet pkt = LobbyPacketMaker.EnterRoom(id);
 					NetworkManager.Inst.Send(pkt);
@@ -124,6 +125,7 @@ public static class LobbyPacketHandler
 	// TODO : CreateRoom_Success
 	public static void CreateRoom_Success(PacketReader _reader)
 	{
+		UserData.Inst.IsRoomOwner = true;
 		SceneManagerEx.Inst.LoadScene(Define.Scene.Room);
 	}
 
@@ -134,6 +136,7 @@ public static class LobbyPacketHandler
 
 	public static void EnterRoom_Success(PacketReader _reader)
 	{
+		UserData.Inst.IsRoomOwner = false;
 		// 씬 전환 후 룸에 있는 슬롯 갱신
 		SceneManagerEx.Inst.LoadScene(Define.Scene.Room);
 	}

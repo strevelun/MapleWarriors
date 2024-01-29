@@ -54,15 +54,25 @@ public class Define
 	{
 		UILobby_RoomList,
 		UILobby_UserList,
+
+		#region UIRoom
 		UIRoom_Users,
-		UIRoom_GamePanel
+		UIRoom_GamePanel,
+		UIRoom_StartBtn,
+		UIRoom_ReadyBtn,
+		UIRoom_StandbyBtn,
+		#endregion
 	}
 
 	public enum UIBtn
 	{
 		MapChoiceBtn,
-		StartBtn,
-		ReadyBtn,
-		StandbyBtn,
+	}
+
+	public enum RoomUserState
+	{
+		None,
+		Ready,
+		Standby
 	}
 }
