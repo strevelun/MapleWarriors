@@ -50,7 +50,7 @@ public class Connection
         }
         if (maxByte < _args.BytesTransferred) maxByte = _args.BytesTransferred;
 		RingBuffer.Inst.MoveWritePos(_args.BytesTransferred);
-        Debug.Log("받은 바이트 수 : " + _args.BytesTransferred + ", 최대바이트 : " + maxByte);
+       // Debug.Log("받은 바이트 수 : " + _args.BytesTransferred + ", 최대바이트 : " + maxByte);
 
 		RegisterRecv();
     }

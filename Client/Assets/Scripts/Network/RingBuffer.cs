@@ -68,7 +68,7 @@ public class RingBuffer : MonoBehaviour
 		{
 			if (m_writtenBytes >= Define.BufferMax) return Define.BufferMax;
 
-			return (m_writePos < m_readPos) ? Define.BufferMax - m_readPos + m_writePos : m_writePos - m_readPos; ;
+			return (m_writePos < m_readPos) ? Define.BufferMax - m_readPos + m_writePos : m_writePos - m_readPos; 
 		}
 	}
 
@@ -88,7 +88,7 @@ public class RingBuffer : MonoBehaviour
 			MoveReadPos(m_reader.Size);
 			++n;
 		}
-		}
+	}
 
 	public bool IsBufferReadable()
 	{
@@ -126,7 +126,7 @@ public class RingBuffer : MonoBehaviour
 	{
 		int writableSize;
 
-		while ((writableSize = WritableSize) == 0) {; }
+		while ((writableSize = WritableSize) == 0) { ; }
 
 		_seg = new ArraySegment<byte>(m_buffer, m_writePos, writableSize);
 	

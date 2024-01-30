@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class InGamePacketHandler
 {
-	public static void LobbyChat(PacketReader _reader)
+	public static void ResInitInfo(PacketReader _reader)
 	{
 	}
 }

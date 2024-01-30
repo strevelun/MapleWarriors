@@ -17,7 +17,9 @@ public class UIChat : MonoBehaviour
 	string							m_uiChat;
 	string							m_uiChatItemPath;
 
-	private const int m_chatLimit = 10;
+	bool m_bReading = false;
+
+	private const int m_chatLimit = 300;
 
 	public uint ChatCount { get; set; } = 0;
 
@@ -32,7 +34,7 @@ public class UIChat : MonoBehaviour
 		m_input.onEndEdit.AddListener(OnEndEdit);
 
 		m_scrollbar = Util.FindChild<Scrollbar>(gameObject, true);
-		//m_scrollbar.onValueChanged.AddListener(OnScrollbarValueChanged);
+		m_scrollbar.onValueChanged.AddListener(OnScrollbarValueChanged);
 
 		GameObject obj = Util.FindChild(gameObject, true, "SendBtn");
 		m_btn = obj.GetComponent<UIButton>();
@@ -41,8 +43,7 @@ public class UIChat : MonoBehaviour
 		m_content = Util.FindChild(gameObject, true, "Content");
 
 		
-		// 버튼 클릭 이벤트
-
+		
 	}
 
 	void Start()
@@ -51,23 +52,35 @@ public class UIChat : MonoBehaviour
 
     void Update()
 	{ 
-		//if(Input.GetKeyDown(KeyCode.Return))
-		{
-			//UIManager.Inst.AddChat(Define.UIChat.UILobbyChat, "TEST");
-		}
-
 		if (m_chatLimit < ChatCount)
 		{
 			--ChatCount;
 		}
 	}
 
-	public void SetScrollbarDown() 
+	private void OnScrollbarValueChanged(float value)
 	{
-		//if (m_inputEnterCount == 0 && m_scrollbarValue > 0f) return;
+		//Debug.Log("호출!! : " + value + ", " + m_scrollbar.value);
 
-		m_scrollbar.value = -0.8f;
+		//if (value <= 0f) m_bReading = false;
+		//else if(value > 0f && !m_bReading) m_bReading = true;
+	}
 
+	public void SetScrollbarDown()
+	{
+		//Debug.Log(m_bReading);
+		//if (m_bReading) return;
+
+		//Debug.Log("스크롤바 : " + m_scrollbar.value);
+
+		StartCoroutine(SetScrollbarDownCoroutine());
+	}
+
+	private IEnumerator SetScrollbarDownCoroutine()
+	{
+		//Canvas.ForceUpdateCanvases(); // 수백번 호출하면 뻗음
+		yield return null;
+		m_scrollbar.value = 0f;
 	}
 
 	void OnSendButtonClicked()
@@ -75,6 +88,7 @@ public class UIChat : MonoBehaviour
 		if (string.IsNullOrWhiteSpace(m_input.text))			return;
 		if (m_sendBtnFunc == null)								return;
 
+		m_bReading = false;
 		Packet packet = m_sendBtnFunc.Invoke(m_input.text);
 		NetworkManager.Inst.Send(packet);
 		m_input.text = string.Empty;

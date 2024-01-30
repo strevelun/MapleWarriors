@@ -31,6 +31,7 @@ public class PacketType
 		RoomReady_Fail,
 		RoomStandby,
 		RoomStandby_Fail,
+		ResInitInfo,
 	}
 
 	public enum eClient : ushort

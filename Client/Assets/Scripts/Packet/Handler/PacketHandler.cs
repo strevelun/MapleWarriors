@@ -43,7 +43,7 @@ public static class PacketHandler
 					break;
 				case PacketType.eServer.CreateRoom_Fail:
 					LobbyPacketHandler.CreateRoom_Fail(_reader);
-					break;	
+					break;
 				case PacketType.eServer.EnterRoom_Success:
 					LobbyPacketHandler.EnterRoom_Success(_reader);
 					break;
@@ -64,19 +64,19 @@ public static class PacketHandler
 			{
 				case PacketType.eServer.RoomChat:
 					RoomPacketHandler.RoomChat(_reader);
-					break;		
+					break;
 				case PacketType.eServer.ExitRoom:
 					RoomPacketHandler.ExitRoom(_reader);
 					break;
 				case PacketType.eServer.NotifyRoomUserExit:
 					RoomPacketHandler.NotifyRoomUserExit(_reader);
-					break;		
+					break;
 				case PacketType.eServer.NotifyRoomUserEnter:
 					RoomPacketHandler.NotifyRoomUserEnter(_reader);
-					break;		
+					break;
 				case PacketType.eServer.RoomUsersInfo:
 					RoomPacketHandler.RoomUsersInfo(_reader);
-					break;				
+					break;
 				case PacketType.eServer.StartGame_Success:
 					RoomPacketHandler.StartGame_Success(_reader);
 					break;
@@ -85,13 +85,13 @@ public static class PacketHandler
 					break;
 				case PacketType.eServer.RoomReady:
 					RoomPacketHandler.RoomReady(_reader);
-					break;		
+					break;
 				case PacketType.eServer.RoomReady_Fail:
 					RoomPacketHandler.RoomReady_Fail(_reader);
 					break;
 				case PacketType.eServer.RoomStandby:
 					RoomPacketHandler.RoomStandby(_reader);
-					break;		
+					break;
 				case PacketType.eServer.RoomStandby_Fail:
 					RoomPacketHandler.RoomStandby_Fail(_reader);
 					break;
@@ -99,6 +99,12 @@ public static class PacketHandler
 		}
 		else if (eSceneType == Define.Scene.InGame)
 		{
+			switch (type)
+			{
+				case PacketType.eServer.ResInitInfo:
+					InGamePacketHandler.ResInitInfo(_reader);
+					break;
+			}
 		}
 	}
 
