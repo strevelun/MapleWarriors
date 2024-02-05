@@ -1,9 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public static class LobbyPacketMaker
 {
+	public static Packet Test()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eClient.Test)
+			.Add(DateTime.Now.Ticks);
+		return pkt;
+	}
+
 	public static Packet ExitGame()
 	{
 		Packet pkt = new Packet();
@@ -55,11 +65,11 @@ public static class LobbyPacketMaker
 		return pkt;
 	}
 
-	public static Packet EnterRoom(int _id)
+	public static Packet EnterRoom(uint _id)
 	{
 		Packet pkt = new Packet();
 		pkt.Add(PacketType.eClient.EnterRoom)
-			.Add((byte)_id);
+			.Add(_id);
 		return pkt;
 	}
 }

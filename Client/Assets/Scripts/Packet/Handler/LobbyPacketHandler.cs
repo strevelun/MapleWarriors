@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -6,6 +7,13 @@ using static Define;
 
 public static class LobbyPacketHandler
 {
+	public static void Test(PacketReader _reader)
+	{
+		long ticks = _reader.GetInt64();
+
+		Debug.Log($"패킷 시간차 : {(UserData.Inst.ticks - ticks)}ms");
+	}
+
 	public static void LobbyChat(PacketReader _reader)
 	{
 		string nickname = _reader.GetString();
@@ -69,6 +77,7 @@ public static class LobbyPacketHandler
 				if (item.activeSelf) item.SetActive(false);
 			}
 		}
+
 		uiPage.ActiveItemCount = activeCount;
 	}
 
@@ -99,13 +108,13 @@ public static class LobbyPacketHandler
 			{
 				obj = Util.FindChild(item, false, "Id");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-				int id = _reader.GetByte();
+				uint id = _reader.GetUInt32();
 				uibtn.Init(() =>
 				{
 					GameObject go = UIManager.Inst.FindUI(Define.UI.UILobby_RoomList_Block);
 					go.SetActive(true);
 
-					Debug.Log("버튼 클릭");
+					Debug.Log($"버튼 클릭 : {id}");
 					Packet pkt = LobbyPacketMaker.EnterRoom(id);
 					NetworkManager.Inst.Send(pkt);
 				});

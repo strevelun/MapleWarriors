@@ -21,6 +21,7 @@ public class InGameScene : BaseScene
 	public override void Clear()
 	{
 		base.Clear();
+		MapManager.Inst.Destroy();
 	}
 
 	void Start()

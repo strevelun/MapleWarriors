@@ -18,7 +18,7 @@ public static class LoginPacketHandler
 
 	public static void LoginSuccess(PacketReader _reader)
 	{
-		UserData.Inst.ConnectionID = _reader.GetByte();
+		UserData.Inst.ConnectionID = _reader.GetUShort();
 		SceneManagerEx.Inst.LoadScene(Define.Scene.Lobby);
 	}
 }

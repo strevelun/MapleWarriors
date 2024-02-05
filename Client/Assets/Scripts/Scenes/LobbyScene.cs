@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -133,6 +134,9 @@ public class LobbyScene : BaseScene
 		{
 			yield return new WaitForSeconds(Define.LobbyUpdateTime);
 			UpdateLobbyInfo();
+			//Debug.Log("º¸³¿");
+			Packet pkt = LobbyPacketMaker.Test();
+			NetworkManager.Inst.Send(pkt);
 		}
 	}
 

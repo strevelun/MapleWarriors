@@ -17,12 +17,13 @@ public class Packet
 		private set { Buffer.BlockCopy(BitConverter.GetBytes(value), 0, m_buffer, 0, sizeof(ushort)); }
 		get { return m_addPos; }
 	}
-	public Packet Add(bool _type) { return Add(GetBytes(_type)); }
+	//public Packet Add(bool _type) { return Add(GetBytes(_type)); }
 	public Packet Add(byte _type) { return Add(new byte[1] { _type }); }
-	public Packet Add(char _type) { return Add(GetBytes(_type)); }
+	//public Packet Add(char _type) { return Add(GetBytes(_type)); }
 	public Packet Add(ushort _type) { return Add(GetBytes(_type)); }
+	public Packet Add(int _type) { return Add(GetBytes(_type)); }
 	public Packet Add(uint _type) { return Add(GetBytes(_type)); }
-	public Packet Add(ulong _type) { return Add(GetBytes(_type)); }
+	public Packet Add(long _type) { return Add(GetBytes(_type)); }
 	public Packet Add(PacketType.eClient _type) { return Add(GetBytes(_type)); }
 	public Packet Add(string _type) 
 	{
@@ -43,11 +44,12 @@ public class Packet
 		return this;
 	}
 
-	private byte[] GetBytes(bool _type) { return BitConverter.GetBytes(_type); }
-	private byte[] GetBytes(char _type) { return BitConverter.GetBytes(_type); }
+	//private byte[] GetBytes(bool _type) { return BitConverter.GetBytes(_type); }
+	//private byte[] GetBytes(char _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(ushort _type) { return BitConverter.GetBytes(_type); }
+	private byte[] GetBytes(int _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(uint _type) { return BitConverter.GetBytes(_type); }
-	private byte[] GetBytes(ulong _type) { return BitConverter.GetBytes(_type); }
+	private byte[] GetBytes(long _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(string _type) { return Encoding.Unicode.GetBytes((string)(object)_type); }
 	private byte[] GetBytes(PacketType.eClient _type) { return BitConverter.GetBytes((ushort)_type); }
 }

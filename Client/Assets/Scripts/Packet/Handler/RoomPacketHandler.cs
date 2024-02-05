@@ -105,10 +105,11 @@ public static class RoomPacketHandler
 
 			GameObject objRoomUsers = UIManager.Inst.FindUI(Define.UI.UIRoom_Users);
 			GameObject slot = objRoomUsers.transform.GetChild(idx).gameObject;
-			if (connectionID == UserData.Inst.ConnectionID)
+			if (connectionID == UserData.Inst.ConnectionID) // 본인
 			{
 				obj = Util.FindChild(slot, false, "Frame");
 				obj.SetActive(true);
+				UserData.Inst.MyRoomSlot = idx;
 			}
 
 			obj = Util.FindChild(slot, false, "CharacterBtn");
@@ -131,6 +132,7 @@ public static class RoomPacketHandler
 
 	public static void StartGame_Success(PacketReader _reader)
 	{
+		// 방 멤버들은 방장이 맵을 바꾸면 바뀐 
 		SceneManagerEx.Inst.LoadScene(Define.Scene.InGame);
 	}
 

@@ -108,6 +108,75 @@ public class PacketReader
 		return result;
 	}
 
+	public int GetInt32()
+	{
+		int pos = m_getPos;
+		m_getPos = (sizeof(int) + m_getPos) % Define.BufferMax;
+		int result = 0;
+		if (pos + sizeof(int) > Define.BufferMax)
+		{
+			int i = pos;
+			int bit = 0;
+			byte temp;
+			while (bit < sizeof(int))
+			{
+				temp = m_buffer.Array[i];
+				result |= temp << (bit * 8);
+				++bit;
+				i = (i + 1) % Define.BufferMax;
+			}
+		}
+		else
+			result = BitConverter.ToInt32(m_buffer.Array, pos);
+		return result;
+	}
+
+	public uint GetUInt32()
+	{
+		int pos = m_getPos;
+		m_getPos = (sizeof(uint) + m_getPos) % Define.BufferMax;
+		uint result = 0;
+		if (pos + sizeof(uint) > Define.BufferMax)
+		{
+			int i = pos;
+			int bit = 0;
+			byte temp;
+			while (bit < sizeof(int))
+			{
+				temp = m_buffer.Array[i];
+				result |= (uint)(temp << (bit * 8));
+				++bit;
+				i = (i + 1) % Define.BufferMax;
+			}
+		}
+		else
+			result = BitConverter.ToUInt32(m_buffer.Array, pos);
+		return result;
+	}
+
+	public long GetInt64()
+	{
+		int pos = m_getPos;
+		m_getPos = (sizeof(long) + m_getPos) % Define.BufferMax;
+		long result = 0;
+		if (pos + sizeof(long) > Define.BufferMax)
+		{
+			int i = pos;
+			int bit = 0;
+			byte temp;
+			while (bit < sizeof(long))
+			{
+				temp = m_buffer.Array[i];
+				result |= (long)temp << (bit * 8);
+				++bit;
+				i = (i + 1) % Define.BufferMax;
+			}
+		}
+		else
+			result = BitConverter.ToInt64(m_buffer.Array, pos);
+		return result;
+	}
+
 	public string GetString()
 	{
 		m_errFlag = true;

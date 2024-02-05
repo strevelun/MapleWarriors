@@ -17,4 +17,6 @@ public class UserData
 	public string Nickname;
 	public int ConnectionID;
 	public bool IsRoomOwner;
+	public long ticks;
+	public int MyRoomSlot;
 }

@@ -14,6 +14,7 @@ public static class PacketHandler
 		{
 			switch (type)
 			{
+		
 				case PacketType.eServer.LoginFailure_AlreadyLoggedIn:
 					LoginPacketHandler.LoginFailure_AlreadyLoggedIn(_reader);
 					break;
@@ -29,6 +30,9 @@ public static class PacketHandler
 		{
 			switch (type)
 			{
+				case PacketType.eServer.Test:
+					LobbyPacketHandler.Test(_reader);
+					break;
 				case PacketType.eServer.LobbyChat:
 					LobbyPacketHandler.LobbyChat(_reader);
 					break;
@@ -103,6 +107,12 @@ public static class PacketHandler
 			{
 				case PacketType.eServer.ResInitInfo:
 					InGamePacketHandler.ResInitInfo(_reader);
+					break;
+				case PacketType.eServer.BeginMove:
+					InGamePacketHandler.BeginMove(_reader);
+					break;	
+				case PacketType.eServer.EndMove:
+					InGamePacketHandler.EndMove(_reader);
 					break;
 			}
 		}

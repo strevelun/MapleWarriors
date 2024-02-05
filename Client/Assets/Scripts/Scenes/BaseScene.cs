@@ -10,7 +10,7 @@ public abstract class BaseScene : MonoBehaviour
 
 	void Start()
 	{
-
+		Application.runInBackground = true;
 	}
 
 	protected virtual void Init()

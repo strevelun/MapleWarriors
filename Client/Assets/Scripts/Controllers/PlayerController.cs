@@ -1,100 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : CreatureController
 {
-	private enum PlayerState
-	{
-		None,
-		Idle,
-		Running,
-		Jumping,
-		Inair,
-		Attack
-	}
 
-	private enum Attack
-	{
-		None,
-		Shoot,
-	}
+	TextMeshProUGUI m_nickname;
+	string m_strNickname;
 
-	private const float GroundedThreshold = 0.05f;
-
-	private PlayerState m_eState = PlayerState.Idle;
-	private Attack m_eCurAttackSkill = Attack.Shoot;
-
-	private Rigidbody2D m_rb;
-	[SerializeField] private LayerMask m_groundLayer;
-	private CapsuleCollider2D m_capsuleCollider;
-	private Animator m_anim;
-
-	private bool m_bIsGrounded = true;
-	private float m_horizontal;
-	private float m_maxSpeed = 4f;
-	private float m_jumpingPower = 8f;
-	private bool m_bIsFacingRight = true;
+	public float m_smoothTime = 0.3f;
+	Vector3 m_targetPosition;
+	public float minDistance = 0.000002f;
+	Vector3 m_velocity = Vector3.zero;
+	bool m_updateEndMove = false;
 
 	void Start()
 	{
-		m_capsuleCollider = GetComponent<CapsuleCollider2D>();
-		m_rb = GetComponent<Rigidbody2D>();
-		m_anim = GetComponent<Animator>();
-
-		InputManager.Inst.KeyAction -= InputKeyboard;
-		InputManager.Inst.KeyAction += InputKeyboard;
+		Init();
 	}
 
-	void Update()
+	protected override void Update()
 	{
-		Flip();
+		base.Update();
 
-		switch (m_eState)
-		{
-			case PlayerState.Idle:
-				UpdateIdle();
-				break;
-			case PlayerState.Running:
-				UpdateRunning();
-				break;
-			case PlayerState.Jumping:
-				UpdateJumping();
-				break;
-			case PlayerState.Inair:
-				UpdateInair();
-				break;
-			case PlayerState.Attack:
-				UpdateAttack();
-				break;
-		}
+		HandleEndMove();
 	}
 
-	private void FixedUpdate()
+	void LateUpdate()
 	{
-		IsGrounded();
+		
 	}
 
-	private void InputKeyboard()
+	public override void Init()
 	{
-		switch(m_eState)
-		{
-			case PlayerState.Idle:
-				InputMovement();
-				InputAttack();
-				break;
-			case PlayerState.Running:
-				InputMovement();
-				break;
-			case PlayerState.Jumping:
-			case PlayerState.Inair:
-				m_horizontal = Input.GetAxisRaw("Horizontal");
-				break;
-		}
+		base.Init();
+
+		GameObject nickname = Util.FindChild(gameObject, true, "Nickname");
+		m_nickname = nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+
+		m_nickname.text = m_strNickname;
 	}
+
+	public void SetNickname(string _nickname)
+	{
+		m_strNickname = _nickname;
+	}
+
+
 
 	private void InputAttack()
 	{
+		/*
 		if (Input.GetKeyDown(KeyCode.Q))
 		{
 			m_anim.SetBool(m_eCurAttackSkill.ToString(), true);
@@ -103,84 +60,37 @@ public class PlayerController : MonoBehaviour
 		{
 			m_anim.SetBool(m_eCurAttackSkill.ToString(), false);
 		}
+		*/
 	}
 
-	private void IsGrounded()
-	{
-		m_bIsGrounded = Physics2D.OverlapCapsule(m_capsuleCollider.bounds.center, m_capsuleCollider.bounds.size, CapsuleDirection2D.Horizontal, 0f, m_groundLayer) && m_rb.velocity.y < 0.01f;
-	}
-
-	private void Flip()
-	{
-		if (m_bIsFacingRight && m_horizontal < 0f || !m_bIsFacingRight && m_horizontal > 0f)
-		{
-			m_bIsFacingRight = !m_bIsFacingRight;
-			Vector3 localScale = transform.localScale;
-			localScale.x *= -1f;
-			transform.localScale = localScale;
-		}
-	}
 
 	private void UpdateAttack()
 	{
 	}
 
-	private void InputMovement()
+	public void EndMovePosition(float _destXPos, float _destYPos)
 	{
-		m_horizontal = Input.GetAxisRaw("Horizontal");
-		m_rb.velocity = new Vector2(m_horizontal * m_maxSpeed, m_rb.velocity.y);
-		//bool isRunning = m_horizontal != 0f && (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A));
-		bool isRunning = (m_horizontal != 0f);//&& (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A)); 
-		m_eState = isRunning ? PlayerState.Running : PlayerState.Idle;
+		if (Vector3.Distance(transform.position, m_targetPosition) < minDistance) return;
+
+		m_targetPosition = new Vector3(_destXPos, _destYPos);
+		m_updateEndMove = true;
 	}
 
-	private void UpdateIdle()
+	public void HandleEndMove()
 	{
-		m_anim.SetBool("isRunning", false);
-
-		if (m_bIsGrounded && Input.GetButton("Jump"))
+		if (m_eDir != Dir.None)
 		{
-			m_eState = PlayerState.Jumping;
-			m_anim.SetBool("isJumping", true);
+			m_updateEndMove = false;
+			return;
 		}
-	}
 
-	private void UpdateRunning()
-	{
-		m_anim.SetBool("isRunning", true);
+		if (m_updateEndMove)
+			transform.position = Vector3.SmoothDamp(transform.position, m_targetPosition, ref m_velocity, m_smoothTime, m_maxSpeed, Time.deltaTime);
 
-		if (m_bIsGrounded && Input.GetButton("Jump"))
+		if (m_updateEndMove && Vector3.Distance(transform.position, m_targetPosition) < minDistance)
 		{
-			m_eState = PlayerState.Jumping;
-			m_anim.SetBool("isJumping", true);
-			m_anim.SetBool("isInair", false);
-		}
-		else if (!m_bIsGrounded)
-		{
-			m_eState = PlayerState.Inair;
-			m_anim.SetBool("isInair", true);
-		}
-	}
-
-	private void UpdateJumping() // 점프를 누르는 순간 한번만 호출됨
-	{
-		m_rb.velocity = new Vector2(m_horizontal * m_maxSpeed, m_jumpingPower);
-
-		m_anim.SetBool("isInair", true);
-
-		m_eState = PlayerState.Inair;
-	}
-
-	private void UpdateInair() // Inair상태에서 계속 호출되어야 함
-	{
-		m_rb.velocity = new Vector2(m_horizontal * m_maxSpeed, m_rb.velocity.y);
-
-		if (m_bIsGrounded)
-		{
-			m_anim.SetBool("isInair", false);
-			m_anim.SetBool("isJumping", false);
-			bool isRunning = m_horizontal != 0f && (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A));
-			m_eState = isRunning ? PlayerState.Running : PlayerState.Idle;
+			m_updateEndMove = false;
+			Debug.Log("보정 끝");
 		}
 	}
 }

@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
-public class MultiplayMenu 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+public class MultiplayMenu
 {
+#if UNITY_EDITOR
 	[MenuItem("Run Multiplayer(Win64)/1 Players")]
 	static void PerformWin64Build1()
 	{
@@ -59,5 +63,5 @@ public class MultiplayMenu
 
 		return scenes;
 	}
-
+#endif
 }

@@ -40,7 +40,9 @@ public class NetworkManager
 
 	public void Send(Packet _packet)
 	{
+		long before = DateTime.Now.Ticks;
 		m_connection?.Send(_packet);
+		//Debug.Log($"send : {(DateTime.Now.Ticks - before) / 10000000.0}√ ");
 	}
 	
 	public void Disconnect()

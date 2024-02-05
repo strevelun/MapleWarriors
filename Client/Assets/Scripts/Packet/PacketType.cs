@@ -32,6 +32,8 @@ public class PacketType
 		RoomStandby,
 		RoomStandby_Fail,
 		ResInitInfo,
+		BeginMove,
+		EndMove,
 	}
 
 	public enum eClient : ushort
@@ -53,5 +55,7 @@ public class PacketType
 		RoomChat,
 		ReqRoomUsersInfo,
 		ReqInitInfo,
+		BeginMove,
+		EndMove,
 	}
 }

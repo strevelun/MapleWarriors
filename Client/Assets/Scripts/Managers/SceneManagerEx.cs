@@ -24,7 +24,7 @@ public class SceneManagerEx
         SceneManager.LoadScene(GetSceneName(_type));
     }
 
-    private string GetSceneName(Define.Scene _type)
+	private string GetSceneName(Define.Scene _type)
     {
         return System.Enum.GetName(typeof(Define.Scene), _type);
     }

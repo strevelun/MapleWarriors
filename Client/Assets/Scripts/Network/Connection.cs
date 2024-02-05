@@ -6,6 +6,7 @@ using UnityEngine;
 public class Connection 
 {
     Socket m_socket;
+    System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
     SocketAsyncEventArgs m_recvArgs = new SocketAsyncEventArgs();
 
@@ -48,9 +49,15 @@ public class Connection
 			Disconnect();
             return;
         }
+
         if (maxByte < _args.BytesTransferred) maxByte = _args.BytesTransferred;
+
 		RingBuffer.Inst.MoveWritePos(_args.BytesTransferred);
-       // Debug.Log("받은 바이트 수 : " + _args.BytesTransferred + ", 최대바이트 : " + maxByte);
+
+        //Thread.Sleep(1);
+        //UserData.Inst.ticks = DateTime.Now.Ticks;
+
+		//Debug.Log("받은 바이트 수 : " + _args.BytesTransferred + ", 최대바이트 : " + maxByte);
 
 		RegisterRecv();
     }

@@ -7,13 +7,7 @@ using UnityEngine.EventSystems;
 public class InputManager : MonoBehaviour
 {
 	private static InputManager s_inst = null;
-	public static InputManager Inst
-	{
-		get
-		{
-			return s_inst;
-		}
-	}
+	public static InputManager Inst { get { return s_inst; } }
 
 	public Action KeyAction = null; // listener 패턴. 키보드 입력을 감지하면 구독자들에게 뿌림
 
