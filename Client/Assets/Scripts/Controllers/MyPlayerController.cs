@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MyPlayerController : PlayerController
 {
-	Dir m_ePrevDir = Dir.None;
+	eDir m_ePrevDir = eDir.None;
 	KeyCode m_curKeyCode = KeyCode.None;
 	bool m_bIsKeyDown = false;
 	bool m_bIsKeyUp = false;
@@ -28,12 +28,6 @@ public class MyPlayerController : PlayerController
 	}
 
 
-	public override void Init()
-	{
-		base.Init();
-
-
-	}
 	
 	// 왼쪽방향키와 위쪽 방향키를 순서대로 누르고 유지하면 왼쪽으로 가다가 왼쪽방햐이를 떼면 위쪽으로 감
 	void InputKeyboard()
@@ -42,31 +36,31 @@ public class MyPlayerController : PlayerController
 		{
 			m_curKeyCode = KeyCode.None;
 			m_bIsKeyUp = true;
-			m_eDir = Dir.None;
+			Dir = eDir.None;
 		}
 
 		if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.W))
 		{
 			m_curKeyCode = KeyCode.W;
-			m_eDir = Dir.Up;
+			Dir = eDir.Up;
 			m_bIsKeyDown = true;
 		}
 		else if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.S))
 		{
 			m_curKeyCode = KeyCode.S;
-			m_eDir = Dir.Down;
+			Dir = eDir.Down;
 			m_bIsKeyDown = true;
 		}
 		else if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.A))
 		{
 			m_curKeyCode = KeyCode.A;
-			m_eDir = Dir.Left; 
+			Dir = eDir.Left; 
 			m_bIsKeyDown = true;
 		}
 		else if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.D))
 		{
 			m_curKeyCode = KeyCode.D;
-			m_eDir = Dir.Right;
+			Dir = eDir.Right;
 			m_bIsKeyDown = true;
 		}
 		/*
@@ -90,7 +84,7 @@ public class MyPlayerController : PlayerController
 
 		if (m_bIsKeyDown)
 		{
-			Packet pkt = InGamePacketMaker.BeginMove(m_eDir);
+			Packet pkt = InGamePacketMaker.BeginMove(Dir);
 			NetworkManager.Inst.Send(pkt);
 			m_bIsKeyDown = false;
 		}

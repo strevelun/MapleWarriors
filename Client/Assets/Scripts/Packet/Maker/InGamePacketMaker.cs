@@ -17,7 +17,7 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet BeginMove(CreatureController.Dir _dir)
+	public static Packet BeginMove(CreatureController.eDir _dir)
 	{
 		Packet pkt = new Packet();
 		pkt

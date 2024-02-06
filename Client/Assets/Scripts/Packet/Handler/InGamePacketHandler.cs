@@ -12,6 +12,8 @@ public static class InGamePacketHandler
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
 
+		MapManager.Inst.Load(1, 1); // TestMap : 1
+
 		for (int i = 0; i < numOfUsers; ++i)
 		{
 			int connectionID = _reader.GetUShort();
@@ -24,18 +26,27 @@ public static class InGamePacketHandler
 			if (connectionID == UserData.Inst.ConnectionID)
 			{
 				MyPlayerController mpc = player.AddComponent<MyPlayerController>();
+				mpc.Init(i, 1);
 				mpc.SetNickname(nickname);
 				ObjectManager.Inst.Add<MyPlayerController>(player.name, player);
 			}
 			else
 			{
 				PlayerController pc = player.AddComponent<PlayerController>();
+				pc.Init(i, 1);
 				pc.SetNickname(nickname);
 				ObjectManager.Inst.Add<PlayerController>(player.name, player);
 			}
 		}
 
-		MapManager.Inst.Load(1, 1); // TestMap : 1
+
+		GameObject monster;
+		for (int i = 0; i < 30; ++i)
+		{
+			monster = ResourceManager.Inst.Instantiate("Creature/Slime");
+			MonsterController mc = monster.GetComponent<MonsterController>();
+			mc.Init(i+5, 10);
+		}
 	}
 
 	public static void BeginMove(PacketReader _reader)
@@ -44,7 +55,7 @@ public static class InGamePacketHandler
 		byte dir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.Find($"Player_{roomSlot}");
-		pc.SetDir((CreatureController.Dir)dir);
+		pc.SetDir((CreatureController.eDir)dir);
 	}
 
 	public static void EndMove(PacketReader _reader)
@@ -52,11 +63,13 @@ public static class InGamePacketHandler
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
+		//byte dir = _reader.GetByte();
 
 		Debug.Log($"최종 도착지점 : {xpos}, {ypos}");
 
 		PlayerController pc = ObjectManager.Inst.Find($"Player_{roomSlot}");
-		pc.SetDir(CreatureController.Dir.None);
+		//pc.UnSetDir((CreatureController.Dir)dir);
+		pc.SetDir(CreatureController.eDir.None);
 		pc.EndMovePosition(xpos, ypos);
 	}
 }

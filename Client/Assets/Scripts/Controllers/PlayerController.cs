@@ -5,6 +5,13 @@ using UnityEngine;
 
 public class PlayerController : CreatureController
 {
+	public enum eState
+	{
+		None,
+		Idle,
+		Walking,
+		Attack
+	}
 
 	TextMeshProUGUI m_nickname;
 	string m_strNickname;
@@ -15,9 +22,10 @@ public class PlayerController : CreatureController
 	Vector3 m_velocity = Vector3.zero;
 	bool m_updateEndMove = false;
 
+	public eState State { get; private set; } = eState.None;
+
 	void Start()
 	{
-		Init();
 	}
 
 	protected override void Update()
@@ -32,9 +40,11 @@ public class PlayerController : CreatureController
 		
 	}
 
-	public override void Init()
+	public override void Init(int _cellXPos, int _cellYPos)
 	{
-		base.Init();
+		base.Init(_cellXPos, _cellYPos);
+
+		m_maxSpeed = 8f;
 
 		GameObject nickname = Util.FindChild(gameObject, true, "Nickname");
 		m_nickname = nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
@@ -73,12 +83,13 @@ public class PlayerController : CreatureController
 		if (Vector3.Distance(transform.position, m_targetPosition) < minDistance) return;
 
 		m_targetPosition = new Vector3(_destXPos, _destYPos);
+		CellPos = ConvertToCellPos(_destXPos, _destYPos);
 		m_updateEndMove = true;
 	}
 
 	public void HandleEndMove()
 	{
-		if (m_eDir != Dir.None)
+		if (Dir != eDir.None)
 		{
 			m_updateEndMove = false;
 			return;

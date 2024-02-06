@@ -74,7 +74,7 @@ public class PriorityQueue<T> where T : IComparable<T>
 		return result;
 	}
 
-	public T Peek()
+	public T Top()
 	{
 		return m_data[0];
 	}
@@ -82,6 +82,11 @@ public class PriorityQueue<T> where T : IComparable<T>
 	public int Count()
 	{
 		return m_data.Count;
+	}
+
+	public void Clear()
+	{
+		m_data.Clear();
 	}
 
 	private void ChangeItems(int _a, int _b)

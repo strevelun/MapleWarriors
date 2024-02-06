@@ -21,8 +21,8 @@ public class MapManager
 	public int MinY { get; private set; }
 	public int MaxY { get; private set; }
 
-	private int m_xSize;
-	private int m_ySize;
+	public int XSize { get; private set; }
+	public int YSize { get; private set; }
 
 	bool[,] m_collisionMap;
 
@@ -51,12 +51,12 @@ public class MapManager
 		MaxX = m_tmBase.cellBounds.xMax;
 		MinY = m_tmBase.cellBounds.yMin;
 		MaxY = m_tmBase.cellBounds.yMax;
-		m_ySize = MaxY - MinY;
-		m_xSize = MaxX - MinX;
+		YSize = MaxY - MinY;
+		XSize = MaxX - MinX;
 
-		m_collisionMap = new bool[m_ySize, m_xSize];
+		m_collisionMap = new bool[YSize, XSize];
 
-		for(int y = MinY, mapY = 0; y < MaxY; ++y, ++mapY)
+		for(int y = MinY, mapY = YSize-1; y < MaxY; ++y, --mapY)
 		{
 			for(int x = MinX, mapX = 0; x < MaxX; ++x, ++mapX)
 			{
@@ -69,9 +69,9 @@ public class MapManager
 		m_tmCollision.gameObject.SetActive(false);
 	}
 
-	public bool IsBlocked(uint _cellXPos, uint _cellYPos)
+	public bool IsBlocked(int _cellXPos, int _cellYPos)
 	{
-		if (_cellXPos >= m_xSize || _cellYPos >= m_ySize) return false;
+		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= XSize || _cellYPos >= YSize) return true;
 
 		return m_collisionMap[_cellYPos, _cellXPos];
 	}
@@ -89,7 +89,7 @@ public class MapManager
 		MaxX = 0;
 		MinY = 0;
 		MaxY = 0;
-		m_ySize = 0;
-		m_xSize = 0;
+		YSize = 0;
+		XSize = 0;
 	}
 }

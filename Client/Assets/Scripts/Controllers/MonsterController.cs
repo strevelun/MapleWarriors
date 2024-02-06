@@ -1,54 +1,134 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class MonsterController : CreatureController
 {
-	public struct Pos
+	enum eState
 	{
-		public int x;
-		public int y;
+		None,
+		Chase,
+		Patrol,
+		Attack
 	}
 
-	Pos[] m_dir = new Pos[8];
-	int[] m_cost = {
-		10, 
-		10,
-		10,
-		10,
-		14,
-		14,
-		14,
-		14 };
+	AStar m_astar = new AStar();
+
+	List<Vector2Int> m_path = null;
+	Queue<PlayerController> m_targets = new Queue<PlayerController>();
+	Vector2Int m_prevTargetPos;
+	eState m_eState = eState.None;
+	int m_pathIdx = 0;
 
 	void Start()
     {
-        
-    }
+
+	}
 
 	protected override void Update()
     {
 		base.Update();
 
-    }
 
-	public override void Init()
+		HandleTarget();
+		StartChase();
+		UpdateChase();
+	}
+
+	public override void Init(int _cellXPos, int _cellYPos)
 	{
-		base.Init();
+		base.Init(_cellXPos, _cellYPos);
 
-		m_dir[0] = new Pos { x = 0, y = -1 };
-		m_dir[1] = new Pos { x = 1, y = -1 };
-		m_dir[2] = new Pos { x = 1, y = 0 };
-		m_dir[3] = new Pos { x = 1, y = 1 };
-		m_dir[4] = new Pos { x = 0, y = 1 };
-		m_dir[5] = new Pos { x = -1, y = 1 };
-		m_dir[6] = new Pos { x = -1, y = 0 };
-		m_dir[7] = new Pos { x = -1, y = -1 };
+		m_maxSpeed = 4f;
+	}
 
-		// 정점에 도달할때마다 인접 정점 검색
-		// 뒤늦게 더 좋은 경로 발견될 경우
+	void HandleTarget()
+	{
+		if (m_targets.Count == 0) return;
+		//if (m_eState != State.None && m_eState != State.Patrol) return;
+		//if (m_pathIdx < m_path.Count) return;
+		// if (m_dest == m_targets.Peek().CellPos) return;
+		if (m_prevTargetPos != null && m_prevTargetPos == m_targets.Peek().CellPos) return;
+
+		m_prevTargetPos = m_targets.Peek().CellPos;
+
+		m_path = m_astar.Search(CellPos, m_targets.Peek().CellPos);
+
+		if (m_path.Count < 3)
+			m_eState = eState.None;
+		else
+		{
+			m_pathIdx = 1;
+			m_eState = eState.Chase;
+		}
+	}
+
+	void StartChase()
+	{
+		if (m_targets.Count == 0) return;
+		if (m_eState != eState.Chase) return;
+		if (m_path == null) return;
+		//if (m_pathIdx >= m_path.Count) return;
+
+		Vector2 dir = CellPos - m_path[m_pathIdx];
+		if (dir.x == -1) Dir = eDir.Right;
+		else if (dir.x == 1) Dir = eDir.Left;
+
+		else if (dir.y == -1) Dir = eDir.Down;
+		else if (dir.y == 1) Dir = eDir.Up;
+	}
+
+	void UpdateChase()
+	{
+		if (m_path == null) return;
+
+		if (m_pathIdx >= m_path.Count)
+		{
+			m_eState = eState.None;
+			return;
+		}
+
+		if (m_eState == eState.None)
+		{
+			Dir = eDir.None;
+			return;
+		}
+		if (m_eState != eState.Chase) return;
+
+		if (CellPos == m_path[m_pathIdx])
+		{
+			++m_pathIdx;
+			Dir = eDir.None;
+			if (m_pathIdx >= m_path.Count)
+			{
+				m_eState = eState.None;
+			}
+			Debug.Log(m_pathIdx);
+		}
+	}
 
 
+
+	
+
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.gameObject.tag != "Player") return;
+
+		m_targets.Enqueue(other.gameObject.GetComponent<PlayerController>());
+
+		//Debug.Log(other.gameObject.name + " has entered!");
+	}
+
+	void OnTriggerExit2D(Collider2D other)
+	{
+		if (other.gameObject.tag != "Player") return;
+
+		m_targets.Dequeue();
+		if(m_targets.Count == 0) m_eState = eState.None;
+
+		//Debug.Log(other.gameObject.name + " has exited!");
 	}
 }
