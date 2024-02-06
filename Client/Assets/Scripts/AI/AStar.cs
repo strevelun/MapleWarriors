@@ -89,7 +89,7 @@ public class AStar
 			}
 		}
 
-		Debug.Log($"크기 : {m_dicParent.Count}");
+		//Debug.Log($"크기 : {m_dicParent.Count}");
 
 		Vector2Int pos = node.CurPos;
 		int totalSize = XSize * YSize;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,14 +28,15 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet EndMove(float _xpos, float _ypos)
+	public static Packet EndMove(long _tick)
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eClient.EndMove)
 			.Add((byte)UserData.Inst.MyRoomSlot)
-			.Add((int)(_xpos * 1000000)) // 소수점 6자리 정밀도
-			.Add((int)(_ypos * 1000000));
+			.Add(_tick);
+			//.Add((int)(_xpos * 1000000)) // 소수점 6자리 정밀도
+			//.Add((int)(_ypos * 1000000));
 		return pkt;
 	}
 }

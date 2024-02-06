@@ -56,20 +56,21 @@ public static class InGamePacketHandler
 
 		PlayerController pc = ObjectManager.Inst.Find($"Player_{roomSlot}");
 		pc.SetDir((CreatureController.eDir)dir);
+		pc.BeginMove();
 	}
 
 	public static void EndMove(PacketReader _reader)
 	{
 		byte roomSlot = _reader.GetByte();
-		float xpos = _reader.GetInt32() / 1000000.0f;
-		float ypos = _reader.GetInt32() / 1000000.0f;
+		//float xpos = _reader.GetInt32() / 1000000.0f;
+		//float ypos = _reader.GetInt32() / 1000000.0f;
 		//byte dir = _reader.GetByte();
-
-		Debug.Log($"최종 도착지점 : {xpos}, {ypos}");
+		long tick = _reader.GetInt64();
 
 		PlayerController pc = ObjectManager.Inst.Find($"Player_{roomSlot}");
 		//pc.UnSetDir((CreatureController.Dir)dir);
+		pc.EndMovePosition(tick);
 		pc.SetDir(CreatureController.eDir.None);
-		pc.EndMovePosition(xpos, ypos);
+		//pc.EndMovePosition(xpos, ypos);
 	}
 }

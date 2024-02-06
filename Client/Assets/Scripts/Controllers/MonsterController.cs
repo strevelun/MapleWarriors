@@ -105,7 +105,7 @@ public class MonsterController : CreatureController
 			{
 				m_eState = eState.None;
 			}
-			Debug.Log(m_pathIdx);
+			//Debug.Log(m_pathIdx);
 		}
 	}
 

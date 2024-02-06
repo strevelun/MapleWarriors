@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ public class MyPlayerController : PlayerController
 	KeyCode m_curKeyCode = KeyCode.None;
 	bool m_bIsKeyDown = false;
 	bool m_bIsKeyUp = false;
+
+	long m_prevMoveTime = 0;
 
     void Start()
     {
@@ -22,14 +25,18 @@ public class MyPlayerController : PlayerController
 		HandleInput();
 	}
 
-	private void LateUpdate()
+	private void FixedUpdate()
 	{
-		Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
 	}
 
+	protected override void LateUpdate()
+	{
+		base.LateUpdate();
 
+		//Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
+	}
 	
-	// 왼쪽방향키와 위쪽 방향키를 순서대로 누르고 유지하면 왼쪽으로 가다가 왼쪽방햐이를 떼면 위쪽으로 감
+	// 왼쪽방향키와 위쪽 방향키를 순서대로 누르고 유지하면 왼쪽으로 가다가 왼쪽방향키를 떼면 위쪽으로 감
 	void InputKeyboard()
 	{
 		if(Input.GetKeyUp(m_curKeyCode))
@@ -63,21 +70,13 @@ public class MyPlayerController : PlayerController
 			Dir = eDir.Right;
 			m_bIsKeyDown = true;
 		}
-		/*
-		else if (m_eDir != m_ePrevDir)
-		{
-			m_ePrevDir = m_eDir;
-			m_curKeyCode = KeyCode.None;
-			m_eDir = Dir.None;
-		}
-		*/
 	}
 
 	void HandleInput()
 	{
 		if (m_bIsKeyUp)
 		{
-			Packet pkt = InGamePacketMaker.EndMove(transform.position.x, transform.position.y);
+			Packet pkt = InGamePacketMaker.EndMove(DateTime.Now.Ticks);
 			NetworkManager.Inst.Send(pkt);
 			m_bIsKeyUp = false;
 		}
@@ -87,6 +86,7 @@ public class MyPlayerController : PlayerController
 			Packet pkt = InGamePacketMaker.BeginMove(Dir);
 			NetworkManager.Inst.Send(pkt);
 			m_bIsKeyDown = false;
+			m_prevMoveTime = DateTime.Now.Ticks;
 		}
 	}
 }

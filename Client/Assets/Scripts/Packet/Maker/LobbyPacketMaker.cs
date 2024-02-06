@@ -9,8 +9,7 @@ public static class LobbyPacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.Test)
-			.Add(DateTime.Now.Ticks);
+			.Add(PacketType.eClient.Test);
 		return pkt;
 	}
 

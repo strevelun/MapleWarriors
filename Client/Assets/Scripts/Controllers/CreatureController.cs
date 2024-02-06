@@ -76,6 +76,11 @@ public class CreatureController : MonoBehaviour
 		}
     }
 
+	protected virtual void LateUpdate()
+	{
+		
+	}
+
 	public virtual void Init(int _cellXPos, int _cellYPos)
 	{
 		m_anim = GetComponent<Animator>();
