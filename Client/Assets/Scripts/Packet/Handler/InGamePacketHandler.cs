@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ public static class InGamePacketHandler
 		int mapID = _reader.GetByte();
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
+		CinemachineVirtualCamera vcam1 = GameObject.Find("CM vcam1").GetComponent<CinemachineVirtualCamera>();
 
 		MapManager.Inst.Load(1, 1); // TestMap : 1
 
@@ -28,24 +30,28 @@ public static class InGamePacketHandler
 				MyPlayerController mpc = player.AddComponent<MyPlayerController>();
 				mpc.Init(i, 1);
 				mpc.SetNickname(nickname);
-				ObjectManager.Inst.Add<MyPlayerController>(player.name, player);
+				ObjectManager.Inst.AddPlayer(player.name, player);
+				vcam1.Follow = player.transform;
 			}
 			else
 			{
 				PlayerController pc = player.AddComponent<PlayerController>();
 				pc.Init(i, 1);
 				pc.SetNickname(nickname);
-				ObjectManager.Inst.Add<PlayerController>(player.name, player);
+				ObjectManager.Inst.AddPlayer(player.name, player);
 			}
 		}
 
-
+		
 		GameObject monster;
-		for (int i = 0; i < 30; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			monster = ResourceManager.Inst.Instantiate("Creature/Slime");
 			MonsterController mc = monster.GetComponent<MonsterController>();
 			mc.Init(i+5, 10);
+
+			monster.name = $"Slime_{i}";
+			ObjectManager.Inst.AddMonster(monster.name, monster);
 		}
 	}
 
@@ -54,7 +60,7 @@ public static class InGamePacketHandler
 		byte roomSlot = _reader.GetByte();
 		byte dir = _reader.GetByte();
 
-		PlayerController pc = ObjectManager.Inst.Find($"Player_{roomSlot}");
+		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_{roomSlot}");
 		pc.SetDir((CreatureController.eDir)dir);
 		pc.BeginMove();
 	}
@@ -62,15 +68,38 @@ public static class InGamePacketHandler
 	public static void EndMove(PacketReader _reader)
 	{
 		byte roomSlot = _reader.GetByte();
-		//float xpos = _reader.GetInt32() / 1000000.0f;
-		//float ypos = _reader.GetInt32() / 1000000.0f;
+		float xpos = _reader.GetInt32() / 1000000.0f;
+		float ypos = _reader.GetInt32() / 1000000.0f;
 		//byte dir = _reader.GetByte();
-		long tick = _reader.GetInt64();
+		//long tick = _reader.GetInt64();
 
-		PlayerController pc = ObjectManager.Inst.Find($"Player_{roomSlot}");
+		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_{roomSlot}");
 		//pc.UnSetDir((CreatureController.Dir)dir);
-		pc.EndMovePosition(tick);
 		pc.SetDir(CreatureController.eDir.None);
+		pc.EndMovePosition(xpos, ypos);
 		//pc.EndMovePosition(xpos, ypos);
+	}
+
+	public static void BeginMoveMonster(PacketReader _reader)
+	{
+		string name = _reader.GetString();
+		int pathIdx = _reader.GetUShort();
+		int destCellXPos = _reader.GetUShort();
+		int destCellYPos = _reader.GetUShort();
+
+		MonsterController mc = ObjectManager.Inst.FindMonster(name);
+		if (!mc) return;
+
+		mc.BeginMove(pathIdx, destCellXPos, destCellYPos);
+	}
+
+	public static void EndMoveMonster(PacketReader _reader)
+	{
+		string name = _reader.GetString();
+
+		MonsterController mc = ObjectManager.Inst.FindMonster(name);
+		if (!mc) return;
+
+		mc.EndMove();
 	}
 }

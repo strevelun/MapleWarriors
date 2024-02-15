@@ -28,15 +28,36 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet EndMove(long _tick)
+	public static Packet EndMove(float _xpos, float _ypos)
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eClient.EndMove)
 			.Add((byte)UserData.Inst.MyRoomSlot)
-			.Add(_tick);
-			//.Add((int)(_xpos * 1000000)) // 소수점 6자리 정밀도
-			//.Add((int)(_ypos * 1000000));
+			//.Add(_tick);
+			.Add((int)(_xpos * 1000000)) // 소수점 6자리 정밀도
+			.Add((int)(_ypos * 1000000));
+		return pkt;
+	}
+
+	public static Packet BeginMoveMonster(string _name, int _cellXPos, int _cellYPos, int _pathIdx)
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eClient.BeginMoveMonster)
+			.Add(_name)
+			.Add((ushort)_pathIdx)
+			.Add((ushort)_cellXPos)
+			.Add((ushort)_cellYPos);
+		return pkt;
+	}
+
+	public static Packet EndMoveMonster(string _name)
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eClient.EndMoveMonster)
+			.Add(_name);
 		return pkt;
 	}
 }

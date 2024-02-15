@@ -78,7 +78,7 @@ public class MapManager
 
 	public Vector3Int WorldToCell(float _xpos, float _ypos)
 	{
-		return m_tmBase.WorldToCell(new Vector3(_xpos, _ypos));
+		return m_tmBase.WorldToCell(new Vector3(_xpos, -_ypos));
 	}
 
 	public void Destroy()

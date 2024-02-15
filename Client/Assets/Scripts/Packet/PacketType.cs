@@ -34,6 +34,8 @@ public class PacketType
 		ResInitInfo,
 		BeginMove,
 		EndMove,
+		BeginMoveMonster,
+		EndMoveMonster,
 	}
 
 	public enum eClient : ushort
@@ -57,5 +59,7 @@ public class PacketType
 		ReqInitInfo,
 		BeginMove,
 		EndMove,
+		BeginMoveMonster,
+		EndMoveMonster,
 	}
 }

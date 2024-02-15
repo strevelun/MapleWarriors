@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -41,42 +42,139 @@ public class CreatureController : MonoBehaviour
 	{
 		Flip();
 
+		UpdateMove();
+
+	}
+
+	protected virtual void LateUpdate()
+	{
+
+	}
+
+
+	void UpdateMove()
+	{
+		float newX = transform.position.x, newY = transform.position.y;
+
 		switch (Dir)
 		{
 			case eDir.Up:
-				transform.position = new Vector3(transform.position.x, transform.position.y + (m_maxSpeed * Time.deltaTime));
+				newY = transform.position.y + (m_maxSpeed * Time.deltaTime);
 				break;
 			case eDir.Down:
-				transform.position = new Vector3(transform.position.x, transform.position.y - (m_maxSpeed * Time.deltaTime));
+				newY = transform.position.y - (m_maxSpeed * Time.deltaTime);
 				break;
 			case eDir.Left:
-				transform.position = new Vector3(transform.position.x - (m_maxSpeed * Time.deltaTime), transform.position.y);
+				newX = transform.position.x - (m_maxSpeed * Time.deltaTime);
 				break;
 			case eDir.Right:
-				transform.position = new Vector3(transform.position.x + (m_maxSpeed * Time.deltaTime), transform.position.y);
-				break;
-			case eDir.UpRight:
-				transform.position = new Vector3(transform.position.x + (m_maxSpeed * Time.deltaTime), transform.position.y + (m_maxSpeed * Time.deltaTime));
-				break;
-			case eDir.RightDown:
-				transform.position = new Vector3(transform.position.x + (m_maxSpeed * Time.deltaTime), transform.position.y - (m_maxSpeed * Time.deltaTime));
-				break;
-			case eDir.DownLeft:
-				transform.position = new Vector3(transform.position.x - (m_maxSpeed * Time.deltaTime), transform.position.y - (m_maxSpeed * Time.deltaTime));
-				break;
-			case eDir.LeftUp:
-				transform.position = new Vector3(transform.position.x - (m_maxSpeed * Time.deltaTime), transform.position.y + (m_maxSpeed * Time.deltaTime));
+				newX = transform.position.x + (m_maxSpeed * Time.deltaTime);
 				break;
 		}
+
+		// 블록이 10,0에 있을때 캐릭터가 9.9999,0까지 가서 오른쪽을 누르면 10.0으로 맞춰짐. 근데 현재 위치가 블록의 위치라 안움직임.
+		// 0~0.2인 경우 y=0존재, y=1비존재인 경우 멈춤. 0.2~0.8인 경우는 y=1만 확인. 
 
 		if (Dir != eDir.None)
 		{
-			CellPos = ConvertToCellPos(transform.position.x, transform.position.y);
-			//.Log(CellPos);
-		}
-    }
+			if(Dir == eDir.Left || Dir == eDir.Right)
+				AdjustXPosition(ref newX, ref newY);
+			/*
+			Debug.Log($"{vec.x}, {vec.y}");
+			if (Dir == eDir.Right)
+			{
+				vec.x = vec.x + 1;
+			}
+			else if (Dir == eDir.Down)
+				vec.y = vec.y + 1;
+			if (MapManager.Inst.IsBlocked(vec.x, vec.y))
+			{
+				if (Dir == eDir.Left)
+					newX = (float)Math.Round((double)newX, MidpointRounding.AwayFromZero);
+				else if (Dir == eDir.Right)
+					newX = vec.x - 1;
+				else if (Dir == eDir.Up)
+					newY = (float)Math.Round((double)newY, MidpointRounding.AwayFromZero);
+				else if (Dir == eDir.Down)
+					newY = -(vec.y - 1);
 
-	protected virtual void LateUpdate()
+				Dir = eDir.None;
+			}
+			*/
+			transform.position = new Vector3(newX, newY);
+			CellPos = ConvertToCellPos(transform.position.x, transform.position.y);
+			//Debug.Log($"{CellPos.x}, {CellPos.y}");
+		}
+
+	}
+
+	void AdjustXPosition(ref float _newX, ref float _newY)
+	{
+		Vector3Int vec = MapManager.Inst.WorldToCell(_newX, _newY);
+		float absNewY = Math.Abs(_newY);
+		float testY = absNewY - Mathf.Floor(absNewY);
+
+		int vecX = 0, newX = 0;
+		if (Dir == eDir.Right)
+		{
+			vecX = vec.x + 1;
+			newX = vec.x;
+		}
+		else if(Dir == eDir.Left)
+		{
+			vecX = vec.x;
+			newX = vec.x+1;
+		}
+
+		if ((testY != 0.0f && MapManager.Inst.IsBlocked(vecX, vec.y + 1)) // 0일때는 0번째 줄 이동 가능
+						|| MapManager.Inst.IsBlocked(vecX, vec.y))
+		{
+			_newX = newX;
+		}
+
+		if (MapManager.Inst.IsBlocked(vecX, vec.y) && !MapManager.Inst.IsBlocked(vecX, vec.y + 1)) // Plant타일이 약간 띄어져 있어서 어색한 이동 방지 목적의 코드
+		{
+			float targetY = -vec.y - 1;
+			if (Math.Abs(_newY - targetY) < 0.1f)
+				_newY = targetY;
+			else
+				_newY -= (m_maxSpeed * Time.deltaTime);
+		}
+		else
+		{
+			if (testY <= 0.4f)
+			{
+				if (!MapManager.Inst.IsBlocked(vecX, vec.y) && MapManager.Inst.IsBlocked(vecX, vec.y + 1))
+				{
+					float targetY = (float)Math.Round((double)_newY, MidpointRounding.AwayFromZero);
+					if (Math.Abs(_newY - targetY) < 0.1f)
+						_newY = targetY;
+					else
+						_newY += (m_maxSpeed * Time.deltaTime);
+				}
+			}
+			else if (testY >= 0.9f)
+			{
+				if (MapManager.Inst.IsBlocked(vecX, vec.y + 1) && !MapManager.Inst.IsBlocked(vecX, vec.y + 2))
+				{
+					float targetY = (float)Math.Round((double)_newY - 1, MidpointRounding.AwayFromZero);
+
+					if (Math.Abs(_newY - targetY) < 0.1f)
+						_newY = targetY;
+					else
+						_newY -= (m_maxSpeed * Time.deltaTime);
+				}
+
+			}
+		}
+	}
+
+	void AdjustYPosition(ref float _newX, ref float _newY)
+	{
+
+	}
+
+	void AdjustXPos(int _xpos, eDir _eDir)
 	{
 		
 	}
@@ -123,4 +221,6 @@ public class CreatureController : MonoBehaviour
 			transform.localScale = localScale;
 		}
 	}
+
+
 }

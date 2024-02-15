@@ -15,20 +15,37 @@ public class ObjectManager
 	}
 
 	Dictionary<string, PlayerController> m_dicPlayerObj = new Dictionary<string, PlayerController>();
+	Dictionary<string, MonsterController> m_dicMonsterObj = new Dictionary<string, MonsterController>();
 
-	public void Add<T>(string _key, GameObject _obj) where T : PlayerController
+	public void AddPlayer(string _key, GameObject _obj)
 	{
-		T pc = _obj.GetComponent<T>();
-		if (!pc) pc = _obj.AddComponent<T>();
+		PlayerController pc = _obj.GetComponent<PlayerController>();
+		if (!pc) pc = _obj.AddComponent<PlayerController>();
 
 		m_dicPlayerObj.Add(_key, pc);
 	}
 
-	public PlayerController Find(string _key)
+	public void AddMonster(string _key, GameObject _obj)
+	{
+		MonsterController pc = _obj.GetComponent<MonsterController>();
+		if (!pc) pc = _obj.AddComponent<MonsterController>();
+
+		m_dicMonsterObj.Add(_key, pc);
+	}
+
+	public PlayerController FindPlayer(string _key)
 	{
 		PlayerController pc = null;
 		m_dicPlayerObj.TryGetValue(_key, out pc);
-	
+
 		return pc;
+	}
+
+	public MonsterController FindMonster(string _key)
+	{
+		MonsterController mc = null;
+		m_dicMonsterObj.TryGetValue(_key, out mc);
+
+		return mc;
 	}
 }

@@ -57,7 +57,7 @@ public class AStar
 		int g = 0;
 		int h = 10 * (Math.Abs(_destCellPos.y - _startCellPos.y) + Math.Abs(_destCellPos.x - _startCellPos.x));
 		m_pq.Enqueue(new Node(g + h, g, _startCellPos));
-		m_best[_startCellPos.y, _startCellPos.x] = g + h;
+		m_best[_startCellPos.y, _startCellPos.x] = g + h; // index out of bounds
 		m_dicParent[_startCellPos] = _startCellPos;
 
 		Node node = null;

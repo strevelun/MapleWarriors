@@ -20,7 +20,9 @@ public class MonsterController : CreatureController
 	Queue<PlayerController> m_targets = new Queue<PlayerController>();
 	Vector2Int m_prevTargetPos;
 	eState m_eState = eState.None;
-	int m_pathIdx = 0;
+	public int PathIdx { get; set; } = 0;
+	int m_prevPathIdx = 0;
+	public Vector2Int DestPos { get; set; } = new Vector2Int(0, 0);
 
 	void Start()
     {
@@ -31,9 +33,21 @@ public class MonsterController : CreatureController
     {
 		base.Update();
 
+		if (UserData.Inst.IsRoomOwner)
+		{
 
-		HandleTarget();
-		StartChase();
+
+			BeginSearch();
+			//StartChase();
+			//UpdateChase();
+		}
+		else
+		{
+			//if(CellPos == DestPos)
+			//{
+			//	Dir = eDir.None;
+			//}
+		}
 		UpdateChase();
 	}
 
@@ -41,28 +55,42 @@ public class MonsterController : CreatureController
 	{
 		base.Init(_cellXPos, _cellYPos);
 
-		m_maxSpeed = 4f;
+		m_maxSpeed = 2f;
 	}
 
-	void HandleTarget()
+	// 플레이어가 포착되면 길을 만들고, PathIdx=1의 위치부터 하나씩 서버로 
+
+	void BoundCheck()
 	{
+		int x, y;
+		if (CellPos.x <= 0) x = 0;
+		//else if(CellPos.x >= MapManager.Inst.MaxX)
+		if (CellPos.y <= 0) y = 0;
+	}
+
+	void BeginSearch()
+	{
+		//if (m_eState == eState.Chase) return;
 		if (m_targets.Count == 0) return;
-		//if (m_eState != State.None && m_eState != State.Patrol) return;
-		//if (m_pathIdx < m_path.Count) return;
-		// if (m_dest == m_targets.Peek().CellPos) return;
-		if (m_prevTargetPos != null && m_prevTargetPos == m_targets.Peek().CellPos) return;
+		//if (m_prevTargetPos != null && m_prevTargetPos == m_targets.Peek().CellPos) return;
 
-		m_prevTargetPos = m_targets.Peek().CellPos;
+		PlayerController pc = m_targets.Peek();
+		if (Math.Abs(CellPos.x - pc.CellPos.x) <= 1 && Math.Abs(CellPos.y - pc.CellPos.y) <= 1) return;
 
-		m_path = m_astar.Search(CellPos, m_targets.Peek().CellPos);
+		m_prevTargetPos = pc.CellPos;
+		m_path = m_astar.Search(CellPos, pc.CellPos);
 
-		if (m_path.Count < 3)
-			m_eState = eState.None;
-		else
+		if (m_path.Count <= 2)
 		{
-			m_pathIdx = 1;
-			m_eState = eState.Chase;
+			m_eState = eState.None;
+			return;
 		}
+		//else
+		PathIdx = 0;
+
+		Packet pkt = InGamePacketMaker.BeginMoveMonster(name, m_path[PathIdx+1].x, m_path[PathIdx+1].y, PathIdx + 1);
+		NetworkManager.Inst.Send(pkt);
+			
 	}
 
 	void StartChase()
@@ -70,12 +98,11 @@ public class MonsterController : CreatureController
 		if (m_targets.Count == 0) return;
 		if (m_eState != eState.Chase) return;
 		if (m_path == null) return;
-		//if (m_pathIdx >= m_path.Count) return;
+		//if (PathIdx >= m_path.Count) return;
 
-		Vector2 dir = CellPos - m_path[m_pathIdx];
+		Vector2 dir = CellPos - m_path[PathIdx];
 		if (dir.x == -1) Dir = eDir.Right;
 		else if (dir.x == 1) Dir = eDir.Left;
-
 		else if (dir.y == -1) Dir = eDir.Down;
 		else if (dir.y == 1) Dir = eDir.Up;
 	}
@@ -83,8 +110,10 @@ public class MonsterController : CreatureController
 	void UpdateChase()
 	{
 		if (m_path == null) return;
+		if (Dir == eDir.None) return;
 
-		if (m_pathIdx >= m_path.Count)
+		/*
+		if (PathIdx >= m_path.Count)
 		{
 			m_eState = eState.None;
 			return;
@@ -96,22 +125,59 @@ public class MonsterController : CreatureController
 			return;
 		}
 		if (m_eState != eState.Chase) return;
+		*/
 
-		if (CellPos == m_path[m_pathIdx])
+		Vector3 dest = new Vector3(m_path[PathIdx].x, -m_path[PathIdx].y);
+		if (Vector3.Distance(transform.position, dest) < 0.05f)
+		//if (CellPos == m_path[PathIdx])
 		{
-			++m_pathIdx;
+			transform.position = dest;
+			++PathIdx;
 			Dir = eDir.None;
-			if (m_pathIdx >= m_path.Count)
+			//if (PathIdx >= m_path.Count)
+			//{
+			//	m_eState = eState.None;
+			//	Packet pkt = InGamePacketMaker.EndMoveMonster(name);
+			//	NetworkManager.Inst.Send(pkt);
+			//}
+			//else
 			{
-				m_eState = eState.None;
+				if (PathIdx < m_path.Count)
+				{
+					Packet pkt = InGamePacketMaker.BeginMoveMonster(name, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
+					NetworkManager.Inst.Send(pkt);
+					//Debug.Log(m_path[PathIdx + 1]);
+				}
 			}
-			//Debug.Log(m_pathIdx);
+			//Debug.Log(PathIdx);
 		}
+		//Debug.Log(Vector3.Distance(transform.position, dest));
 	}
 
+	// 각 몬스터가 플레이어를 발견하면 각자 Search를 하고 패킷을 만들어 올려야 함.
 
+	public void BeginMove(int _pathIdx, int _cellXPos, int _cellYPos)
+	{
+		PathIdx = _pathIdx;
+		DestPos = new Vector2Int(_cellXPos, _cellYPos);
+		m_eState = eState.Chase;
 
-	
+		Vector2 dir = CellPos - DestPos;
+		if (dir.x == -1) Dir = eDir.Right;
+		else if (dir.x == 1) Dir = eDir.Left;
+		else if (dir.y == -1) Dir = eDir.Down;
+		else if (dir.y == 1) Dir = eDir.Up;
+	}
+
+	public void EndMove()
+	{
+		PathIdx = 0;
+		DestPos = new Vector2Int(0, 0);
+
+		Dir = eDir.None;
+		m_eState = eState.None;
+	}
+
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
@@ -127,7 +193,12 @@ public class MonsterController : CreatureController
 		if (other.gameObject.tag != "Player") return;
 
 		m_targets.Dequeue();
-		if(m_targets.Count == 0) m_eState = eState.None;
+		if (m_targets.Count == 0)
+		{
+			m_path = null;
+			Packet pkt = InGamePacketMaker.EndMoveMonster(name);
+			NetworkManager.Inst.Send(pkt);
+		}
 
 		//Debug.Log(other.gameObject.name + " has exited!");
 	}

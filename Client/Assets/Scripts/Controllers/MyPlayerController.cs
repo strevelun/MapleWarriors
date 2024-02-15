@@ -10,6 +10,8 @@ public class MyPlayerController : PlayerController
 	bool m_bIsKeyDown = false;
 	bool m_bIsKeyUp = false;
 
+	eDir m_eDirInput = eDir.None;
+
 	long m_prevMoveTime = 0;
 
     void Start()
@@ -43,30 +45,35 @@ public class MyPlayerController : PlayerController
 		{
 			m_curKeyCode = KeyCode.None;
 			m_bIsKeyUp = true;
+			//m_eDirInput = eDir.None;
 			Dir = eDir.None;
 		}
 
 		if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.W))
 		{
 			m_curKeyCode = KeyCode.W;
+			//m_eDirInput = eDir.Up;
 			Dir = eDir.Up;
 			m_bIsKeyDown = true;
 		}
 		else if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.S))
 		{
 			m_curKeyCode = KeyCode.S;
+			//m_eDirInput = eDir.Down;
 			Dir = eDir.Down;
 			m_bIsKeyDown = true;
 		}
 		else if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.A))
 		{
 			m_curKeyCode = KeyCode.A;
-			Dir = eDir.Left; 
+			//m_eDirInput = eDir.Left; 
+			Dir = eDir.Left;
 			m_bIsKeyDown = true;
 		}
 		else if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.D))
 		{
 			m_curKeyCode = KeyCode.D;
+			//m_eDirInput = eDir.Right;
 			Dir = eDir.Right;
 			m_bIsKeyDown = true;
 		}
@@ -76,7 +83,7 @@ public class MyPlayerController : PlayerController
 	{
 		if (m_bIsKeyUp)
 		{
-			Packet pkt = InGamePacketMaker.EndMove(DateTime.Now.Ticks);
+			Packet pkt = InGamePacketMaker.EndMove(transform.position.x, transform.position.y);
 			NetworkManager.Inst.Send(pkt);
 			m_bIsKeyUp = false;
 		}

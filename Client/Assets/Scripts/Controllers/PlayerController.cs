@@ -15,16 +15,21 @@ public class PlayerController : CreatureController
 		Attack
 	}
 
-	TextMeshProUGUI m_nickname;
+	TextMeshProUGUI m_nicknameTMP;
+	TextMeshProUGUI m_positionTMP;
 	string m_strNickname;
 
 	[SerializeField]
-	Vector2 m_offset = new Vector2(0.5f, 1.5f); 
-	RectTransform m_nameTagUI; 
+	Vector2 m_nameTagOffset = new Vector2(0.5f, 1.5f); 
+	RectTransform m_nameTagUI;
+	[SerializeField]
+	Vector2 m_positionTagOffset = new Vector2(0.5f, 2.5f);
+	RectTransform m_positionTagUI;
 
 	public float m_smoothTime = 0.3f;
 	Vector3 m_targetPosition;
-	public float minDistance = 0.000002f;
+	public float minDistance = 0.000001f;
+	public float lerpMinDist = 0.01f;
 	Vector3 m_velocity = Vector3.zero;
 	bool m_updateEndMove = false;
 
@@ -39,9 +44,12 @@ public class PlayerController : CreatureController
 	protected override void Update()
 	{
 		base.Update();
-		HandleEndMove();
+		//HandleEndMove();
 
-		m_nameTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_offset);
+		m_positionTMP.text = $"x = {transform.position.x}, y = {transform.position.y}";
+
+		m_nameTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_nameTagOffset);
+		m_positionTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_positionTagOffset);
 
 	}
 
@@ -55,18 +63,22 @@ public class PlayerController : CreatureController
 	{
 		base.Init(_cellXPos, _cellYPos);
 
-		m_maxSpeed = 8f;
+		m_maxSpeed = 4f;
 
 		GameObject nickname = Util.FindChild(gameObject, true, "Nickname");
-		m_nickname = nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		m_nicknameTMP = nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 		m_nameTagUI = nickname.GetComponent<RectTransform>();
+
+		GameObject position = Util.FindChild(gameObject, true, "Position");
+		m_positionTMP = position.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		m_positionTagUI = position.GetComponent<RectTransform>();
 
 	}
 
 	public void SetNickname(string _nickname)
 	{
 		m_strNickname = _nickname;
-		m_nickname.text = m_strNickname;
+		m_nicknameTMP.text = m_strNickname;
 	}
 
 
@@ -100,30 +112,30 @@ public class PlayerController : CreatureController
 
 	}
 
-	public void EndMovePosition(long _tick)
+	// _destXPos가 0이 나오는 경우
+	public void EndMovePosition(float _destXPos, float _destYPos)
 	{
-		if (Vector3.Distance(transform.position, m_targetPosition) < minDistance) return;
+		CellPos = ConvertToCellPos(_destXPos, _destYPos);
+		/*
+		m_targetPosition = new Vector3(_destXPos, _destYPos);
 
-		float finalPosX = transform.position.x;
-		float finalPosY = transform.position.y;
-		float latency = (DateTime.Now.Ticks - _tick) / 10000000.0f;
-		if(Dir == eDir.Left)
-			finalPosX += m_maxSpeed * latency;
-		else if(Dir == eDir.Right)
-			finalPosX -= m_maxSpeed * latency;
-		else if(Dir == eDir.Up)
-			finalPosY -= m_maxSpeed * latency;
-		else if (Dir == eDir.Down)
-			finalPosY += m_maxSpeed * latency;
+		if (Vector3.Distance(transform.position, m_targetPosition) > lerpMinDist)
+		{
+			m_updateEndMove = true;
+			Debug.Log("updateEndMvoe");
+			return;
+		}
+		*/
 
-		//m_targetPosition = new Vector3(_destXPos, _destYPos);
-		transform.position = new Vector3(finalPosX, finalPosY);
-		CellPos = ConvertToCellPos(finalPosX, finalPosY);
-		//m_updateEndMove = true;
+		//Debug.Log(Vector3.Distance(transform.position, new Vector3(_destXPos, _destYPos, 0)));
+
+		transform.position = new Vector3(_destXPos, _destYPos);
 	}
 
 	public void HandleEndMove()
 	{
+		if (!m_updateEndMove) return;
+
 		if (Dir != eDir.None)
 		{
 			m_updateEndMove = false;
@@ -135,13 +147,18 @@ public class PlayerController : CreatureController
 
 		if (m_updateEndMove && Vector3.Distance(transform.position, m_targetPosition) < minDistance)
 		{
+			transform.position = m_targetPosition;
 			m_updateEndMove = false;
-			Debug.Log("보정 끝");
+			//Debug.Log("보정 끝");
 		}
 	}
 
 	public void HandleBeginMove()
 	{
-		
+		if(m_updateEndMove)
+		{
+			transform.position = m_targetPosition;
+			m_updateEndMove = false;
+		}
 	}
 }

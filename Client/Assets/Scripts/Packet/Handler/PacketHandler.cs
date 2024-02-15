@@ -114,6 +114,12 @@ public static class PacketHandler
 				case PacketType.eServer.EndMove:
 					InGamePacketHandler.EndMove(_reader);
 					break;
+				case PacketType.eServer.BeginMoveMonster:
+					InGamePacketHandler.BeginMoveMonster(_reader);
+					break;
+				case PacketType.eServer.EndMoveMonster:
+					InGamePacketHandler.EndMoveMonster(_reader);
+					break;
 			}
 		}
 	}
