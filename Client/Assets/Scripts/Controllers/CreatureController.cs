@@ -77,8 +77,8 @@ public class CreatureController : MonoBehaviour
 
 		if (Dir != eDir.None)
 		{
-			if(Dir == eDir.Left || Dir == eDir.Right)
-				AdjustXPosition(ref newX, ref newY);
+			AdjustXPosition(ref newX, ref newY);
+			AdjustYPosition(ref newX, ref newY);
 			/*
 			Debug.Log($"{vec.x}, {vec.y}");
 			if (Dir == eDir.Right)
@@ -110,6 +110,8 @@ public class CreatureController : MonoBehaviour
 
 	void AdjustXPosition(ref float _newX, ref float _newY)
 	{
+		if (Dir != eDir.Left && Dir != eDir.Right) return;
+
 		Vector3Int vec = MapManager.Inst.WorldToCell(_newX, _newY);
 		float absNewY = Math.Abs(_newY);
 		float testY = absNewY - Mathf.Floor(absNewY);
@@ -123,7 +125,7 @@ public class CreatureController : MonoBehaviour
 		else if(Dir == eDir.Left)
 		{
 			vecX = vec.x;
-			newX = vec.x+1;
+			newX = vec.x + 1;
 		}
 
 		if ((testY != 0.0f && MapManager.Inst.IsBlocked(vecX, vec.y + 1)) // 0일때는 0번째 줄 이동 가능
@@ -171,12 +173,65 @@ public class CreatureController : MonoBehaviour
 
 	void AdjustYPosition(ref float _newX, ref float _newY)
 	{
+		if (Dir != eDir.Up && Dir != eDir.Down) return;
 
-	}
+		Vector3Int vec = MapManager.Inst.WorldToCell(_newX, _newY);
+		float absNewX = Math.Abs(_newX);
+		float testX = absNewX - Mathf.Floor(absNewX);
 
-	void AdjustXPos(int _xpos, eDir _eDir)
-	{
-		
+		int vecY = 0, newY = 0;
+		if (Dir == eDir.Up)
+		{
+			vecY = vec.y;
+			newY = -(vec.y + 1);
+		}
+		else if (Dir == eDir.Down)
+		{
+			vecY = vec.y + 1;
+			newY = -vec.y;
+		}
+
+		if ((testX != 0.0f && MapManager.Inst.IsBlocked(vec.x + 1, vecY))
+						|| MapManager.Inst.IsBlocked(vec.x, vecY))
+		{
+			_newY = newY;
+		}
+
+		if (MapManager.Inst.IsBlocked(vec.x, vecY) && !MapManager.Inst.IsBlocked(vec.x + 1, vecY)) // Plant타일이 약간 띄어져 있어서 어색한 이동 방지 목적의 코드
+		{
+			float targetX = vec.x + 1;
+			if (Math.Abs(_newX - targetX) < 0.1f)
+				_newX = targetX;
+			else
+				_newX += (m_maxSpeed * Time.deltaTime);
+		}
+		else
+		{
+			if (testX <= 0.4f)
+			{
+				if (!MapManager.Inst.IsBlocked(vec.x, vecY) && MapManager.Inst.IsBlocked(vec.x + 1, vecY))
+				{
+					float targetX = (float)Math.Round((double)_newX, MidpointRounding.AwayFromZero);
+					if (Math.Abs(_newX - targetX) < 0.1f)
+						_newX = targetX;
+					else
+						_newX -= (m_maxSpeed * Time.deltaTime);
+				}
+			}
+			else if (testX >= 0.9f)
+			{
+				if (MapManager.Inst.IsBlocked(vec.x + 1, vecY) && !MapManager.Inst.IsBlocked(vec.x + 2, vecY))
+				{
+					float targetX = (float)Math.Round((double)_newX - 1, MidpointRounding.AwayFromZero);
+
+					if (Math.Abs(_newX - targetX) < 0.1f)
+						_newX = targetX;
+					else
+						_newX += (m_maxSpeed * Time.deltaTime);
+				}
+
+			}
+		}
 	}
 
 	public virtual void Init(int _cellXPos, int _cellYPos)
