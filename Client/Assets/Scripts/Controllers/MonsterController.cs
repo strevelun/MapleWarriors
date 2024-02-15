@@ -72,7 +72,8 @@ public class MonsterController : CreatureController
 	{
 		//if (m_eState == eState.Chase) return;
 		if (m_targets.Count == 0) return;
-		//if (m_prevTargetPos != null && m_prevTargetPos == m_targets.Peek().CellPos) return;
+		if (Dir != eDir.None) return;
+			//if (m_prevTargetPos != null && m_prevTargetPos == m_targets.Peek().CellPos) return;
 
 		PlayerController pc = m_targets.Peek();
 		if (Math.Abs(CellPos.x - pc.CellPos.x) <= 1 && Math.Abs(CellPos.y - pc.CellPos.y) <= 1) return;
@@ -86,11 +87,10 @@ public class MonsterController : CreatureController
 			return;
 		}
 		//else
-		PathIdx = 0;
+		PathIdx = 1;
 
-		Packet pkt = InGamePacketMaker.BeginMoveMonster(name, m_path[PathIdx+1].x, m_path[PathIdx+1].y, PathIdx + 1);
-		NetworkManager.Inst.Send(pkt);
-			
+		Packet pkt = InGamePacketMaker.BeginMoveMonster(name, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
+		NetworkManager.Inst.Send(pkt); 	
 	}
 
 	void StartChase()
