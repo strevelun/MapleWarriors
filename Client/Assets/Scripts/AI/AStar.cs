@@ -96,15 +96,12 @@ public class AStar
 
 		while (totalSize > 0)
 		{
+			if (MapManager.Inst.IsBlocked(pos.x, pos.y)) return null;
+
 			path.Add(pos); 
-			try
-			{
-				if (pos == m_dicParent[pos]) break;
-			}
-			catch (Exception _ex)
-			{
-				Debug.Log($"ex : {pos}");
-			}
+
+			if (pos == m_dicParent[pos]) break;
+		
 
 			pos = m_dicParent[pos];
 			--totalSize;

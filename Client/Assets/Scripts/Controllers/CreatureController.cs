@@ -42,7 +42,6 @@ public class CreatureController : MonoBehaviour
 	{
 		Flip();
 
-		UpdateMove();
 
 	}
 
@@ -51,24 +50,28 @@ public class CreatureController : MonoBehaviour
 
 	}
 
+	protected virtual void FixedUpdate()
+	{
+		UpdateMove();
+	}
+
 
 	void UpdateMove()
 	{
 		float newX = transform.position.x, newY = transform.position.y;
-
 		switch (Dir)
 		{
 			case eDir.Up:
-				newY = transform.position.y + (m_maxSpeed * Time.deltaTime);
+				newY = transform.position.y + (m_maxSpeed * Time.fixedDeltaTime);
 				break;
 			case eDir.Down:
-				newY = transform.position.y - (m_maxSpeed * Time.deltaTime);
+				newY = transform.position.y - (m_maxSpeed * Time.fixedDeltaTime);
 				break;
 			case eDir.Left:
-				newX = transform.position.x - (m_maxSpeed * Time.deltaTime);
+				newX = transform.position.x - (m_maxSpeed * Time.fixedDeltaTime);
 				break;
 			case eDir.Right:
-				newX = transform.position.x + (m_maxSpeed * Time.deltaTime);
+				newX = transform.position.x + (m_maxSpeed * Time.fixedDeltaTime);
 				break;
 		}
 
@@ -140,7 +143,7 @@ public class CreatureController : MonoBehaviour
 			if (Math.Abs(_newY - targetY) < 0.1f)
 				_newY = targetY;
 			else
-				_newY -= (m_maxSpeed * Time.deltaTime);
+				_newY -= (m_maxSpeed * Time.fixedDeltaTime);
 		}
 		else
 		{
@@ -152,7 +155,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newY - targetY) < 0.1f)
 						_newY = targetY;
 					else
-						_newY += (m_maxSpeed * Time.deltaTime);
+						_newY += (m_maxSpeed * Time.fixedDeltaTime);
 				}
 			}
 			else if (testY >= 0.9f)
@@ -164,7 +167,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newY - targetY) < 0.1f)
 						_newY = targetY;
 					else
-						_newY -= (m_maxSpeed * Time.deltaTime);
+						_newY -= (m_maxSpeed * Time.fixedDeltaTime);
 				}
 
 			}
@@ -203,7 +206,7 @@ public class CreatureController : MonoBehaviour
 			if (Math.Abs(_newX - targetX) < 0.1f)
 				_newX = targetX;
 			else
-				_newX += (m_maxSpeed * Time.deltaTime);
+				_newX += (m_maxSpeed * Time.fixedDeltaTime);
 		}
 		else
 		{
@@ -215,7 +218,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newX - targetX) < 0.1f)
 						_newX = targetX;
 					else
-						_newX -= (m_maxSpeed * Time.deltaTime);
+						_newX -= (m_maxSpeed * Time.fixedDeltaTime);
 				}
 			}
 			else if (testX >= 0.9f)
@@ -227,7 +230,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newX - targetX) < 0.1f)
 						_newX = targetX;
 					else
-						_newX += (m_maxSpeed * Time.deltaTime);
+						_newX += (m_maxSpeed * Time.fixedDeltaTime);
 				}
 
 			}

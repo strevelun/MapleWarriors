@@ -12,6 +12,7 @@ public class LoginScene : BaseScene
 	{
 		base.Init();
 
+		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = 60;
 		Screen.SetResolution(1280, 720, false);
 		SceneType = Define.Scene.Login;

@@ -27,8 +27,9 @@ public class MyPlayerController : PlayerController
 		HandleInput();
 	}
 
-	private void FixedUpdate()
+	protected override void FixedUpdate()
 	{
+		base.FixedUpdate();
 	}
 
 	protected override void LateUpdate()

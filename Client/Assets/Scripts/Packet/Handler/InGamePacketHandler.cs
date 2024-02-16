@@ -44,11 +44,11 @@ public static class InGamePacketHandler
 
 		
 		GameObject monster;
-		for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < 50; ++i)
 		{
 			monster = ResourceManager.Inst.Instantiate("Creature/Slime");
 			MonsterController mc = monster.GetComponent<MonsterController>();
-			mc.Init(i+5, 10);
+			mc.Init(i, 8);
 
 			monster.name = $"Slime_{i}";
 			ObjectManager.Inst.AddMonster(monster.name, monster);
@@ -88,7 +88,11 @@ public static class InGamePacketHandler
 		int destCellYPos = _reader.GetUShort();
 
 		MonsterController mc = ObjectManager.Inst.FindMonster(name);
-		if (!mc) return;
+		if (!mc)
+		{
+			Debug.Log("몬스터 이름 찾을 수 없음");
+			return;
+		}
 
 		mc.BeginMove(pathIdx, destCellXPos, destCellYPos);
 	}
