@@ -17,8 +17,6 @@ public class UIChat : MonoBehaviour
 	string							m_uiChat;
 	string							m_uiChatItemPath;
 
-	bool m_bReading = false;
-
 	private const int m_chatLimit = 300;
 
 	public uint ChatCount { get; set; } = 0;
@@ -88,7 +86,6 @@ public class UIChat : MonoBehaviour
 		if (string.IsNullOrWhiteSpace(m_input.text))			return;
 		if (m_sendBtnFunc == null)								return;
 
-		m_bReading = false;
 		Packet packet = m_sendBtnFunc.Invoke(m_input.text);
 		NetworkManager.Inst.Send(packet);
 		m_input.text = string.Empty;

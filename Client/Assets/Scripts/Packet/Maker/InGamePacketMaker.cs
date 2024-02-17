@@ -51,13 +51,4 @@ public static class InGamePacketMaker
 			.Add((ushort)_cellYPos);
 		return pkt;
 	}
-
-	public static Packet EndMoveMonster(string _name)
-	{
-		Packet pkt = new Packet();
-		pkt
-			.Add(PacketType.eClient.EndMoveMonster)
-			.Add(_name);
-		return pkt;
-	}
 }

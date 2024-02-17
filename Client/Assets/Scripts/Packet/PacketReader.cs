@@ -10,7 +10,6 @@ public class PacketReader
 	private ArraySegment<byte> m_buffer;
 	private int m_getPos = Define.PacketSize;
 	private int m_startOffset;
-	bool m_errFlag;
 
 	public int Size
 	{
@@ -179,7 +178,7 @@ public class PacketReader
 
 	public string GetString()
 	{
-		m_errFlag = true;
+		//m_errFlag = true;
 		string result = "";
 
 		int i = m_getPos;

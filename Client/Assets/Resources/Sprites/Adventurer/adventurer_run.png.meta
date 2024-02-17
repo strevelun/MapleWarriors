@@ -1,43 +1,40 @@
 fileFormatVersion: 2
-guid: 6996b4b20e98e8a46949c32661826369
+guid: f1f870ff31ccc2f4282a6c3669af1d35
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5463189583543264802
-    second: slime_idle_0
+      213: -5164486710723046665
+    second: adventurer_run_0
   - first:
-      213: 4849661833066715017
-    second: slime_idle_1
+      213: -2599053778263187058
+    second: adventurer_run_2
   - first:
-      213: -4815338781847372184
-    second: slime_idle_2
+      213: -2647801618592002742
+    second: adventurer_run_3
   - first:
-      213: 2331914284563532042
-    second: slime_idle_3
+      213: 467122141793856307
+    second: adventurer_run_4
   - first:
-      213: -2766716539995522894
-    second: slime_idle_4
+      213: -8548055384034950060
+    second: adventurer_run_5
   - first:
-      213: 649774121271738592
-    second: slime_idle_5
+      213: -3335630998023245071
+    second: adventurer_run_6
   - first:
-      213: -4444060080580353025
-    second: slime_idle_6
+      213: 2619182501148558534
+    second: adventurer_run_7
   - first:
-      213: -2004634139485552337
-    second: slime_idle_7
+      213: -2552948907355878105
+    second: adventurer_run_8
   - first:
-      213: -2285690290768003767
-    second: slime_idle_8
+      213: 5887373961370013305
+    second: adventurer_run_9
   - first:
-      213: 1169341046029143273
-    second: slime_idle_9
+      213: 8053982336216501418
+    second: adventurer_run_10
   - first:
-      213: -2338942724765397996
-    second: slime_idle_10
-  - first:
-      213: 9206651655446173522
-    second: slime_idle_11
+      213: -8373294242839836606
+    second: adventurer_run_11
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -81,7 +78,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 351
+  spritePixelsToUnits: 677
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -123,13 +120,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: slime_idle_0
+      name: adventurer_run_0
       rect:
         serializedVersion: 2
-        x: 453
-        y: 125
-        width: 359
-        height: 312
+        x: 215
+        y: 182
+        width: 677
+        height: 722
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,20 +134,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 226e5b32bf521db40800000000000000
-      internalID: 5463189583543264802
+      spriteID: 7f2902003be0458b0800000000000000
+      internalID: -5164486710723046665
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_1
+      name: adventurer_run_2
       rect:
         serializedVersion: 2
-        x: 1781
-        y: 133
-        width: 375
-        height: 296
+        x: 1523
+        y: 143
+        width: 690
+        height: 735
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -158,20 +155,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 98716b81eb57d4340800000000000000
-      internalID: 4849661833066715017
+      spriteID: e816c7aeb5e4eebd0800000000000000
+      internalID: -2599053778263187058
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_2
+      name: adventurer_run_3
       rect:
         serializedVersion: 2
-        x: 3109
-        y: 133
-        width: 367
-        height: 288
+        x: 2844
+        y: 143
+        width: 703
+        height: 748
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -179,20 +176,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86e33d204ea7c2db0800000000000000
-      internalID: -4815338781847372184
+      spriteID: a4d8e10e47e114bd0800000000000000
+      internalID: -2647801618592002742
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_3
+      name: adventurer_run_4
       rect:
         serializedVersion: 2
-        x: 4436
-        y: 125
-        width: 383
-        height: 288
+        x: 4185
+        y: 130
+        width: 690
+        height: 748
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -200,20 +197,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a098112dfaf9c5020800000000000000
-      internalID: 2331914284563532042
+      spriteID: 33ba750fc1d8b7600800000000000000
+      internalID: 467122141793856307
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_4
+      name: adventurer_run_5
       rect:
         serializedVersion: 2
-        x: 5780
-        y: 133
-        width: 367
-        height: 288
+        x: 5513
+        y: 182
+        width: 709
+        height: 722
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -221,20 +218,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2b87e5f27f5aa99d0800000000000000
-      internalID: -2766716539995522894
+      spriteID: 4544b32fae43f5980800000000000000
+      internalID: -8548055384034950060
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_5
+      name: adventurer_run_7
       rect:
         serializedVersion: 2
-        x: 7115
-        y: 133
-        width: 360
-        height: 296
+        x: 6867
+        y: 156
+        width: 683
+        height: 735
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -242,20 +239,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0e0c4a2ee16740900800000000000000
-      internalID: 649774121271738592
+      spriteID: 6c401e69b94395420800000000000000
+      internalID: 2619182501148558534
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_6
+      name: adventurer_run_8
       rect:
         serializedVersion: 2
-        x: 8451
-        y: 125
-        width: 359
-        height: 312
+        x: 8188
+        y: 137
+        width: 690
+        height: 741
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -263,20 +260,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ff3a38007e68352c0800000000000000
-      internalID: -4444060080580353025
+      spriteID: 72dc45fae7a129cd0800000000000000
+      internalID: -2552948907355878105
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_7
+      name: adventurer_run_9
       rect:
         serializedVersion: 2
-        x: 9779
-        y: 133
-        width: 375
-        height: 296
+        x: 9509
+        y: 156
+        width: 703
+        height: 735
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -284,20 +281,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f21c7530fdb1e24e0800000000000000
-      internalID: -2004634139485552337
+      spriteID: 97e085bdc6724b150800000000000000
+      internalID: 5887373961370013305
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_8
+      name: adventurer_run_10
       rect:
         serializedVersion: 2
-        x: 11107
-        y: 133
-        width: 367
-        height: 288
+        x: 10863
+        y: 130
+        width: 684
+        height: 761
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -305,20 +302,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 94db6386ac89740e0800000000000000
-      internalID: -2285690290768003767
+      spriteID: aac8471534e75cf60800000000000000
+      internalID: 8053982336216501418
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_9
+      name: adventurer_run_11
       rect:
         serializedVersion: 2
-        x: 12434
-        y: 125
-        width: 383
-        height: 288
+        x: 12178
+        y: 143
+        width: 696
+        height: 735
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -326,50 +323,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9ecc9d56c755a3010800000000000000
-      internalID: 1169341046029143273
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: slime_idle_10
-      rect:
-        serializedVersion: 2
-        x: 13778
-        y: 133
-        width: 367
-        height: 288
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 41ccf5cebf76a8fd0800000000000000
-      internalID: -2338942724765397996
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: slime_idle_11
-      rect:
-        serializedVersion: 2
-        x: 15113
-        y: 125
-        width: 360
-        height: 312
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 25791a5d6e894cf70800000000000000
-      internalID: 9206651655446173522
+      spriteID: 24845bfef351ccb80800000000000000
+      internalID: -8373294242839836606
       vertices: []
       indices: 
       edges: []

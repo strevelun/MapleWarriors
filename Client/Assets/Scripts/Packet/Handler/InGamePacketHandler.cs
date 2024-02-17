@@ -23,7 +23,7 @@ public static class InGamePacketHandler
 			string nickname = _reader.GetString();
 
 			player = ResourceManager.Inst.Instantiate($"Creature/Player_1"); // 플레이어 선택
-			player.name = $"Player_{idx}"; // slot 넘버로
+			player.name = $"Player_1_{idx}"; // slot 넘버로
 
 			if (connectionID == UserData.Inst.ConnectionID)
 			{
@@ -44,7 +44,7 @@ public static class InGamePacketHandler
 
 		
 		GameObject monster;
-		for (int i = 0; i < 50; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			monster = ResourceManager.Inst.Instantiate("Creature/Slime");
 			MonsterController mc = monster.GetComponent<MonsterController>();
@@ -62,7 +62,7 @@ public static class InGamePacketHandler
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_{roomSlot}");
 		pc.SetDir((CreatureController.eDir)dir);
-		pc.BeginMove();
+		//pc.BeginMove();
 	}
 
 	public static void EndMove(PacketReader _reader)
@@ -95,15 +95,5 @@ public static class InGamePacketHandler
 		}
 
 		mc.BeginMove(pathIdx, destCellXPos, destCellYPos);
-	}
-
-	public static void EndMoveMonster(PacketReader _reader)
-	{
-		string name = _reader.GetString();
-
-		MonsterController mc = ObjectManager.Inst.FindMonster(name);
-		if (!mc) return;
-
-		mc.EndMove();
 	}
 }

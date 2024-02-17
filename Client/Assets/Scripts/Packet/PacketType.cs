@@ -35,7 +35,7 @@ public class PacketType
 		BeginMove,
 		EndMove,
 		BeginMoveMonster,
-		EndMoveMonster,
+		Max,
 	}
 
 	public enum eClient : ushort
@@ -60,6 +60,6 @@ public class PacketType
 		BeginMove,
 		EndMove,
 		BeginMoveMonster,
-		EndMoveMonster,
+		Max,
 	}
 }

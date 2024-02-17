@@ -7,6 +7,7 @@ using UnityEngine.Playables;
 
 public class CreatureController : MonoBehaviour
 {
+	ICreatureState m_curState = null;
 
 	public enum eDir
 	{
@@ -23,26 +24,32 @@ public class CreatureController : MonoBehaviour
 
 	const float m_cellSize = 0.5f;
 
-	private Animator m_anim;
+	public Animator Anim { get; private set; }
+	protected GameObject m_spriteObject;
+	protected Vector2 CenterPos { get; private set; }
+	SpriteRenderer m_spriteRenderer;
 	//private State m_eState = State.Idle;
 	public eDir Dir { get; protected set; } = eDir.None;
-	protected float m_maxSpeed = 1f;
+	public eDir LastDir { get; private set; } = eDir.None;
+	public float MaxSpeed { get; protected set; } = 1f;
 
-	private float m_horizontal;
-	private bool m_bIsFacingRight = true;
+	private bool m_bIsFacingLeft = true;
 
 	public Vector2Int CellPos { get; protected set; }
+	public Vector2Int LastCellPos { get; protected set; }
+
+	public int HP { get; protected set; }
+	public int Attack { get; protected set; }
+	public int AttackRange { get; protected set; }
 
 	void Start()
 	{
-
 	}
 
     protected virtual void Update()
 	{
+		m_curState?.Update();
 		Flip();
-
-
 	}
 
 	protected virtual void LateUpdate()
@@ -55,6 +62,16 @@ public class CreatureController : MonoBehaviour
 		UpdateMove();
 	}
 
+	public void ChangeState(ICreatureState _newState)
+	{
+		if (m_curState != null && m_curState.GetType() == _newState.GetType()) return;
+
+		//Debug.Log("ChangeState");
+		m_curState?.Exit();
+		m_curState = _newState;
+		m_curState.Enter(this);
+	}
+
 
 	void UpdateMove()
 	{
@@ -62,51 +79,31 @@ public class CreatureController : MonoBehaviour
 		switch (Dir)
 		{
 			case eDir.Up:
-				newY = transform.position.y + (m_maxSpeed * Time.fixedDeltaTime);
+				newY = transform.position.y + (MaxSpeed * Time.fixedDeltaTime);
 				break;
 			case eDir.Down:
-				newY = transform.position.y - (m_maxSpeed * Time.fixedDeltaTime);
+				newY = transform.position.y - (MaxSpeed * Time.fixedDeltaTime);
 				break;
 			case eDir.Left:
-				newX = transform.position.x - (m_maxSpeed * Time.fixedDeltaTime);
+				newX = transform.position.x - (MaxSpeed * Time.fixedDeltaTime);
 				break;
 			case eDir.Right:
-				newX = transform.position.x + (m_maxSpeed * Time.fixedDeltaTime);
+				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
 				break;
 		}
-
-		// 블록이 10,0에 있을때 캐릭터가 9.9999,0까지 가서 오른쪽을 누르면 10.0으로 맞춰짐. 근데 현재 위치가 블록의 위치라 안움직임.
-		// 0~0.2인 경우 y=0존재, y=1비존재인 경우 멈춤. 0.2~0.8인 경우는 y=1만 확인. 
 
 		if (Dir != eDir.None)
 		{
 			AdjustXPosition(ref newX, ref newY);
 			AdjustYPosition(ref newX, ref newY);
-			/*
-			Debug.Log($"{vec.x}, {vec.y}");
-			if (Dir == eDir.Right)
-			{
-				vec.x = vec.x + 1;
-			}
-			else if (Dir == eDir.Down)
-				vec.y = vec.y + 1;
-			if (MapManager.Inst.IsBlocked(vec.x, vec.y))
-			{
-				if (Dir == eDir.Left)
-					newX = (float)Math.Round((double)newX, MidpointRounding.AwayFromZero);
-				else if (Dir == eDir.Right)
-					newX = vec.x - 1;
-				else if (Dir == eDir.Up)
-					newY = (float)Math.Round((double)newY, MidpointRounding.AwayFromZero);
-				else if (Dir == eDir.Down)
-					newY = -(vec.y - 1);
 
-				Dir = eDir.None;
-			}
-			*/
 			transform.position = new Vector3(newX, newY);
-			CellPos = ConvertToCellPos(transform.position.x, transform.position.y);
+			Vector2Int tempCellPos = ConvertToCellPos(transform.position.x, transform.position.y);
+			if (tempCellPos != CellPos)
+				LastCellPos = CellPos;
+			CellPos = tempCellPos;
 			//Debug.Log($"{CellPos.x}, {CellPos.y}");
+			CenterPos = new Vector2(m_spriteObject.transform.position.x, m_spriteObject.transform.position.y - 0.5f);
 		}
 
 	}
@@ -115,7 +112,7 @@ public class CreatureController : MonoBehaviour
 	{
 		if (Dir != eDir.Left && Dir != eDir.Right) return;
 
-		Vector3Int vec = MapManager.Inst.WorldToCell(_newX, _newY);
+		Vector2Int vec = MapManager.Inst.WorldToCell(_newX, _newY);
 		float absNewY = Math.Abs(_newY);
 		float testY = absNewY - Mathf.Floor(absNewY);
 
@@ -143,7 +140,7 @@ public class CreatureController : MonoBehaviour
 			if (Math.Abs(_newY - targetY) < 0.1f)
 				_newY = targetY;
 			else
-				_newY -= (m_maxSpeed * Time.fixedDeltaTime);
+				_newY -= (MaxSpeed * Time.fixedDeltaTime);
 		}
 		else
 		{
@@ -155,7 +152,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newY - targetY) < 0.1f)
 						_newY = targetY;
 					else
-						_newY += (m_maxSpeed * Time.fixedDeltaTime);
+						_newY += (MaxSpeed * Time.fixedDeltaTime);
 				}
 			}
 			else if (testY >= 0.9f)
@@ -167,7 +164,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newY - targetY) < 0.1f)
 						_newY = targetY;
 					else
-						_newY -= (m_maxSpeed * Time.fixedDeltaTime);
+						_newY -= (MaxSpeed * Time.fixedDeltaTime);
 				}
 
 			}
@@ -178,7 +175,7 @@ public class CreatureController : MonoBehaviour
 	{
 		if (Dir != eDir.Up && Dir != eDir.Down) return;
 
-		Vector3Int vec = MapManager.Inst.WorldToCell(_newX, _newY);
+		Vector2Int vec = MapManager.Inst.WorldToCell(_newX, _newY);
 		float absNewX = Math.Abs(_newX);
 		float testX = absNewX - Mathf.Floor(absNewX);
 
@@ -206,7 +203,7 @@ public class CreatureController : MonoBehaviour
 			if (Math.Abs(_newX - targetX) < 0.1f)
 				_newX = targetX;
 			else
-				_newX += (m_maxSpeed * Time.fixedDeltaTime);
+				_newX += (MaxSpeed * Time.fixedDeltaTime);
 		}
 		else
 		{
@@ -218,7 +215,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newX - targetX) < 0.1f)
 						_newX = targetX;
 					else
-						_newX -= (m_maxSpeed * Time.fixedDeltaTime);
+						_newX -= (MaxSpeed * Time.fixedDeltaTime);
 				}
 			}
 			else if (testX >= 0.9f)
@@ -230,7 +227,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newX - targetX) < 0.1f)
 						_newX = targetX;
 					else
-						_newX += (m_maxSpeed * Time.fixedDeltaTime);
+						_newX += (MaxSpeed * Time.fixedDeltaTime);
 				}
 
 			}
@@ -239,7 +236,10 @@ public class CreatureController : MonoBehaviour
 
 	public virtual void Init(int _cellXPos, int _cellYPos)
 	{
-		m_anim = GetComponent<Animator>();
+		m_spriteObject = transform.GetChild(0).gameObject;
+		Anim = m_spriteObject.GetComponent<Animator>();
+		m_spriteRenderer = m_spriteObject.GetComponent<SpriteRenderer>();
+		CenterPos = new Vector2(m_spriteObject.transform.position.x, m_spriteObject.transform.position.y - 0.5f);
 
 		SetPosition(_cellXPos, _cellYPos);
 	}
@@ -260,6 +260,7 @@ public class CreatureController : MonoBehaviour
 		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= MapManager.Inst.XSize || _cellYPos >= MapManager.Inst.YSize) return;
 
 		CellPos = new Vector2Int(_cellXPos, _cellYPos);
+		LastCellPos = new Vector2Int(_cellXPos, _cellYPos);
 		transform.position = new Vector3(_cellXPos, -_cellYPos); 
 	}
 
@@ -271,12 +272,11 @@ public class CreatureController : MonoBehaviour
 
 	private void Flip()
 	{
-		if (m_bIsFacingRight && m_horizontal < 0f || !m_bIsFacingRight && m_horizontal > 0f)
+		if ((Dir == eDir.Right && m_bIsFacingLeft)
+			|| (Dir == eDir.Left && !m_bIsFacingLeft))
 		{
-			m_bIsFacingRight = !m_bIsFacingRight;
-			Vector3 localScale = transform.localScale;
-			localScale.x *= -1f;
-			transform.localScale = localScale;
+			m_spriteRenderer.flipX = m_bIsFacingLeft;
+			m_bIsFacingLeft = !m_bIsFacingLeft;
 		}
 	}
 

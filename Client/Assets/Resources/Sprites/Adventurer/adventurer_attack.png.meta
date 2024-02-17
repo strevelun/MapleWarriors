@@ -1,43 +1,31 @@
 fileFormatVersion: 2
-guid: 6996b4b20e98e8a46949c32661826369
+guid: 4f1822e5b6e0dc048b421bae7101f2c6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5463189583543264802
-    second: slime_idle_0
+      213: -7712747593013819834
+    second: adventurer_attack_0
   - first:
-      213: 4849661833066715017
-    second: slime_idle_1
+      213: -515295246214163639
+    second: adventurer_attack_1
   - first:
-      213: -4815338781847372184
-    second: slime_idle_2
+      213: 7572200909773966795
+    second: adventurer_attack_3
   - first:
-      213: 2331914284563532042
-    second: slime_idle_3
+      213: -6669044282525392121
+    second: adventurer_attack_4
   - first:
-      213: -2766716539995522894
-    second: slime_idle_4
+      213: 3491498865493891355
+    second: adventurer_attack_5
   - first:
-      213: 649774121271738592
-    second: slime_idle_5
+      213: -5534148214536687265
+    second: adventurer_attack_6
   - first:
-      213: -4444060080580353025
-    second: slime_idle_6
+      213: -2315201149278162557
+    second: adventurer_attack_7
   - first:
-      213: -2004634139485552337
-    second: slime_idle_7
-  - first:
-      213: -2285690290768003767
-    second: slime_idle_8
-  - first:
-      213: 1169341046029143273
-    second: slime_idle_9
-  - first:
-      213: -2338942724765397996
-    second: slime_idle_10
-  - first:
-      213: 9206651655446173522
-    second: slime_idle_11
+      213: -2380452979833466493
+    second: adventurer_attack_8
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -81,7 +69,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 351
+  spritePixelsToUnits: 703
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -123,13 +111,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: slime_idle_0
+      name: adventurer_attack_0
       rect:
         serializedVersion: 2
-        x: 453
-        y: 125
-        width: 359
-        height: 312
+        x: 364
+        y: 177
+        width: 547
+        height: 728
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,20 +125,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 226e5b32bf521db40800000000000000
-      internalID: 5463189583543264802
+      spriteID: 64689249de0d6f490800000000000000
+      internalID: -7712747593013819834
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_1
+      name: adventurer_attack_1
       rect:
         serializedVersion: 2
-        x: 1781
-        y: 133
-        width: 375
-        height: 296
+        x: 1755
+        y: 177
+        width: 515
+        height: 723
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -158,20 +146,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 98716b81eb57d4340800000000000000
-      internalID: 4849661833066715017
+      spriteID: 94315f624bd49d8f0800000000000000
+      internalID: -515295246214163639
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_2
+      name: adventurer_attack_3
       rect:
         serializedVersion: 2
-        x: 3109
-        y: 133
-        width: 367
-        height: 288
+        x: 3020
+        y: 177
+        width: 552
+        height: 728
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -179,20 +167,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86e33d204ea7c2db0800000000000000
-      internalID: -4815338781847372184
+      spriteID: bcd87f2bb9cd51960800000000000000
+      internalID: 7572200909773966795
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_3
+      name: adventurer_attack_4
       rect:
         serializedVersion: 2
-        x: 4436
-        y: 125
-        width: 383
-        height: 288
+        x: 4192
+        y: 177
+        width: 703
+        height: 728
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -200,20 +188,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a098112dfaf9c5020800000000000000
-      internalID: 2331914284563532042
+      spriteID: 70369b42f8bc273a0800000000000000
+      internalID: -6669044282525392121
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_4
+      name: adventurer_attack_5
       rect:
         serializedVersion: 2
-        x: 5780
-        y: 133
-        width: 367
-        height: 288
+        x: 5519
+        y: 177
+        width: 703
+        height: 728
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -221,20 +209,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2b87e5f27f5aa99d0800000000000000
-      internalID: -2766716539995522894
+      spriteID: b19517b28bb447030800000000000000
+      internalID: 3491498865493891355
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_5
+      name: adventurer_attack_6
       rect:
         serializedVersion: 2
-        x: 7115
-        y: 133
-        width: 360
-        height: 296
+        x: 6832
+        y: 177
+        width: 729
+        height: 728
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -242,20 +230,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0e0c4a2ee16740900800000000000000
-      internalID: 649774121271738592
+      spriteID: f51bd222581c233b0800000000000000
+      internalID: -5534148214536687265
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_6
+      name: adventurer_attack_7
       rect:
         serializedVersion: 2
-        x: 8451
-        y: 125
-        width: 359
-        height: 312
+        x: 8201
+        y: 166
+        width: 677
+        height: 739
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -263,20 +251,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ff3a38007e68352c0800000000000000
-      internalID: -4444060080580353025
+      spriteID: 381f2b932d0cedfd0800000000000000
+      internalID: -2315201149278162557
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_idle_7
+      name: adventurer_attack_8
       rect:
         serializedVersion: 2
-        x: 9779
-        y: 133
-        width: 375
-        height: 296
+        x: 9492
+        y: 177
+        width: 725
+        height: 728
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -284,92 +272,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f21c7530fdb1e24e0800000000000000
-      internalID: -2004634139485552337
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: slime_idle_8
-      rect:
-        serializedVersion: 2
-        x: 11107
-        y: 133
-        width: 367
-        height: 288
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 94db6386ac89740e0800000000000000
-      internalID: -2285690290768003767
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: slime_idle_9
-      rect:
-        serializedVersion: 2
-        x: 12434
-        y: 125
-        width: 383
-        height: 288
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9ecc9d56c755a3010800000000000000
-      internalID: 1169341046029143273
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: slime_idle_10
-      rect:
-        serializedVersion: 2
-        x: 13778
-        y: 133
-        width: 367
-        height: 288
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 41ccf5cebf76a8fd0800000000000000
-      internalID: -2338942724765397996
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: slime_idle_11
-      rect:
-        serializedVersion: 2
-        x: 15113
-        y: 125
-        width: 360
-        height: 312
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 25791a5d6e894cf70800000000000000
-      internalID: 9206651655446173522
+      spriteID: 381918480aee6fed0800000000000000
+      internalID: -2380452979833466493
       vertices: []
       indices: 
       edges: []
