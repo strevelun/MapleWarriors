@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ICreatureState 
+public interface IAnyState 
 {
-	bool CanEnter(CreatureController _cs);
 	void Enter(CreatureController _cs);
 	void Update();
-	void FixedUpdate();
 	void Exit();
 }

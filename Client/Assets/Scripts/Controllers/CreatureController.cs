@@ -7,7 +7,8 @@ using UnityEngine.Playables;
 
 public class CreatureController : MonoBehaviour
 {
-	ICreatureState m_curState = null;
+	public ICreatureState CurState { get; private set; } = null;
+	ICreatureState m_nextState = null;
 
 	public enum eDir
 	{
@@ -29,7 +30,7 @@ public class CreatureController : MonoBehaviour
 	protected Vector2 CenterPos { get; private set; }
 	SpriteRenderer m_spriteRenderer;
 	//private State m_eState = State.Idle;
-	public eDir Dir { get; protected set; } = eDir.None;
+	public eDir Dir { get; set; } = eDir.None;
 	public eDir LastDir { get; private set; } = eDir.None;
 	public float MaxSpeed { get; protected set; } = 1f;
 
@@ -38,8 +39,8 @@ public class CreatureController : MonoBehaviour
 	public Vector2Int CellPos { get; protected set; }
 	public Vector2Int LastCellPos { get; protected set; }
 
-	public int HP { get; protected set; }
-	public int Attack { get; protected set; }
+	public int HP { get; set; }
+	public int AttackDamage { get; protected set; }
 	public int AttackRange { get; protected set; }
 
 	void Start()
@@ -48,32 +49,30 @@ public class CreatureController : MonoBehaviour
 
     protected virtual void Update()
 	{
-		m_curState?.Update();
-		Flip();
-	}
-
-	protected virtual void LateUpdate()
-	{
-
+		CurState?.Update();
 	}
 
 	protected virtual void FixedUpdate()
 	{
-		UpdateMove();
+		CurState?.FixedUpdate();
 	}
 
 	public void ChangeState(ICreatureState _newState)
 	{
-		if (m_curState != null && m_curState.GetType() == _newState.GetType()) return;
+		if(_newState.CanEnter(this) == false)
+		{
+			// 10명의 플레이어가 동시에 10번 몬스터 클릭하면 hit 애니가 10번 연속 순차적으로 재생 -> 마지막으로 때린 놈 기준(데미지는 전부 들어가야 : Enter할때 데미지 먹이기)
+			m_nextState = _newState; // 두 명 이상의 플레이어가 동시에 몬스터를 클릭하면 
+			return; 
+		}
+		if (CurState != null && CurState.GetType() == _newState.GetType()) return;
 
-		//Debug.Log("ChangeState");
-		m_curState?.Exit();
-		m_curState = _newState;
-		m_curState.Enter(this);
+		CurState?.Exit();
+		CurState = _newState;
+		CurState.Enter(this);
 	}
 
-
-	void UpdateMove()
+	public void UpdateMove()
 	{
 		float newX = transform.position.x, newY = transform.position.y;
 		switch (Dir)
@@ -249,12 +248,12 @@ public class CreatureController : MonoBehaviour
 		//m_eDir |= _eDir; 
 		Dir = _eDir;
 	}
-
+	/*
 	public void UnSetDir(eDir _eDir)
 	{
 		Dir &= ~_eDir;
 	}
-
+	*/
 	public void SetPosition(int _cellXPos, int _cellYPos) 
 	{
 		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= MapManager.Inst.XSize || _cellYPos >= MapManager.Inst.YSize) return;
@@ -270,7 +269,7 @@ public class CreatureController : MonoBehaviour
 		return new Vector2Int((int)(_xpos + m_cellSize), (int)(-_ypos + m_cellSize));
 	}
 
-	private void Flip()
+	public void Flip()
 	{
 		if ((Dir == eDir.Right && m_bIsFacingLeft)
 			|| (Dir == eDir.Left && !m_bIsFacingLeft))
@@ -279,6 +278,4 @@ public class CreatureController : MonoBehaviour
 			m_bIsFacingLeft = !m_bIsFacingLeft;
 		}
 	}
-
-
 }

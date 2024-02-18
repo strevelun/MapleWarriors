@@ -2,35 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonsterRunState : ICreatureState
+public class MonsterAttackState : ICreatureState
 {
-	MonsterController m_mc = null;
-
 	public bool CanEnter(CreatureController _cs)
 	{
+		// 이동 중에는 불가능
+
 		return true;
 	}
 
+	// 몬스터는 어택 도중 쳐맞을 수 있다. -> 바로 Hit애니 재생 후 체력 감소
 	public void Enter(CreatureController _cs)
 	{
-		m_mc = _cs as MonsterController;
-		m_mc.Anim.SetBool("Run", true);
 	}
 
 	public void Update()
 	{
+	
 	}
 
 	public void FixedUpdate()
 	{
-		m_mc.UpdateMove();
-		m_mc.CheckMoveState();
-		m_mc.Flip();
+	
 	}
 
 	public void Exit()
 	{
-		m_mc.Anim.SetBool("Run", false);
+	
 	}
-
 }

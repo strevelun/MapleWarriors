@@ -117,6 +117,9 @@ public static class PacketHandler
 				case PacketType.eServer.BeginMoveMonster:
 					InGamePacketHandler.BeginMoveMonster(_reader);
 					break;
+				case PacketType.eServer.Attack:
+					InGamePacketHandler.Attack(_reader);
+					break;
 			}
 		}
 	}

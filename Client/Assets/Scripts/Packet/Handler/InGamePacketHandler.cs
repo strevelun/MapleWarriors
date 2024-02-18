@@ -96,4 +96,14 @@ public static class InGamePacketHandler
 
 		mc.BeginMove(pathIdx, destCellXPos, destCellYPos);
 	}
+
+	public static void Attack(PacketReader _reader)
+	{
+		byte roomSlot = _reader.GetByte();
+		string monsterName = _reader.GetString();
+
+		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_{roomSlot}");
+		MonsterController mc = ObjectManager.Inst.FindMonster(monsterName);
+		pc.ChangeState(new PlayerAttackState(mc, "Attack_0"));
+	}
 }

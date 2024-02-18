@@ -14,7 +14,8 @@ public class MapManager
 	}
 
 	public Grid CurMap { get; private set; }
-	Tilemap m_tmBase, m_tmCollision;
+	Tilemap m_tmBase, m_tmCollision, m_tmAim;
+	Tile m_aimTile;
 
 	public int MinX { get; private set; }
 	public int MaxX { get; private set; }
@@ -39,6 +40,10 @@ public class MapManager
 		CreateCollisionMap(go);
 
 		CurMap = go.GetComponent<Grid>();
+
+		m_tmAim = Util.FindChild<Tilemap>(go, true, "TM_Aim");
+		m_aimTile = ScriptableObject.CreateInstance<Tile>();
+		m_aimTile.sprite = ResourceManager.Inst.LoadSprite("Etc/Aim");
 	}
 
 	private void CreateCollisionMap(GameObject _prefabMap)
@@ -70,6 +75,7 @@ public class MapManager
 			for(int x = MinX, mapX = 0; x < MaxX; ++x, ++mapX)
 			{
 				TileBase t = m_tmCollision.GetTile(new Vector3Int(x, y, 0));
+				
 				m_collisionMap[mapY, mapX] = t ? true : false;
 				//Vector3 v = tmBase.CellToWorld(new Vector3Int(x, y, 0));
 				//Debug.Log(v);
@@ -112,6 +118,20 @@ public class MapManager
 		if (m_monsterMap[_cellYPos, _cellXPos].Count == 0) return;
 
 		m_monsterMap[_cellYPos, _cellXPos].Dequeue();
+	}
+
+	public void SetAimTile(int _cellXPos, int _cellYPos)
+	{
+		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= XSize || _cellYPos >= YSize) return;
+
+		m_tmAim.SetTile(new Vector3Int(_cellXPos, -_cellYPos, 0), m_aimTile);
+	}
+
+	public void RemoveAimTile(int _cellXPos, int _cellYPos)
+	{
+		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= XSize || _cellYPos >= YSize) return;
+
+		m_tmAim.SetTile(new Vector3Int(_cellXPos, -_cellYPos, 0), null);
 	}
 
 	public void Destroy()

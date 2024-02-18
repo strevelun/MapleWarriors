@@ -6,9 +6,6 @@ using UnityEngine;
 
 public class MonsterController : CreatureController
 {
-	MonsterIdleState m_idleState = new MonsterIdleState();
-	MonsterRunState m_runState = new MonsterRunState();
-
 	enum eState
 	{
 		None,
@@ -45,11 +42,6 @@ public class MonsterController : CreatureController
 			CheckTargetPosChanged();
 			BeginSearch();
 		}
-
-		if (Dir == eDir.None)
-			ChangeState(m_idleState);
-		else
-			ChangeState(m_runState);
 	}
 
 
@@ -64,12 +56,20 @@ public class MonsterController : CreatureController
 	{
 		base.Init(_cellXPos, _cellYPos);
 
-		ChangeState(m_idleState);
+		ChangeState(new MonsterIdleState());
 		MaxSpeed = 2f;
 		HP = 10;
-		Attack = 2;
+		AttackDamage = 2;
 		AttackRange = 1;
 		MapManager.Inst.AddMonster(this, CellPos.x, CellPos.y);
+	}
+
+	public void CheckMoveState()
+	{
+		if (Dir == eDir.None)
+			ChangeState(new MonsterIdleState());
+		else
+			ChangeState(new MonsterRunState());
 	}
 
 	void CheckTargetPosChanged()
@@ -162,7 +162,7 @@ public class MonsterController : CreatureController
 
 			++PathIdx;
 				
-			if (PathIdx < m_path.Count)
+			if (PathIdx < m_path.Count-1)
 			{
 				Packet pkt = InGamePacketMaker.BeginMoveMonster(name, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
 				NetworkManager.Inst.Send(pkt);

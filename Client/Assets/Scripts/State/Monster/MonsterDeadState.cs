@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonsterRunState : ICreatureState
+public class MonsterDeadState : ICreatureState
 {
-	MonsterController m_mc = null;
+	MonsterController m_mc;
 
 	public bool CanEnter(CreatureController _cs)
 	{
@@ -14,7 +14,8 @@ public class MonsterRunState : ICreatureState
 	public void Enter(CreatureController _cs)
 	{
 		m_mc = _cs as MonsterController;
-		m_mc.Anim.SetBool("Run", true);
+		m_mc.Anim.SetBool("Dead", true);
+		MapManager.Inst.RemoveMonster(m_mc.CellPos.x, m_mc.CellPos.y);
 	}
 
 	public void Update()
@@ -23,14 +24,10 @@ public class MonsterRunState : ICreatureState
 
 	public void FixedUpdate()
 	{
-		m_mc.UpdateMove();
-		m_mc.CheckMoveState();
-		m_mc.Flip();
 	}
 
 	public void Exit()
 	{
-		m_mc.Anim.SetBool("Run", false);
+		Debug.Log("DeadState Exit");
 	}
-
 }

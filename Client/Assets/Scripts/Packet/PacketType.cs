@@ -35,6 +35,8 @@ public class PacketType
 		BeginMove,
 		EndMove,
 		BeginMoveMonster,
+		InGameExit,
+		Attack,
 		Max,
 	}
 
@@ -60,6 +62,8 @@ public class PacketType
 		BeginMove,
 		EndMove,
 		BeginMoveMonster,
+		InGameExit,
+		Attack,
 		Max,
 	}
 }
