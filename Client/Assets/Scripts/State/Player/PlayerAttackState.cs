@@ -14,6 +14,9 @@ public class PlayerAttackState : ICreatureState
 
 	public bool CanEnter(CreatureController _cs)
 	{
+		// 현재 몬스터가 Dead 인 경우 AttackState로 바꿀 수 없음
+		//if (_target.CurState is MonsterHitState) return false;
+		if (m_target?.CurState is MonsterDeadState) return false;
 
 		return true;
 	}
@@ -57,7 +60,7 @@ public class PlayerAttackState : ICreatureState
 		if (m_animStart && !m_stateInfo.IsName(m_playerAnimName))
 		{
 			m_player.ChangeState(new PlayerIdleState());
-			Debug.Log("PlayerAttackState Changed");
+			//Debug.Log("PlayerAttackState Changed");
 			return;
 		}
 

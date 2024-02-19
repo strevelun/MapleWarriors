@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Slime",
+    "HP": 15,
+    "attack": 5,
+    "attackCellRange": 1,
+    "speed": 2,
+    "visionCellRange": 5
+  },
+  {
+    "name": "Blue_Mushroom",
+    "HP": 10,
+    "attack": 1,
+    "attackCellRange": 1,
+    "speed": 1,
+    "visionCellRange": 3
+  }
+]

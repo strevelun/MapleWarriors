@@ -43,15 +43,32 @@ public static class InGamePacketHandler
 		}
 
 		
+		
 		GameObject monster;
-		for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < 5; ++i)
 		{
 			monster = ResourceManager.Inst.Instantiate("Creature/Slime");
 			MonsterController mc = monster.GetComponent<MonsterController>();
-			mc.Init(i, 8);
+			MonsterData monsterData = DataManager.Inst.FindMonsterData("Slime");
+			mc.Init(i * 5, 8);
+			mc.SetMonsterData(monsterData);
 
 			monster.name = $"Slime_{i}";
 			ObjectManager.Inst.AddMonster(monster.name, monster);
+			MapManager.Inst.AddMonster(mc, mc.CellPos.x, mc.CellPos.y);
+		}
+
+		for (int i = 0; i < 5; ++i)
+		{
+			monster = ResourceManager.Inst.Instantiate("Creature/Blue_Mushroom");
+			MonsterController mc = monster.GetComponent<MonsterController>();
+			MonsterData monsterData = DataManager.Inst.FindMonsterData("Blue_Mushroom");
+			mc.Init(i * 5, 9);
+			mc.SetMonsterData(monsterData);
+
+			monster.name = $"Blue_Mushroom_{i}";
+			ObjectManager.Inst.AddMonster(monster.name, monster);
+			MapManager.Inst.AddMonster(mc, mc.CellPos.x, mc.CellPos.y);
 		}
 	}
 

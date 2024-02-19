@@ -28,18 +28,19 @@ public class CreatureController : MonoBehaviour
 	public Animator Anim { get; private set; }
 	protected GameObject m_spriteObject;
 	protected Vector2 CenterPos { get; private set; }
-	SpriteRenderer m_spriteRenderer;
+	protected SpriteRenderer m_spriteRenderer;
 	//private State m_eState = State.Idle;
 	public eDir Dir { get; set; } = eDir.None;
 	public eDir LastDir { get; private set; } = eDir.None;
 	public float MaxSpeed { get; protected set; } = 1f;
 
-	private bool m_bIsFacingLeft = true;
+	protected bool m_bIsFacingLeft = true;
 
 	public Vector2Int CellPos { get; protected set; }
 	public Vector2Int LastCellPos { get; protected set; }
 
 	public int HP { get; set; }
+	public int MaxHP { get; set; }
 	public int AttackDamage { get; protected set; }
 	public int AttackRange { get; protected set; }
 
@@ -101,6 +102,9 @@ public class CreatureController : MonoBehaviour
 			if (tempCellPos != CellPos)
 				LastCellPos = CellPos;
 			CellPos = tempCellPos;
+
+			if (LastDir != Dir) LastDir = Dir;
+
 			//Debug.Log($"{CellPos.x}, {CellPos.y}");
 			CenterPos = new Vector2(m_spriteObject.transform.position.x, m_spriteObject.transform.position.y - 0.5f);
 		}

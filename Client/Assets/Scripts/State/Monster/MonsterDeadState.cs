@@ -40,7 +40,7 @@ public class MonsterDeadState : ICreatureState
 		if (!m_animStart && m_stateInfo.IsName("Dead"))
 			m_animStart = true;
 
-		Debug.Log(m_stateInfo.normalizedTime);
+		//Debug.Log(m_stateInfo.normalizedTime);
 		if (m_animStart && m_stateInfo.normalizedTime >= 1.0f)
 		{
 			m_mc.Die();

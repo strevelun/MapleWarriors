@@ -8,12 +8,11 @@ public class MonsterIdleState : ICreatureState
 
 	public bool CanEnter(CreatureController _cs)
 	{
+		MonsterController mc = _cs as MonsterController;
 		// 지금바로 Idle이 될 수 없는 조건
-		//if (m_mc.CurState.GetType() != typeof(MonsterRunState)) return false;
-		//if (m_mc.CurState.GetType() != typeof(MonsterAttackState)) return false;
-		//if (m_mc.CurState.GetType() != typeof(MonsterHitState)) return false;
-		//if(m_mc.CurState.GetType() != typeof(MonsterDieState))
-
+		if (mc.CurState is MonsterDeadState) 
+			return false;
+ 
 		return true;
 	}
 

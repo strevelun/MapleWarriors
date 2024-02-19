@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MonsterController : CreatureController
 {
@@ -26,11 +28,32 @@ public class MonsterController : CreatureController
 	public Vector2Int DestPos { get; set; } = new Vector2Int(0, 0);
 	public bool m_cellArrived { get; private set; } = true;
 
+	Vector3 m_knockbackOrigin;
 
+	Coroutine m_damamgeCoroutine = null;
+	Coroutine m_knockbackCoroutine = null;
+
+	GameObject m_damageObj;
+	CanvasGroup m_damageCanvasGroup;
+	TextMeshProUGUI m_damageTMP;
+	RectTransform m_damageTMP_RT;
+
+	[SerializeField]
+	Vector2 m_damageUIOffset = new Vector2(0.5f, 1.5f);
+
+	GameObject m_hpbarObj;
+	Slider m_hpBarSlider;
+	RectTransform m_sliderRect;
+
+	TextMeshProUGUI m_hpbarText;
+
+	[SerializeField]
+	Vector2 m_hpBarUIOffset = new Vector2(0.5f, -0.3f);
 
 	void Start()
 	{
 		DestPos = CellPos;
+
 	}
 
 	protected override void Update()
@@ -42,6 +65,9 @@ public class MonsterController : CreatureController
 			CheckTargetPosChanged();
 			BeginSearch();
 		}
+
+
+		m_sliderRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_hpBarUIOffset);
 	}
 
 
@@ -50,6 +76,8 @@ public class MonsterController : CreatureController
 		base.FixedUpdate();
 
 		UpdateChase();
+
+
 	}
 
 	public override void Init(int _cellXPos, int _cellYPos)
@@ -57,19 +85,58 @@ public class MonsterController : CreatureController
 		base.Init(_cellXPos, _cellYPos);
 
 		ChangeState(new MonsterIdleState());
-		MaxSpeed = 2f;
-		HP = 10;
-		AttackDamage = 2;
-		AttackRange = 1;
-		MapManager.Inst.AddMonster(this, CellPos.x, CellPos.y);
+
+		GameObject monsterUI = ResourceManager.Inst.Instantiate("Creature/UI/MonsterUI", gameObject.transform);
+
+		m_damageObj = Util.FindChild(monsterUI, true, "Damage");
+		m_damageCanvasGroup = m_damageObj.GetComponent<CanvasGroup>();
+		m_damageTMP = m_damageObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		m_damageTMP_RT = m_damageObj.transform.GetChild(0).GetComponent<RectTransform>();
+		m_damageObj.SetActive(false);
+
+		m_hpbarObj = Util.FindChild(monsterUI, true, "HPBar");
+
+		m_hpBarSlider = Util.FindChild(m_hpbarObj, true, "Slider").GetComponent<Slider>();
+
+		m_sliderRect = m_hpBarSlider.GetComponent<RectTransform>();
+		m_sliderRect.sizeDelta = new Vector2(m_spriteRenderer.sprite.rect.width * transform.localScale.x, m_sliderRect.sizeDelta.y);
+
+		m_hpbarText = Util.FindChild(m_hpbarObj, true, "HPText").GetComponent<TextMeshProUGUI>();
+	}
+
+	public void SetMonsterData(MonsterData _data)
+	{
+		MaxSpeed = _data.speed;
+		MaxHP = _data.HP;
+		HP = _data.HP;
+		AttackDamage = _data.attack;
+		AttackRange = _data.attackCellRange;
+
+		CircleCollider2D collider = GetComponent<CircleCollider2D>();
+		if(collider == null) collider = gameObject.AddComponent<CircleCollider2D>();
+
+		collider.offset = new Vector2(0.5f, 0.5f);
+		collider.radius = _data.visionCellRange;
+
+		m_hpBarSlider.maxValue = MaxHP;
+		m_hpBarSlider.value = MaxHP;
+		m_hpbarText.text = MaxHP.ToString();
 	}
 
 	public void CheckMoveState()
 	{
-		if (Dir == eDir.None)
-			ChangeState(new MonsterIdleState());
-		else
-			ChangeState(new MonsterRunState());
+		if (CurState is MonsterIdleState)
+		{
+			if (Dir != eDir.None)
+				ChangeState(new MonsterRunState());
+			return;
+		}
+		if (CurState is MonsterRunState)
+		{
+			if (Dir == eDir.None)
+				ChangeState(new MonsterIdleState());
+			return;
+		}
 	}
 
 	void CheckTargetPosChanged()
@@ -202,21 +269,95 @@ public class MonsterController : CreatureController
 		return true;
 	}
 
+	public void Hit(int _damage)
+	{
+		if (HP <= 0) return;
+
+		HP -= _damage;
+		m_hpbarText.text = HP.ToString();
+
+		m_damageObj.SetActive(true);
+		m_damageCanvasGroup.alpha = 1f;
+
+		m_damageTMP_RT.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_damageUIOffset);
+		m_damageTMP.text = _damage.ToString();
+
+		m_hpBarSlider.value -= _damage;
+
+		if (m_damamgeCoroutine != null)
+		{
+			StopCoroutine(m_damamgeCoroutine);
+			m_damamgeCoroutine = null;
+		}
+
+		m_damamgeCoroutine = StartCoroutine(DamageCoroutine(1.0f));
+	}
+
+	IEnumerator DamageCoroutine(float _delay)
+	{
+		float elapsedTime = 0f;
+		Vector3 startPos = m_damageTMP_RT.position;
+		Vector3 destPos = startPos + new Vector3(0, 50, 0);
+		float t = 0.0f;
+
+		while (elapsedTime < _delay)
+		{
+			elapsedTime += Time.deltaTime;
+			t = elapsedTime / _delay;
+
+			m_damageTMP_RT.position = Vector3.Lerp(startPos, destPos, t);
+
+			m_damageCanvasGroup.alpha = 1.0f - t;
+
+			yield return null;
+		}
+
+		m_damageObj.SetActive(false);
+	}
+
+	public void Knockback(float _duration)
+	{
+		if (m_knockbackCoroutine != null)
+		{
+			StopCoroutine(m_knockbackCoroutine);
+			transform.position = m_knockbackOrigin;
+		}
+		else
+			m_knockbackOrigin = transform.position;
+
+		Debug.Log($"시간 : {_duration}");
+		m_knockbackCoroutine = StartCoroutine(KnockbackCoroutine(_duration));
+	}
+
+	IEnumerator KnockbackCoroutine(float _duration)
+	{
+		Vector3 objDestPos = transform.position + new Vector3(m_bIsFacingLeft ? 0.2f : -0.2f, 0, 0);
+		float elapsed = 0f;
+
+		while (elapsed <= _duration)
+		{
+			transform.position = Vector3.MoveTowards(transform.position, objDestPos, Time.deltaTime * 3);
+			elapsed += Time.deltaTime;
+			yield return null;
+		}
+		transform.position = m_knockbackOrigin;
+	}
+
 	public void Die()
 	{
 		gameObject.SetActive(false);
 	}
 
-	void OnTriggerEnter2D(Collider2D other)
+	void OnTriggerEnter2D(Collider2D _other)
 	{
-		if (other.gameObject.tag != "Player") return;
+		if (_other.gameObject.tag != "Player") return;
 
-		m_targets.Enqueue(other.gameObject.GetComponent<PlayerController>());
+		m_targets.Enqueue(_other.gameObject.GetComponent<PlayerController>());
 	}
 
-	void OnTriggerExit2D(Collider2D other)
+	void OnTriggerExit2D(Collider2D _other)
 	{
-		if (other.gameObject.tag != "Player") return;
+		if (_other.gameObject.tag != "Player") return;
 
 		m_targets.Dequeue();
 		if (m_targets.Count == 0)

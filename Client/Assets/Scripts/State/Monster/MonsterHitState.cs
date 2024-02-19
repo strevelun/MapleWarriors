@@ -6,6 +6,8 @@ public class MonsterHitState : ICreatureState
 {
 	MonsterController m_mc;
 	int m_damage;
+	bool m_knockback = false;
+	bool m_animStart = false;
 
 	AnimatorStateInfo m_stateInfo;
 
@@ -24,12 +26,18 @@ public class MonsterHitState : ICreatureState
 	{
 		m_mc = _cs as MonsterController;
 		m_mc.Anim.SetTrigger("Hit"); // 이게 실행될때마다 항상 0부터 시작해야
-		m_mc.HP -= m_damage;
+		m_mc.Hit(m_damage);
 	}
 
 	public void Update()
 	{
 		UpdateAnimation();
+		if (!m_knockback && m_animStart)
+		{
+			m_mc.Knockback(m_stateInfo.length);
+			m_knockback = true;
+		}
+
 	}
 
 	public void FixedUpdate()
@@ -46,7 +54,12 @@ public class MonsterHitState : ICreatureState
 	{
 		m_stateInfo = m_mc.Anim.GetCurrentAnimatorStateInfo(0);
 
-		if (!m_stateInfo.IsName("Slime_Hit"))
+		if (!m_animStart && m_stateInfo.IsName("Hit"))
+			m_animStart = true;
+
+		Debug.Log(m_animStart);
+
+		if (m_animStart && !m_stateInfo.IsName("Hit"))
 		{
 			if(IsDead())	
 				m_mc.ChangeState(new MonsterDeadState());
