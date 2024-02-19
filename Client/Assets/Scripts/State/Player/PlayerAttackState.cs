@@ -8,6 +8,7 @@ public class PlayerAttackState : ICreatureState
 	PlayerController m_player;
 	MonsterController m_target;
 	string m_playerAnimName;
+	bool m_animStart = false;
 	AnimatorStateInfo m_stateInfo;
 	bool m_hit = false;
 
@@ -45,18 +46,22 @@ public class PlayerAttackState : ICreatureState
 	{
 	}
 
+	// 인게임 패킷 핸들러에서 PlayerAttackState로 바꾸지만 애니메이터에서 아직 스테이트 전환이 안되기 때문에 바로 PlayerIdleState로 전환됨.
 	void UpdateAnimation()
 	{
 		m_stateInfo = m_player.Anim.GetCurrentAnimatorStateInfo(0);
 
-		if (!m_stateInfo.IsName(m_playerAnimName))
+		if (!m_animStart && m_stateInfo.IsName(m_playerAnimName))
+			m_animStart = true;
+
+		if (m_animStart && !m_stateInfo.IsName(m_playerAnimName))
 		{
 			m_player.ChangeState(new PlayerIdleState());
 			Debug.Log("PlayerAttackState Changed");
 			return;
 		}
 
-		if (!m_hit && m_target && m_stateInfo.normalizedTime >= 0.3f)
+		if (!m_hit && m_target) //&& m_stateInfo.normalizedTime >= 0.3f)
 		{
 			m_target.ChangeState(new MonsterHitState(m_player.AttackDamage));
 			m_hit = true;

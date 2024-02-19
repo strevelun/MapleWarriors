@@ -202,6 +202,11 @@ public class MonsterController : CreatureController
 		return true;
 	}
 
+	public void Die()
+	{
+		gameObject.SetActive(false);
+	}
+
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject.tag != "Player") return;

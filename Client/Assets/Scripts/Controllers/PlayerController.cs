@@ -66,12 +66,21 @@ public class PlayerController : CreatureController
 		ChangeState(new PlayerIdleState());
 	}
 
+	// 매 프레임마다 new
 	public void CheckMoveState()
 	{
-		if (Dir == eDir.None)
-			ChangeState(new PlayerIdleState());
-		else
-			ChangeState(new PlayerRunState());
+		if(CurState is PlayerIdleState)
+		{
+			if(Dir != eDir.None)
+				ChangeState(new PlayerRunState());
+			return;
+		}
+		if (CurState is PlayerRunState)
+		{
+			if (Dir == eDir.None)
+				ChangeState(new PlayerIdleState());
+			return;
+		}	
 	}
 
 	public void SetNickname(string _nickname)

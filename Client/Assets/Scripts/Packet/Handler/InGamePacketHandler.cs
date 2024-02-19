@@ -60,7 +60,7 @@ public static class InGamePacketHandler
 		byte roomSlot = _reader.GetByte();
 		byte dir = _reader.GetByte();
 
-		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_{roomSlot}");
+		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
 		pc.SetDir((CreatureController.eDir)dir);
 		//pc.BeginMove();
 	}
@@ -73,7 +73,7 @@ public static class InGamePacketHandler
 		//byte dir = _reader.GetByte();
 		//long tick = _reader.GetInt64();
 
-		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_{roomSlot}");
+		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
 		//pc.UnSetDir((CreatureController.Dir)dir);
 		pc.SetDir(CreatureController.eDir.None);
 		pc.EndMovePosition(xpos, ypos);
@@ -102,7 +102,7 @@ public static class InGamePacketHandler
 		byte roomSlot = _reader.GetByte();
 		string monsterName = _reader.GetString();
 
-		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_{roomSlot}");
+		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
 		MonsterController mc = ObjectManager.Inst.FindMonster(monsterName);
 		pc.ChangeState(new PlayerAttackState(mc, "Attack_0"));
 	}

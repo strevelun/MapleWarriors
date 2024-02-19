@@ -51,8 +51,6 @@ public class MyPlayerController : PlayerController
 	// 이동 방향키를 누르고 있다가 다른 상태에서 방향키를 떼면 계속 이동함
 	public void InputMovement()
 	{
-	
-
 		if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.W))
 		{
 			m_curKeyCode = KeyCode.W;
@@ -122,14 +120,14 @@ public class MyPlayerController : PlayerController
 			if (Input.GetMouseButtonDown(0))
 			{
 				// 선택된 스킬 정보
-				MonsterController mc = MapManager.Inst.GetMonster(mouseCellPos.x, mouseCellPos.y);
+				MonsterController mc;
+				//for (int i = 0; i < 2; ++i) // 공격 길이 2
+				//{
+					mc = MapManager.Inst.GetMonster(mouseCellPos.x, mouseCellPos.y);
+				//}
 				ChangeState(new PlayerAttackState(mc, "Attack_0"));
-				if (mc)
-				{
-					Packet pkt = InGamePacketMaker.Attack(mc.name);
-					NetworkManager.Inst.Send(pkt);
-
-				}
+				Packet pkt = InGamePacketMaker.Attack(mc ? mc.name : string.Empty);
+				NetworkManager.Inst.Send(pkt);
 			}
 		}
 	}
