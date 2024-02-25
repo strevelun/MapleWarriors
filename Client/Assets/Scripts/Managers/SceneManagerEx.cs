@@ -17,15 +17,15 @@ public class SceneManagerEx
 
 	public BaseScene CurScene { get; set; }
 
-    public void LoadScene(Define.Scene _type)
+    public void LoadScene(Define.eScene _type)
     {
 		CurScene.IsLoading = true;
         CurScene.Clear();
         SceneManager.LoadScene(GetSceneName(_type));
     }
 
-	private string GetSceneName(Define.Scene _type)
+	private string GetSceneName(Define.eScene _type)
     {
-        return System.Enum.GetName(typeof(Define.Scene), _type);
+        return System.Enum.GetName(typeof(Define.eScene), _type);
     }
 }

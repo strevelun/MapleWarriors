@@ -44,7 +44,7 @@ public class Connection
     {
         if(_args.BytesTransferred == 0 || _args.SocketError != SocketError.Success)
 		{
-			ActionQueue.Inst.Enqueue(() => UIManager.Inst.ShowPopupUI(Define.UIPopup.UIDisconnectPopup, "서버와의 연결이 끊어졌습니다!\n" + _args.SocketError.ToString()));
+			ActionQueue.Inst.Enqueue(() => UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIDisconnectPopup, "서버와의 연결이 끊어졌습니다!\n" + _args.SocketError.ToString()));
 
 			Disconnect();
             return;

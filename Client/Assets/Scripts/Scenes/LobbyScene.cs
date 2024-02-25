@@ -14,9 +14,9 @@ public class LobbyScene : BaseScene
 		base.Init();
 
 		Screen.SetResolution(1280, 720, false);
-		SceneType = Define.Scene.Lobby;
+		SceneType = Define.eScene.Lobby;
 
-        UIScene uiScene = UIManager.Inst.SetSceneUI(Define.Scene.Lobby);
+        UIScene uiScene = UIManager.Inst.SetSceneUI(Define.eScene.Lobby);
 		{
 			GameObject obj = Util.FindChild(uiScene.gameObject, false, "CreateRoomBtn");
 			Button btn = obj.GetComponent<Button>();
@@ -27,14 +27,14 @@ public class LobbyScene : BaseScene
 		}
 
 		{
-			UIChat uichat = UIManager.Inst.AddUI(Define.UIChat.UILobbyChat);
-			uichat.Init(LobbyPacketMaker.SendChat, Define.UIChat.UILobbyChat);
+			UIChat uichat = UIManager.Inst.AddUI(Define.eUIChat.UILobbyChat);
+			uichat.Init(LobbyPacketMaker.SendChat, Define.eUIChat.UILobbyChat);
 		}
 
 		{
-            GameObject parentObj = UIManager.Inst.AddUI(Define.UI.UILobby_RoomList);
+            GameObject parentObj = UIManager.Inst.AddUI(Define.eUI.UILobby_RoomList);
 			m_roomListPage = parentObj.GetComponent<UIPage>();
-			m_roomListPage.Init(Define.RoomListPageMax, Define.RoomListMaxItemInPage, "UI/Scene/Lobby/", Define.UI.UILobby_RoomList, "Content");
+			m_roomListPage.Init(Define.RoomListPageMax, Define.RoomListMaxItemInPage, "UI/Scene/Lobby/", Define.eUI.UILobby_RoomList, "Content");
 
 			GameObject obj = Util.FindChild(parentObj, false, "PrevBtn");
             Button btn = obj.GetComponent<Button>();
@@ -43,7 +43,7 @@ public class LobbyScene : BaseScene
             btn = obj.GetComponent<Button>();
             btn.onClick.AddListener(OnRoomListNextBtnClicked);
 
-			obj = UIManager.Inst.AddUI(Define.UI.UILobby_RoomList_Block);
+			obj = UIManager.Inst.AddUI(Define.eUI.UILobby_RoomList_Block);
 			obj.transform.SetParent(parentObj.transform);
 			RectTransform rectTransform = obj.GetComponent<RectTransform>();
 			rectTransform.offsetMin = Vector2.zero;
@@ -51,9 +51,9 @@ public class LobbyScene : BaseScene
 		}
 
 		{
-			GameObject parentObj = UIManager.Inst.AddUI(Define.UI.UILobby_UserList);
+			GameObject parentObj = UIManager.Inst.AddUI(Define.eUI.UILobby_UserList);
 			m_userListPage = parentObj.GetComponent<UIPage>();
-			m_userListPage.Init(Define.UserListPageMax, Define.UserListMaxItemInPage, "UI/Scene/Lobby/", Define.UI.UILobby_UserList, "Content");
+			m_userListPage.Init(Define.UserListPageMax, Define.UserListMaxItemInPage, "UI/Scene/Lobby/", Define.eUI.UILobby_UserList, "Content");
 
 			GameObject obj = Util.FindChild(parentObj, false, "PrevBtn");
 			Button btn = obj.GetComponent<Button>();
@@ -64,12 +64,12 @@ public class LobbyScene : BaseScene
 		}
 
 		{
-			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UICreateRoomPopup);
+			UIPopup popup = UIManager.Inst.AddUI(Define.eUIPopup.UICreateRoomPopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
 				if (string.IsNullOrWhiteSpace(popup.InputField.text)) return;
 
-				UIManager.Inst.HidePopupUI(Define.UIPopup.UICreateRoomPopup);
+				UIManager.Inst.HidePopupUI(Define.eUIPopup.UICreateRoomPopup);
 				Packet pkt = LobbyPacketMaker.CreateRoom(popup.InputField.text);
 				popup.InputField.text = string.Empty;
 				NetworkManager.Inst.Send(pkt);
@@ -77,33 +77,33 @@ public class LobbyScene : BaseScene
 			popup.SetButtonAction("CancelBtn", () => 
 			{
 				popup.InputField.text = string.Empty;
-				UIManager.Inst.HidePopupUI(Define.UIPopup.UICreateRoomPopup); 
+				UIManager.Inst.HidePopupUI(Define.eUIPopup.UICreateRoomPopup); 
 			});
 		}		
 		
 		{
-			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UICreateRoomFailPopup);
+			UIPopup popup = UIManager.Inst.AddUI(Define.eUIPopup.UICreateRoomFailPopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
-				UIManager.Inst.HidePopupUI(Define.UIPopup.UICreateRoomFailPopup);
+				UIManager.Inst.HidePopupUI(Define.eUIPopup.UICreateRoomFailPopup);
 			});
 
-			popup = UIManager.Inst.AddUI(Define.UIPopup.UIEnterRoomFullPopup);
+			popup = UIManager.Inst.AddUI(Define.eUIPopup.UIEnterRoomFullPopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
-				UIManager.Inst.HidePopupUI(Define.UIPopup.UIEnterRoomFullPopup);
+				UIManager.Inst.HidePopupUI(Define.eUIPopup.UIEnterRoomFullPopup);
 			});
 
-			popup = UIManager.Inst.AddUI(Define.UIPopup.UIEnterRoomInGamePopup);
+			popup = UIManager.Inst.AddUI(Define.eUIPopup.UIEnterRoomInGamePopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
-				UIManager.Inst.HidePopupUI(Define.UIPopup.UIEnterRoomInGamePopup);
+				UIManager.Inst.HidePopupUI(Define.eUIPopup.UIEnterRoomInGamePopup);
 			});
 
-			popup = UIManager.Inst.AddUI(Define.UIPopup.UIEnterRoomNopePopup);
+			popup = UIManager.Inst.AddUI(Define.eUIPopup.UIEnterRoomNopePopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
-				UIManager.Inst.HidePopupUI(Define.UIPopup.UIEnterRoomNopePopup);
+				UIManager.Inst.HidePopupUI(Define.eUIPopup.UIEnterRoomNopePopup);
 			});
 		}
 
@@ -185,7 +185,7 @@ public class LobbyScene : BaseScene
 
 	void OnCreateBtnClicked()
 	{
-		UIManager.Inst.ShowPopupUI(Define.UIPopup.UICreateRoomPopup);
+		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UICreateRoomPopup);
 	}
 
 	void OnExitBtnClicked()

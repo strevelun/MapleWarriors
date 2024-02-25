@@ -37,7 +37,7 @@ public class AStar
 	}
 
 	// 시작점부터 목적지까지 path 만들기 (중간에 없던 장애물이 갑자기 생기면 다시 호출할 것)
-	public List<Vector2Int> Search(Vector2Int _startCellPos, Vector2Int _destCellPos)
+	public List<Vector2Int> Search(Vector2Int _startCellPos, Vector2Int _destCellPos, int _hitboxWidth, int _hitboxHeight)
 	{
 		List<Vector2Int> path = new List<Vector2Int>();
 
@@ -66,7 +66,7 @@ public class AStar
 		{
 			node = m_pq.Dequeue();
 
-			if (MapManager.Inst.IsBlocked(node.CurPos.x, node.CurPos.y)) continue;
+			if (MapManager.Inst.IsBlocked(node.CurPos.x, node.CurPos.y, _hitboxWidth, _hitboxHeight)) continue;
 			if (m_visited[node.CurPos.y, node.CurPos.x]) continue;
 
 			m_visited[node.CurPos.y, node.CurPos.x] = true;
@@ -76,7 +76,7 @@ public class AStar
 			for (int i = 0; i < DirLen; ++i)
 			{
 				Vector2Int nextPos = node.CurPos + m_dir[i];
-				if (MapManager.Inst.IsBlocked(nextPos.x, nextPos.y)) continue;
+				if (MapManager.Inst.IsBlocked(nextPos.x, nextPos.y, _hitboxWidth, _hitboxHeight)) continue;
 				if (m_visited[nextPos.y, nextPos.x]) continue;
 
 				g = node.G + m_cost[i];
@@ -96,7 +96,7 @@ public class AStar
 
 		while (totalSize > 0)
 		{
-			if (MapManager.Inst.IsBlocked(pos.x, pos.y)) return null;
+			if (MapManager.Inst.IsBlocked(pos.x, pos.y, _hitboxWidth, _hitboxHeight)) return null;
 
 			path.Add(pos); 
 

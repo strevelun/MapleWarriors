@@ -11,6 +11,7 @@ public class DataManager : MonoBehaviour
 	public static DataManager Inst { get { return s_inst; } }
 
 	Dictionary<string, MonsterData> m_monsterData = new Dictionary<string, MonsterData>();
+	Dictionary<string, SkillData> m_skillData = new Dictionary<string, SkillData>();
 
 	private void Awake()
 	{
@@ -27,10 +28,19 @@ public class DataManager : MonoBehaviour
 		return null;
 	}
 
+
+	public SkillData FindSkillData(string _name)
+	{
+		SkillData skill;
+		if (m_skillData.TryGetValue(_name, out skill)) return skill;
+
+		return null;
+	}
+
 	void LoadAllData()
 	{
 		LoadMonsterData();
-
+		LoadSkillData();
 	}
 
 	public void LoadMonsterData()
@@ -42,6 +52,18 @@ public class DataManager : MonoBehaviour
 		foreach (MonsterData monster in loadedData.monsters)
 		{
 			m_monsterData.Add(monster.name, monster);
+		}
+	}
+
+	public void LoadSkillData()
+	{
+		string filePath = Path.Combine(Application.streamingAssetsPath, "Data/SkillData.json");
+		string dataAsJson = File.ReadAllText(filePath);
+		SkillDataList loadedData = JsonUtility.FromJson<SkillDataList>("{\"skills\":" + dataAsJson + "}");
+
+		foreach (SkillData skill in loadedData.skills)
+		{
+			m_skillData.Add(skill.name, skill);
 		}
 	}
 }

@@ -25,8 +25,8 @@ public class UIManager
 	public UIScene SceneUI { private set; get; }
 	Dictionary<string, UIPopup> m_dicPopup = new Dictionary<string, UIPopup>();
 	Dictionary<string, UIPopup> m_dicPopupInDestructible = new Dictionary<string, UIPopup>();
-	Dictionary<Define.UIChat, UIChat> m_dicUIChat = new Dictionary<Define.UIChat, UIChat>();
-	Dictionary<Define.UI, GameObject> m_dicUI = new Dictionary<Define.UI, GameObject>();
+	Dictionary<Define.eUIChat, UIChat> m_dicUIChat = new Dictionary<Define.eUIChat, UIChat>();
+	Dictionary<Define.eUI, GameObject> m_dicUI = new Dictionary<Define.eUI, GameObject>();
 
 	public GameObject Root
 	{
@@ -57,7 +57,7 @@ public class UIManager
 			c.sortingOrder = 0;
 	}
 
-	public UIScene SetSceneUI(Define.Scene _sceneName)
+	public UIScene SetSceneUI(Define.eScene _sceneName)
 	{
 		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
 
@@ -67,7 +67,7 @@ public class UIManager
 	}
 
 	#region PopupUI
-	public UIPopup FindPopupUI(Define.UIPopup _prefabName)
+	public UIPopup FindPopupUI(Define.eUIPopup _prefabName)
 	{
 		string name = _prefabName.ToString();
 		UIPopup popup;
@@ -78,7 +78,7 @@ public class UIManager
 		return popup;
 	}
 
-	public UIPopup AddUI(Define.UIPopup _prefabName, bool _isOnScene = true)
+	public UIPopup AddUI(Define.eUIPopup _prefabName, bool _isOnScene = true)
 	{
 		string name = _prefabName.ToString();
 		UIPopup uiPopup = FindPopupUI(_prefabName);
@@ -113,7 +113,7 @@ public class UIManager
 		return uiPopup;
 	}
 
-	public void ShowPopupUI(Define.UIPopup _prefabName)
+	public void ShowPopupUI(Define.eUIPopup _prefabName)
 	{
 		UIPopup popup = FindPopupUI(_prefabName);
 		if (!popup) return;
@@ -125,7 +125,7 @@ public class UIManager
 		obj.SetActive(true);
 	}
 
-	public void ShowPopupUI(Define.UIPopup _prefabName, string _description)
+	public void ShowPopupUI(Define.eUIPopup _prefabName, string _description)
 	{
 		UIPopup popup = FindPopupUI(_prefabName);
 		if (!popup) return;
@@ -141,7 +141,7 @@ public class UIManager
 		obj.SetActive(true);
 	}
 
-	public void HidePopupUI(Define.UIPopup _prefabName)
+	public void HidePopupUI(Define.eUIPopup _prefabName)
 	{
 		UIPopup popup = FindPopupUI(_prefabName);
 		if (!popup) return;
@@ -151,7 +151,7 @@ public class UIManager
 	#endregion
 
 	#region ChatUI
-	public UIChat AddUI(Define.UIChat _eChat)
+	public UIChat AddUI(Define.eUIChat _eChat)
 	{
 		UIChat chat;
 		if (m_dicUIChat.TryGetValue(_eChat, out chat)) return chat;
@@ -164,7 +164,7 @@ public class UIManager
 		return chat;
 	}
 
-	public UIChat FindUI(Define.UIChat _eChat)
+	public UIChat FindUI(Define.eUIChat _eChat)
 	{
 		UIChat chat;
 		if (!m_dicUIChat.TryGetValue(_eChat, out chat)) return null;
@@ -173,7 +173,7 @@ public class UIManager
 	}
 	#endregion
 
-	public GameObject AddUI(Define.UI _eUI)
+	public GameObject AddUI(Define.eUI _eUI)
 	{
 		GameObject obj;
 		if (m_dicUI.TryGetValue(_eUI, out obj)) return null;
@@ -185,7 +185,7 @@ public class UIManager
 		return obj;
 	}
 
-	public GameObject FindUI(Define.UI _eUI)
+	public GameObject FindUI(Define.eUI _eUI)
 	{
 		GameObject obj;
 		if (!m_dicUI.TryGetValue(_eUI, out obj)) return null;

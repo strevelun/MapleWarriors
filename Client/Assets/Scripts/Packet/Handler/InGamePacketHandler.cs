@@ -2,6 +2,7 @@ using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Define;
 
 public static class InGamePacketHandler
 {
@@ -45,6 +46,7 @@ public static class InGamePacketHandler
 		
 		
 		GameObject monster;
+		/*
 		for (int i = 0; i < 5; ++i)
 		{
 			monster = ResourceManager.Inst.Instantiate("Creature/Slime");
@@ -55,7 +57,7 @@ public static class InGamePacketHandler
 
 			monster.name = $"Slime_{i}";
 			ObjectManager.Inst.AddMonster(monster.name, monster);
-			MapManager.Inst.AddMonster(mc, mc.CellPos.x, mc.CellPos.y);
+			MapManager.Inst.AddMonster(mc);
 		}
 
 		for (int i = 0; i < 5; ++i)
@@ -68,7 +70,46 @@ public static class InGamePacketHandler
 
 			monster.name = $"Blue_Mushroom_{i}";
 			ObjectManager.Inst.AddMonster(monster.name, monster);
-			MapManager.Inst.AddMonster(mc, mc.CellPos.x, mc.CellPos.y);
+			MapManager.Inst.AddMonster(mc);
+		}
+
+		for (int i = 0; i < 2; ++i)
+		{
+			monster = ResourceManager.Inst.Instantiate("Creature/Dark_Stone_Golem");
+			MonsterController mc = monster.GetComponent<MonsterController>();
+			MonsterData monsterData = DataManager.Inst.FindMonsterData("Dark_Stone_Golem");
+			mc.Init(i+5,5);
+			mc.SetMonsterData(monsterData);
+
+			monster.name = $"Dark_Stone_Golem_{i}";
+			ObjectManager.Inst.AddMonster(monster.name, monster);
+			MapManager.Inst.AddMonster(mc);
+		}
+
+		for (int i = 0; i < 1; ++i)
+		{
+			monster = ResourceManager.Inst.Instantiate("Creature/Boss1");
+			MonsterController mc = monster.GetComponent<MonsterController>();
+			MonsterData monsterData = DataManager.Inst.FindMonsterData("Boss1");
+			mc.Init(20, 15);
+			mc.SetMonsterData(monsterData);
+
+			monster.name = $"Boss1_{i}";
+			ObjectManager.Inst.AddMonster(monster.name, monster);
+			MapManager.Inst.AddMonster(mc);
+		}
+		*/
+		for (int i = 0; i < 1; ++i)
+		{
+			monster = ResourceManager.Inst.Instantiate("Creature/Boss2");
+			MonsterController mc = monster.GetComponent<MonsterController>();
+			MonsterData monsterData = DataManager.Inst.FindMonsterData("Boss2");
+			mc.Init(5, 5);
+			mc.SetMonsterData(monsterData);
+
+			monster.name = $"Boss2_{i}";
+			ObjectManager.Inst.AddMonster(monster.name, monster);
+			MapManager.Inst.AddMonster(mc);
 		}
 	}
 
@@ -117,10 +158,19 @@ public static class InGamePacketHandler
 	public static void Attack(PacketReader _reader)
 	{
 		byte roomSlot = _reader.GetByte();
-		string monsterName = _reader.GetString();
+		ushort count = _reader.GetUShort();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
-		MonsterController mc = ObjectManager.Inst.FindMonster(monsterName);
-		pc.ChangeState(new PlayerAttackState(mc, "Attack_0"));
+		List<MonsterController> targets = new List<MonsterController>();
+		MonsterController mc;
+		for (int i = 0; i < count; ++i)
+		{
+			mc = ObjectManager.Inst.FindMonster(_reader.GetString());
+			targets.Add(mc);
+		}
+
+		eSkill skill = (eSkill)_reader.GetByte();
+
+		pc.ChangeState(new PlayerAttackState(targets, skill));
 	}
 }

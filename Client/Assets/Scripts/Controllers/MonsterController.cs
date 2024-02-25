@@ -16,6 +16,8 @@ public class MonsterController : CreatureController
 		Attack
 	}
 
+
+
 	AStar m_astar = new AStar();
 
 	List<Vector2Int> m_path = null;
@@ -68,6 +70,8 @@ public class MonsterController : CreatureController
 
 
 		m_sliderRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_hpBarUIOffset);
+
+
 	}
 
 
@@ -102,6 +106,8 @@ public class MonsterController : CreatureController
 		m_sliderRect.sizeDelta = new Vector2(m_spriteRenderer.sprite.rect.width * transform.localScale.x, m_sliderRect.sizeDelta.y);
 
 		m_hpbarText = Util.FindChild(m_hpbarObj, true, "HPText").GetComponent<TextMeshProUGUI>();
+
+
 	}
 
 	public void SetMonsterData(MonsterData _data)
@@ -111,6 +117,8 @@ public class MonsterController : CreatureController
 		HP = _data.HP;
 		AttackDamage = _data.attack;
 		AttackRange = _data.attackCellRange;
+		HitboxWidth = _data.hitboxWidth;
+		HitboxHeight = _data.hitboxHeight;
 
 		CircleCollider2D collider = GetComponent<CircleCollider2D>();
 		if(collider == null) collider = gameObject.AddComponent<CircleCollider2D>();
@@ -161,7 +169,7 @@ public class MonsterController : CreatureController
 		if ((Math.Abs(CellPos.x - pc.CellPos.x) <= 1 && CellPos.y == pc.CellPos.y) ||
 			(Math.Abs(CellPos.y - pc.CellPos.y) <= 1 && CellPos.x == pc.CellPos.x)) return;
 
-		m_path = m_astar.Search(CellPos, pc.CellPos);
+		m_path = m_astar.Search(CellPos, pc.CellPos, HitboxWidth, HitboxHeight);
 		if (m_path == null)
 		{
 			Dir = eDir.None;
@@ -195,8 +203,8 @@ public class MonsterController : CreatureController
 
 		if (dist > MaxSpeed * Time.fixedDeltaTime * 2) return;
 
-		MapManager.Inst.RemoveMonster(LastCellPos.x, LastCellPos.y);
-		MapManager.Inst.AddMonster(this, CellPos.x, CellPos.y);
+		MapManager.Inst.RemoveMonster(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
+		MapManager.Inst.AddMonster(this);
 		transform.position = dest;
 		m_dest.Dequeue();
 
@@ -273,6 +281,8 @@ public class MonsterController : CreatureController
 	{
 		if (HP <= 0) return;
 
+		//m_dest.Clear();
+
 		HP -= _damage;
 		m_hpbarText.text = HP.ToString();
 
@@ -321,9 +331,12 @@ public class MonsterController : CreatureController
 		{
 			StopCoroutine(m_knockbackCoroutine);
 			transform.position = m_knockbackOrigin;
+			m_knockbackCoroutine = null;
 		}
 		else
+		{
 			m_knockbackOrigin = transform.position;
+		}
 
 		Debug.Log($"시간 : {_duration}");
 		m_knockbackCoroutine = StartCoroutine(KnockbackCoroutine(_duration));
@@ -341,11 +354,14 @@ public class MonsterController : CreatureController
 			yield return null;
 		}
 		transform.position = m_knockbackOrigin;
+		m_knockbackCoroutine = null;
 	}
 
-	public void Die()
+	public override void Die()
 	{
-		gameObject.SetActive(false);
+		base.Die();
+
+		//gameObject.SetActive(false);
 	}
 
 	void OnTriggerEnter2D(Collider2D _other)

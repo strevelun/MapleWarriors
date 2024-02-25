@@ -17,10 +17,6 @@ public class CreatureController : MonoBehaviour
 		Right = 0b10,
 		Down = 0b100,
 		Left = 0b1000,
-		UpRight = 0b11,
-		DownLeft = 0b1100,
-		RightDown = 0b110,
-		LeftUp = 0b1001,
 	}
 
 	const float m_cellSize = 0.5f;
@@ -43,6 +39,9 @@ public class CreatureController : MonoBehaviour
 	public int MaxHP { get; set; }
 	public int AttackDamage { get; protected set; }
 	public int AttackRange { get; protected set; }
+
+	public int HitboxWidth { get; protected set; }
+	public int HitboxHeight { get; protected set; }
 
 	void Start()
 	{
@@ -100,13 +99,18 @@ public class CreatureController : MonoBehaviour
 			transform.position = new Vector3(newX, newY);
 			Vector2Int tempCellPos = ConvertToCellPos(transform.position.x, transform.position.y);
 			if (tempCellPos != CellPos)
+			{
 				LastCellPos = CellPos;
-			CellPos = tempCellPos;
+				CellPos = tempCellPos;
+				MapManager.Inst.RemoveHitboxTile(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
+				MapManager.Inst.SetHitboxTile(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight);
+			}
 
 			if (LastDir != Dir) LastDir = Dir;
 
 			//Debug.Log($"{CellPos.x}, {CellPos.y}");
 			CenterPos = new Vector2(m_spriteObject.transform.position.x, m_spriteObject.transform.position.y - 0.5f);
+
 		}
 
 	}
@@ -131,13 +135,13 @@ public class CreatureController : MonoBehaviour
 			newX = vec.x + 1;
 		}
 
-		if ((testY != 0.0f && MapManager.Inst.IsBlocked(vecX, vec.y + 1)) // 0일때는 0번째 줄 이동 가능
-						|| MapManager.Inst.IsBlocked(vecX, vec.y))
+		if ((testY != 0.0f && MapManager.Inst.IsBlocked(vecX, vec.y + 1, HitboxWidth, HitboxHeight)) // 0일때는 0번째 줄 이동 가능
+						|| MapManager.Inst.IsBlocked(vecX, vec.y, HitboxWidth, HitboxHeight))
 		{
 			_newX = newX;
 		}
 
-		if (MapManager.Inst.IsBlocked(vecX, vec.y) && !MapManager.Inst.IsBlocked(vecX, vec.y + 1)) // Plant타일이 약간 띄어져 있어서 어색한 이동 방지 목적의 코드
+		if (MapManager.Inst.IsBlocked(vecX, vec.y, HitboxWidth, HitboxHeight) && !MapManager.Inst.IsBlocked(vecX, vec.y + 1, HitboxWidth, HitboxHeight)) // Plant타일이 약간 띄어져 있어서 어색한 이동 방지 목적의 코드
 		{
 			float targetY = -vec.y - 1;
 			if (Math.Abs(_newY - targetY) < 0.1f)
@@ -149,7 +153,7 @@ public class CreatureController : MonoBehaviour
 		{
 			if (testY <= 0.4f)
 			{
-				if (!MapManager.Inst.IsBlocked(vecX, vec.y) && MapManager.Inst.IsBlocked(vecX, vec.y + 1))
+				if (!MapManager.Inst.IsBlocked(vecX, vec.y, HitboxWidth, HitboxHeight) && MapManager.Inst.IsBlocked(vecX, vec.y + 1, HitboxWidth, HitboxHeight))
 				{
 					float targetY = (float)Math.Round((double)_newY, MidpointRounding.AwayFromZero);
 					if (Math.Abs(_newY - targetY) < 0.1f)
@@ -160,7 +164,7 @@ public class CreatureController : MonoBehaviour
 			}
 			else if (testY >= 0.9f)
 			{
-				if (MapManager.Inst.IsBlocked(vecX, vec.y + 1) && !MapManager.Inst.IsBlocked(vecX, vec.y + 2))
+				if (MapManager.Inst.IsBlocked(vecX, vec.y + 1, HitboxWidth, HitboxHeight) && !MapManager.Inst.IsBlocked(vecX, vec.y + 2, HitboxWidth, HitboxHeight))
 				{
 					float targetY = (float)Math.Round((double)_newY - 1, MidpointRounding.AwayFromZero);
 
@@ -194,13 +198,13 @@ public class CreatureController : MonoBehaviour
 			newY = -vec.y;
 		}
 
-		if ((testX != 0.0f && MapManager.Inst.IsBlocked(vec.x + 1, vecY))
-						|| MapManager.Inst.IsBlocked(vec.x, vecY))
+		if ((testX != 0.0f && MapManager.Inst.IsBlocked(vec.x + 1, vecY, HitboxWidth, HitboxHeight))
+						|| MapManager.Inst.IsBlocked(vec.x, vecY, HitboxWidth, HitboxHeight))
 		{
 			_newY = newY;
 		}
 
-		if (MapManager.Inst.IsBlocked(vec.x, vecY) && !MapManager.Inst.IsBlocked(vec.x + 1, vecY)) // Plant타일이 약간 띄어져 있어서 어색한 이동 방지 목적의 코드
+		if (MapManager.Inst.IsBlocked(vec.x, vecY, HitboxWidth, HitboxHeight) && !MapManager.Inst.IsBlocked(vec.x + 1, vecY, HitboxWidth, HitboxHeight)) // Plant타일이 약간 띄어져 있어서 어색한 이동 방지 목적의 코드
 		{
 			float targetX = vec.x + 1;
 			if (Math.Abs(_newX - targetX) < 0.1f)
@@ -212,7 +216,7 @@ public class CreatureController : MonoBehaviour
 		{
 			if (testX <= 0.4f)
 			{
-				if (!MapManager.Inst.IsBlocked(vec.x, vecY) && MapManager.Inst.IsBlocked(vec.x + 1, vecY))
+				if (!MapManager.Inst.IsBlocked(vec.x, vecY, HitboxWidth, HitboxHeight) && MapManager.Inst.IsBlocked(vec.x + 1, vecY, HitboxWidth, HitboxHeight))
 				{
 					float targetX = (float)Math.Round((double)_newX, MidpointRounding.AwayFromZero);
 					if (Math.Abs(_newX - targetX) < 0.1f)
@@ -223,7 +227,7 @@ public class CreatureController : MonoBehaviour
 			}
 			else if (testX >= 0.9f)
 			{
-				if (MapManager.Inst.IsBlocked(vec.x + 1, vecY) && !MapManager.Inst.IsBlocked(vec.x + 2, vecY))
+				if (MapManager.Inst.IsBlocked(vec.x + 1, vecY, HitboxWidth, HitboxHeight) && !MapManager.Inst.IsBlocked(vec.x + 2, vecY, HitboxWidth, HitboxHeight))
 				{
 					float targetX = (float)Math.Round((double)_newX - 1, MidpointRounding.AwayFromZero);
 
@@ -281,5 +285,11 @@ public class CreatureController : MonoBehaviour
 			m_spriteRenderer.flipX = m_bIsFacingLeft;
 			m_bIsFacingLeft = !m_bIsFacingLeft;
 		}
+	}
+
+	public virtual void Die()
+	{
+		MapManager.Inst.RemoveHitboxTile(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight);
+		gameObject.SetActive(false);
 	}
 }

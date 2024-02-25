@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Slash",
+    "MP": 0,
+    "hitCount": 1,
+    "attack": 5,
+    "attackCellRange": 1,
+    "attackRadius": 1,
+    "hitTime": 0
+  },
+  {
+    "name": "Blast",
+    "MP": 0,
+    "hitCount": 3,
+    "attack": 10,
+    "attackCellRange": 4,
+    "attackRadius": 2,
+    "hitTime": 0.9
+  }
+]

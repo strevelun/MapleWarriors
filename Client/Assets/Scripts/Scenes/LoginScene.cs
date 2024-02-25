@@ -15,11 +15,11 @@ public class LoginScene : BaseScene
 		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = 60;
 		Screen.SetResolution(1280, 720, false);
-		SceneType = Define.Scene.Login;
+		SceneType = Define.eScene.Login;
 		GameObject obj, child;
 		UIButton uiBtn;
 
-		obj = UIManager.Inst.SetSceneUI(Define.Scene.Login).gameObject;
+		obj = UIManager.Inst.SetSceneUI(Define.eScene.Login).gameObject;
 		if (obj)
 		{
 			child = Util.FindChild(obj, true, "Input");
@@ -31,21 +31,21 @@ public class LoginScene : BaseScene
 				uiBtn.Init(() => OnLoginButtonClicked());
 			}
 		}
-		UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UILoginFailPopup_WrongInput);
-		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopup.UILoginFailPopup_WrongInput));
+		UIPopup popup = UIManager.Inst.AddUI(Define.eUIPopup.UILoginFailPopup_WrongInput);
+		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.eUIPopup.UILoginFailPopup_WrongInput));
 
-		popup = UIManager.Inst.AddUI(Define.UIPopup.UILoginFailPopup_AlreadyLoggedIn);
-		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopup.UILoginFailPopup_AlreadyLoggedIn));
+		popup = UIManager.Inst.AddUI(Define.eUIPopup.UILoginFailPopup_AlreadyLoggedIn);
+		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.eUIPopup.UILoginFailPopup_AlreadyLoggedIn));
 		
-		popup = UIManager.Inst.AddUI(Define.UIPopup.UILoginFailPopup_Full);
-		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopup.UILoginFailPopup_Full));
+		popup = UIManager.Inst.AddUI(Define.eUIPopup.UILoginFailPopup_Full);
+		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.eUIPopup.UILoginFailPopup_Full));
 
-		popup = UIManager.Inst.AddUI(Define.UIPopup.UIConnectFailPopup);
+		popup = UIManager.Inst.AddUI(Define.eUIPopup.UIConnectFailPopup);
 		popup.SetButtonAction("OKBtn", () => OnConnectFailButtonClicked());
 
-		popup = UIManager.Inst.AddUI(Define.UIPopup.UIDisconnectPopup, false);
+		popup = UIManager.Inst.AddUI(Define.eUIPopup.UIDisconnectPopup, false);
 		popup.SetButtonAction("OKBtn", () => { 
-			UIManager.Inst.HidePopupUI(Define.UIPopup.UIDisconnectPopup);
+			UIManager.Inst.HidePopupUI(Define.eUIPopup.UIDisconnectPopup);
 #if UNITY_EDITOR
 			UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -81,7 +81,7 @@ public class LoginScene : BaseScene
 	{
 		if (string.IsNullOrEmpty(m_input.text) || m_input.text.Contains(" "))
 		{
-			UIManager.Inst.ShowPopupUI(Define.UIPopup.UILoginFailPopup_WrongInput);
+			UIManager.Inst.ShowPopupUI(Define.eUIPopup.UILoginFailPopup_WrongInput);
 			return;
 		}
 
@@ -93,7 +93,7 @@ public class LoginScene : BaseScene
 
 	void OnConnectFailButtonClicked()
 	{
-		UIManager.Inst.HidePopupUI(Define.UIPopup.UIConnectFailPopup);
+		UIManager.Inst.HidePopupUI(Define.eUIPopup.UIConnectFailPopup);
 
 #if UNITY_EDITOR
 		UnityEditor.EditorApplication.isPlaying = false;

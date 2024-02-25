@@ -14,8 +14,8 @@ public class MapManager
 	}
 
 	public Grid CurMap { get; private set; }
-	Tilemap m_tmBase, m_tmCollision, m_tmAim;
-	Tile m_aimTile;
+	Tilemap m_tmBase, m_tmCollision, m_tmAim, m_tmHitbox;
+	Tile m_aimTile, m_hitboxTile;
 
 	public int MinX { get; private set; }
 	public int MaxX { get; private set; }
@@ -44,6 +44,10 @@ public class MapManager
 		m_tmAim = Util.FindChild<Tilemap>(go, true, "TM_Aim");
 		m_aimTile = ScriptableObject.CreateInstance<Tile>();
 		m_aimTile.sprite = ResourceManager.Inst.LoadSprite("Etc/Aim");
+
+		m_tmHitbox = Util.FindChild<Tilemap>(go, true, "TM_Hitbox");
+		m_hitboxTile = ScriptableObject.CreateInstance<Tile>();
+		m_hitboxTile.sprite = ResourceManager.Inst.LoadSprite("Etc/Hitbox");
 	}
 
 	private void CreateCollisionMap(GameObject _prefabMap)
@@ -84,11 +88,24 @@ public class MapManager
 		m_tmCollision.gameObject.SetActive(false);
 	}
 
-	public bool IsBlocked(int _cellXPos, int _cellYPos)
+	public bool IsBlocked(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight)
 	{
-		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= XSize || _cellYPos >= YSize) return true;
+		int hitboxWidth = _hitboxWidth - 1;
+		int hitboxHeight = _hitboxHeight - 1;
+		if (_cellXPos < 0 || _cellYPos - hitboxHeight < 0 || _cellXPos + hitboxWidth >= XSize || _cellYPos >= YSize) return true;
 
-		return m_collisionMap[_cellYPos, _cellXPos];
+		for(int y = _cellYPos; y >= _cellYPos - hitboxHeight; --y)
+		{
+			for(int x= _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
+			{
+				if (m_collisionMap[y, x])
+				{
+					return m_collisionMap[y, x];
+				}
+			}
+		}
+
+		return false;
 	}
 
 	public Vector2Int WorldToCell(float _xpos, float _ypos)
@@ -97,41 +114,92 @@ public class MapManager
 		return new Vector2Int(v.x, v.y);
 	}
 
-	public MonsterController GetMonster(int _cellXPos, int _cellYPos)
+	public Queue<MonsterController> GetMonsters(int _cellXPos, int _cellYPos)
 	{
-		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= XSize || _cellYPos >= YSize) return null;
+		if (IsBlocked(_cellXPos, _cellYPos, 1, 1)) return null;
 		if (m_monsterMap[_cellYPos, _cellXPos].Count == 0) return null;
-		
-		return m_monsterMap[_cellYPos, _cellXPos].Peek();
+
+		return new Queue<MonsterController>(m_monsterMap[_cellYPos, _cellXPos]);
 	}
 
-	public void AddMonster(MonsterController _mc, int _cellXPos, int _cellYPos)
+	public void AddMonster(MonsterController _mc)
 	{
-		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= XSize || _cellYPos >= YSize) return;
+		if (IsBlocked(_mc.CellPos.x, _mc.CellPos.y, _mc.HitboxWidth, _mc.HitboxHeight)) return;
 
-		m_monsterMap[_cellYPos, _cellXPos].Enqueue(_mc);
+		int hitboxWidth = _mc.HitboxWidth - 1;
+		int hitboxHeight = _mc.HitboxHeight - 1;
+
+		for (int y = _mc.CellPos.y; y >= _mc.CellPos.y - hitboxHeight; --y)
+		{
+			for (int x = _mc.CellPos.x; x <= _mc.CellPos.x + hitboxWidth; ++x)
+			{
+				m_monsterMap[y, x].Enqueue(_mc);
+			}
+		}
+
 	}
 
-	public void RemoveMonster(int _cellXPos, int _cellYPos)
+	public void RemoveMonster(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight)
 	{
-		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= XSize || _cellYPos >= YSize) return;
+		if (IsBlocked(_cellXPos, _cellYPos, 1, 1)) return;
 		if (m_monsterMap[_cellYPos, _cellXPos].Count == 0) return;
 
-		m_monsterMap[_cellYPos, _cellXPos].Dequeue();
+		int hitboxWidth = _hitboxWidth - 1;
+		int hitboxHeight = _hitboxHeight - 1;
+
+		for (int y = _cellYPos; y >= _cellYPos - hitboxHeight; --y)
+		{
+			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
+			{
+				m_monsterMap[y, x].Dequeue();
+			}
+		}
 	}
 
 	public void SetAimTile(int _cellXPos, int _cellYPos)
 	{
-		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= XSize || _cellYPos >= YSize) return;
+		if (IsBlocked(_cellXPos, _cellYPos, 1, 1)) return;
 
 		m_tmAim.SetTile(new Vector3Int(_cellXPos, -_cellYPos, 0), m_aimTile);
 	}
 
 	public void RemoveAimTile(int _cellXPos, int _cellYPos)
 	{
-		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= XSize || _cellYPos >= YSize) return;
+		if (IsBlocked(_cellXPos, _cellYPos, 1, 1)) return;
 
 		m_tmAim.SetTile(new Vector3Int(_cellXPos, -_cellYPos, 0), null);
+	}
+
+	public void SetHitboxTile(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight)
+	{
+		if (IsBlocked(_cellXPos, _cellYPos, _hitboxWidth, _hitboxHeight)) return;
+
+		int hitboxWidth = _hitboxWidth - 1;
+		int hitboxHeight = _hitboxHeight - 1;
+
+		for (int y = _cellYPos; y >= _cellYPos - hitboxHeight; --y)
+		{
+			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
+			{
+				m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), m_hitboxTile);
+			}
+		}
+	}
+
+	public void RemoveHitboxTile(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight)
+	{
+		if (IsBlocked(_cellXPos, _cellYPos, _hitboxWidth, _hitboxHeight)) return;
+
+		int hitboxWidth = _hitboxWidth - 1;
+		int hitboxHeight = _hitboxHeight - 1;
+
+		for (int y = _cellYPos; y >= _cellYPos - hitboxHeight; --y)
+		{
+			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
+			{
+				m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), null);
+			}
+		}
 	}
 
 	public void Destroy()

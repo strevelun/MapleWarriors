@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Define;
 
 public static class InGamePacketMaker
 {
@@ -51,12 +52,20 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet Attack(string _monsterName) // 매개변수 : Attack 번호
+	public static Packet Attack(List<MonsterController> _targets, eSkill _skill) // 매개변수 : Attack 번호
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eClient.Attack)
-			.Add(_monsterName);
+			.Add((ushort)_targets.Count);
+
+		foreach(MonsterController mc in _targets)
+		{
+			pkt.Add(mc.name);
+		}
+
+		pkt.Add((byte)_skill);
+
 		return pkt;
 	}
 }

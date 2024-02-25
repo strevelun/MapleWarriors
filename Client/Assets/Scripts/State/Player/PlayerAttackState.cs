@@ -2,38 +2,43 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static Define;
 
 public class PlayerAttackState : ICreatureState
 {
 	PlayerController m_player;
-	MonsterController m_target;
-	string m_playerAnimName;
+	eSkill m_eSkill;
+	List<MonsterController> m_targets;
 	bool m_animStart = false;
-	AnimatorStateInfo m_stateInfo;
+	AnimatorStateInfo m_stateInfo, m_skillStateInfo;
 	bool m_hit = false;
 
 	public bool CanEnter(CreatureController _cs)
 	{
 		// 현재 몬스터가 Dead 인 경우 AttackState로 바꿀 수 없음
 		//if (_target.CurState is MonsterHitState) return false;
-		if (m_target?.CurState is MonsterDeadState) return false;
+		//if (m_target?.CurState is MonsterDeadState) return false;
 
 		return true;
 	}
 
 	// 타겟이 없으면 그냥 공격 모션만 하고 끝
 	// 스킬 정보(애니이름, 언제 히트가 되는지 등)를 담고 있는 객체를 매개변수로
-	public PlayerAttackState(MonsterController _target, string _playerAnimName) 
+	public PlayerAttackState(List<MonsterController> _targets, eSkill _eSkill) 
 	{
-		m_playerAnimName = _playerAnimName;
-		m_target = _target;
+		m_eSkill = _eSkill;
+		m_targets = new List<MonsterController>(_targets);
 	}
 
 	public void Enter(CreatureController _cs)
 	{
 		m_player = _cs as PlayerController;
-		m_player.Anim.SetTrigger(m_playerAnimName);
+		m_player.Anim.SetTrigger("Attack");
 		// 플레이어의 Dir로 Flip
+		// 스킬 이펙트 있으면 재생
+		m_player.PlayCurSkillAnim(m_eSkill);
+
+		// 몬스터 멈추기 Dir = None
 	}
 
 	public void Update()
@@ -53,20 +58,23 @@ public class PlayerAttackState : ICreatureState
 	void UpdateAnimation()
 	{
 		m_stateInfo = m_player.Anim.GetCurrentAnimatorStateInfo(0);
+		m_skillStateInfo = m_player.SkillAnim.GetCurrentAnimatorStateInfo(0);
 
-		if (!m_animStart && m_stateInfo.IsName(m_playerAnimName))
+		if (!m_animStart && m_stateInfo.IsName("Attack"))
 			m_animStart = true;
 
-		if (m_animStart && !m_stateInfo.IsName(m_playerAnimName))
+		if (m_animStart && !m_stateInfo.IsName("Attack") && m_skillStateInfo.IsName("None"))
 		{
 			m_player.ChangeState(new PlayerIdleState());
 			//Debug.Log("PlayerAttackState Changed");
 			return;
 		}
 
-		if (!m_hit && m_target) //&& m_stateInfo.normalizedTime >= 0.3f)
+		if (!m_hit && m_targets.Count > 0 && m_stateInfo.normalizedTime >= 0.3f)
 		{
-			m_target.ChangeState(new MonsterHitState(m_player.AttackDamage));
+			foreach(MonsterController mc in m_targets)
+				mc.ChangeState(new MonsterHitState(m_player.AttackDamage));
+			
 			m_hit = true;
 		}
 	}

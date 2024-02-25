@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
+using static Define;
 
 public class PlayerController : CreatureController
 {
@@ -13,6 +15,11 @@ public class PlayerController : CreatureController
 		Walking,
 		Attack
 	}
+
+	GameObject m_skillAnimObj;
+	public Animator SkillAnim { get; private set; }
+	protected eSkill m_eCurSkill = eSkill.None;
+	protected eSkill m_eBeforeSkill = eSkill.None;
 
 	TextMeshProUGUI m_nicknameTMP;
 	TextMeshProUGUI m_positionTMP;
@@ -34,6 +41,20 @@ public class PlayerController : CreatureController
 	protected override void Update()
 	{
 		base.Update();
+
+
+		if (Dir == eDir.Right)
+		{
+			Vector3 currentScale = m_skillAnimObj.transform.localScale;
+			currentScale.x = -1;
+			m_skillAnimObj.transform.localScale = currentScale;
+		}
+		else if(Dir == eDir.Left)
+		{
+			Vector3 currentScale = m_skillAnimObj.transform.localScale;
+			currentScale.x = 1;
+			m_skillAnimObj.transform.localScale = currentScale;
+		}
 	}
 
 	protected override void FixedUpdate()
@@ -55,6 +76,11 @@ public class PlayerController : CreatureController
 		AttackDamage = 5;
 		AttackRange = 2;
 
+		HitboxWidth = 1;
+		HitboxHeight = 1;
+
+		//m_eCurSkill = eSkill.Slash;
+
 		GameObject nickname = Util.FindChild(gameObject, true, "Nickname");
 		m_nicknameTMP = nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 		m_nameTagUI = nickname.GetComponent<RectTransform>();
@@ -62,6 +88,9 @@ public class PlayerController : CreatureController
 		GameObject position = Util.FindChild(gameObject, true, "Position");
 		m_positionTMP = position.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 		m_positionTagUI = position.GetComponent<RectTransform>();
+
+		m_skillAnimObj = Util.FindChild(gameObject, true, "Skill");
+		SkillAnim = m_skillAnimObj.transform.GetChild(0).GetComponent<Animator>();
 
 		ChangeState(new PlayerIdleState());
 	}
@@ -95,5 +124,17 @@ public class PlayerController : CreatureController
 		CellPos = ConvertToCellPos(_destXPos, _destYPos);
 
 		transform.position = new Vector3(_destXPos, _destYPos);
+	}
+
+	public void PlayCurSkillAnim(eSkill _eSkill)
+	{
+		SkillAnim.Play(_eSkill.ToString());
+	}
+
+	public override void Die()
+	{
+		base.Die();
+
+		//gameObject.SetActive(false);
 	}
 }

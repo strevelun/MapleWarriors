@@ -19,7 +19,7 @@ public class Define
 
 	public const int RoomTitleMaxCount = 15;
 
-	public enum Scene
+	public enum eScene
 	{
 		None,
 		Login,
@@ -28,14 +28,14 @@ public class Define
 		InGame
 	}
 
-	public enum Stage
+	public enum eStage
 	{
 		None,
 		Test,
 
 	}
 
-	public enum UIPopup
+	public enum eUIPopup
 	{
 		UILoginFailPopup_WrongInput,
 		UILoginFailPopup_AlreadyLoggedIn,
@@ -51,13 +51,13 @@ public class Define
 		UIEnterRoomNopePopup,
 	}
 
-	public enum UIChat
+	public enum eUIChat
 	{
 		UILobbyChat,
 		UIRoomChat,
 	}
 
-	public enum UI
+	public enum eUI
 	{
 		UILobby_RoomList,
 		UILobby_RoomList_Block,
@@ -72,28 +72,35 @@ public class Define
 		#endregion
 	}
 
-	public enum UIBtn
+	public enum eUIBtn
 	{
 		MapChoiceBtn,
 	}
 
-	public enum RoomUserState
+	public enum eRoomUserState
 	{
 		None,
 		Ready,
 		Standby
 	}
 
-	public enum GameMap
+	public enum eGameMap
 	{
 		None,
 		Test,
 	}
 
-	public enum RoomState
+	public enum eRoomState
 	{
 		None,
 		Standby,
 		InGame,
+	}
+
+	public enum eSkill
+	{
+		None,
+		Slash,
+		Blast,
 	}
 }

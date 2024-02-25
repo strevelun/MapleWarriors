@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Define;
 
 public class MyPlayerController : PlayerController
 {
@@ -18,17 +19,20 @@ public class MyPlayerController : PlayerController
 		RightDown
 	}
 
+	Skill m_curSkill = null;
+
 	KeyCode m_curKeyCode = KeyCode.None;
 	bool m_bIsKeyDown = false;
 	bool m_bIsKeyUp = false;
 
-	Vector2Int m_prevMouseCellPos = Vector2Int.zero;
 
 	//eDir m_eDirInput = eDir.None;
 
     void Start()
-    {
-        
+	{
+		m_eCurSkill = eSkill.Slash;
+		m_eBeforeSkill = eSkill.Slash;
+		m_curSkill = new Skill(m_eCurSkill);
     }
 
     protected override void Update()
@@ -41,6 +45,10 @@ public class MyPlayerController : PlayerController
 			m_bIsKeyUp = true;
 			Dir = eDir.None;
 		}
+
+		InputSkillChoice();
+
+		m_curSkill.Update(CellPos);
 	}
 
 	protected override void FixedUpdate()
@@ -96,46 +104,45 @@ public class MyPlayerController : PlayerController
 		}
 	}
 
+	// SkillData의 정보를 토대로 
 	public void InputAttack()
 	{
+
+
 		// 스킬을 활성화한 상태에서만 마우스 포지션 추적
-		Vector2 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
-		mousePos.y = -mousePos.y + 1.0f;
-		Vector2Int mouseCellPos = MapManager.Inst.WorldToCell(mousePos.x, -mousePos.y);
 
-		Vector2Int dist = mouseCellPos - CellPos;
-		if (m_prevMouseCellPos != mouseCellPos)
+
+		if (Input.GetMouseButtonDown(0))
 		{
-			if(CheckAttackRange(dist.x, dist.y))
+			List<MonsterController> targets = new List<MonsterController>();
+			bool activated = m_curSkill.Activate(targets);
+			if (activated)
 			{
-				MapManager.Inst.SetAimTile(mouseCellPos.x, mouseCellPos.y);
-			}
-
-			MapManager.Inst.RemoveAimTile(m_prevMouseCellPos.x, m_prevMouseCellPos.y);
-			m_prevMouseCellPos = mouseCellPos;
-		}
-
-		if (CheckAttackRange(dist.x, dist.y))
-		{
-			if (Input.GetMouseButtonDown(0))
-			{
-				// 선택된 스킬 정보
-				MonsterController mc;
-				//for (int i = 0; i < 2; ++i) // 공격 길이 2
-				//{
-					mc = MapManager.Inst.GetMonster(mouseCellPos.x, mouseCellPos.y);
-				//}
-				ChangeState(new PlayerAttackState(mc, "Attack_0"));
-				Packet pkt = InGamePacketMaker.Attack(mc ? mc.name : string.Empty);
+				ChangeState(new PlayerAttackState(targets, m_eCurSkill));
+				Packet pkt = InGamePacketMaker.Attack(targets, m_eCurSkill); //mc ? mc.name : string.Empty);
 				NetworkManager.Inst.Send(pkt);
 			}
 		}
 	}
 
-	bool CheckAttackRange(int _cellXPos, int _cellYPos)
+	void InputSkillChoice()
 	{
-		if ((-AttackRange <= _cellXPos && _cellXPos <= AttackRange) 
-			&& (-AttackRange <= _cellYPos && _cellYPos <= AttackRange)) return true;
-		return false;
+		eSkill curSkill = eSkill.None;
+
+		if(Input.GetKeyDown(KeyCode.Alpha1))
+		{
+			curSkill = eSkill.Slash;
+		}
+		else if(Input.GetKeyDown(KeyCode.Alpha2))
+		{
+			curSkill = eSkill.Blast;
+		}
+
+		if (curSkill != eSkill.None && curSkill != m_eCurSkill)
+		{
+			m_eCurSkill = curSkill;
+			m_curSkill.RemoveAimTiles();
+			m_curSkill.SetSkill(curSkill);
+		}
 	}
 }

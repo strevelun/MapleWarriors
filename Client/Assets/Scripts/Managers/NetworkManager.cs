@@ -34,7 +34,7 @@ public class NetworkManager
 			m_connection = new Connection(socket);
 		} catch(SocketException e)
 		{
-			UIManager.Inst.ShowPopupUI(Define.UIPopup.UIConnectFailPopup, "서버와 연결할 수 없습니다.\n(오류코드 : " + e.SocketErrorCode + ")");
+			UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIConnectFailPopup, "서버와 연결할 수 없습니다.\n(오류코드 : " + e.SocketErrorCode + ")");
 		}
 	}
 

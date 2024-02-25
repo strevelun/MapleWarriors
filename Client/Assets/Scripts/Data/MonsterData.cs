@@ -11,6 +11,8 @@ public class MonsterData
 	public int			attackCellRange;	
 	public float		speed;
 	public int			visionCellRange;
+	public int			hitboxWidth;
+	public int			hitboxHeight;
 }
 
 [System.Serializable]

@@ -1,0 +1,683 @@
+fileFormatVersion: 2
+guid: 7660beb7b7f876c429c6ae72fb84655c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2082378250387763289
+    second: dark_stone_golem_1
+  - first:
+      213: -865272373549469829
+    second: dark_stone_golem_4
+  - first:
+      213: 2538158475060671590
+    second: dark_stone_golem_7
+  - first:
+      213: 6800859316852767025
+    second: dark_stone_golem_16
+  - first:
+      213: -2368519432552192983
+    second: dark_stone_golem_20
+  - first:
+      213: 9084020113175747476
+    second: dark_stone_golem_23
+  - first:
+      213: -2848978510326413831
+    second: dark_stone_golem_26
+  - first:
+      213: 1958548744371461508
+    second: dark_stone_golem_31
+  - first:
+      213: 5497041679400749703
+    second: dark_stone_golem_70
+  - first:
+      213: 5113981445713484081
+    second: dark_stone_golem_54
+  - first:
+      213: -1044625507723090157
+    second: dark_stone_golem_57
+  - first:
+      213: -2211336227355319588
+    second: dark_stone_golem_60
+  - first:
+      213: 2722349328708070235
+    second: dark_stone_golem_63
+  - first:
+      213: -6898382816560674436
+    second: dark_stone_golem_66
+  - first:
+      213: -8172184917597979928
+    second: dark_stone_golem_69
+  - first:
+      213: 3562951759475583833
+    second: dark_stone_golem_74
+  - first:
+      213: -9110038799546364184
+    second: dark_stone_golem_77
+  - first:
+      213: 5096886894251047329
+    second: dark_stone_golem_97
+  - first:
+      213: -2996918079769724026
+    second: dark_stone_golem_98
+  - first:
+      213: -4516615071906850388
+    second: dark_stone_golem_99
+  - first:
+      213: -4559009753241552421
+    second: dark_stone_golem_100
+  - first:
+      213: 1755301870789071135
+    second: dark_stone_golem_101
+  - first:
+      213: -6810952863765018666
+    second: dark_stone_golem_102
+  - first:
+      213: -784960001163276269
+    second: dark_stone_golem_103
+  - first:
+      213: -8127646980042169729
+    second: dark_stone_golem_104
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 87
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: dark_stone_golem_1
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 734
+        width: 175
+        height: 151
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7af43a1a308e913e0800000000000000
+      internalID: -2082378250387763289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_4
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 734
+        width: 177
+        height: 151
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7fef945c5fedf3f0800000000000000
+      internalID: -865272373549469829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_7
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 734
+        width: 179
+        height: 155
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66473a17fa9593320800000000000000
+      internalID: 2538158475060671590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_16
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 563
+        width: 175
+        height: 153
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1393a642481816e50800000000000000
+      internalID: 6800859316852767025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_20
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 563
+        width: 175
+        height: 149
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 924ed130024512fd0800000000000000
+      internalID: -2368519432552192983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_23
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 563
+        width: 175
+        height: 153
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49b185ae92ce01e70800000000000000
+      internalID: 9084020113175747476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_26
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 562
+        width: 175
+        height: 149
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f5c54fa3256678d0800000000000000
+      internalID: -2848978510326413831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_31
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 368
+        width: 258
+        height: 172
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48d5c87c4b92e2b10800000000000000
+      internalID: 1958548744371461508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_70
+      rect:
+        serializedVersion: 2
+        x: 1134
+        y: 189
+        width: 175
+        height: 186
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78ac238684a694c40800000000000000
+      internalID: 5497041679400749703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_54
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 189
+        width: 175
+        height: 151
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 139d0b3a70388f640800000000000000
+      internalID: 5113981445713484081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_57
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 189
+        width: 175
+        height: 151
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3176ad8a2aeb081f0800000000000000
+      internalID: -1044625507723090157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_60
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 189
+        width: 175
+        height: 151
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd2a889da61cf41e0800000000000000
+      internalID: -2211336227355319588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_63
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 189
+        width: 175
+        height: 151
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5bea247a4ab7c520800000000000000
+      internalID: 2722349328708070235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_66
+      rect:
+        serializedVersion: 2
+        x: 759
+        y: 189
+        width: 175
+        height: 151
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c790e36a0650440a0800000000000000
+      internalID: -6898382816560674436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_69
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 189
+        width: 175
+        height: 151
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ea74c39d11969e80800000000000000
+      internalID: -8172184917597979928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_74
+      rect:
+        serializedVersion: 2
+        x: 1324
+        y: 189
+        width: 175
+        height: 170
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95b25677fb5227130800000000000000
+      internalID: 3562951759475583833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_77
+      rect:
+        serializedVersion: 2
+        x: 1520
+        y: 189
+        width: 175
+        height: 171
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ee43079af3a29180800000000000000
+      internalID: -9110038799546364184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_97
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 10
+        width: 194
+        height: 152
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a97d2830a7cbb640800000000000000
+      internalID: 5096886894251047329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_98
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 10
+        width: 228
+        height: 152
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68b316282eec866d0800000000000000
+      internalID: -2996918079769724026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_99
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 10
+        width: 225
+        height: 148
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca911dba582c151c0800000000000000
+      internalID: -4516615071906850388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_101
+      rect:
+        serializedVersion: 2
+        x: 716
+        y: 10
+        width: 215
+        height: 136
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1116f160c51c5810800000000000000
+      internalID: 1755301870789071135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_102
+      rect:
+        serializedVersion: 2
+        x: 959
+        y: 10
+        width: 215
+        height: 133
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d74b55d472aa71a0800000000000000
+      internalID: -6810952863765018666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_103
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 10
+        width: 215
+        height: 74
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 310d5cfa9034b15f0800000000000000
+      internalID: -784960001163276269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark_stone_golem_104
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 10
+        width: 215
+        height: 74
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f726fce322cc43f80800000000000000
+      internalID: -8127646980042169729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -9,9 +9,9 @@ public class InGameScene : BaseScene
 		base.Init();
 
 		Screen.SetResolution(1280, 720, false);
-		SceneType = Define.Scene.InGame;
+		SceneType = Define.eScene.InGame;
 
-		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.Scene.InGame);
+		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.eScene.InGame);
 
 		Packet pkt = InGamePacketMaker.ReqInitInfo();
 		NetworkManager.Inst.Send(pkt);

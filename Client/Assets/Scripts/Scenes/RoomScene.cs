@@ -11,9 +11,9 @@ public class RoomScene : BaseScene
 		base.Init();
 
 		Screen.SetResolution(1280, 720, false);
-		SceneType = Define.Scene.Room;
+		SceneType = Define.eScene.Room;
 
-		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.Scene.Room);
+		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.eScene.Room);
 
 		{
 			GameObject obj = Util.FindChild(uiScene.gameObject, false, "BackBtn");
@@ -22,19 +22,19 @@ public class RoomScene : BaseScene
 		}
 
 		{
-			UIChat uichat = UIManager.Inst.AddUI(Define.UIChat.UIRoomChat);
-			uichat.Init(RoomPacketMaker.SendChat, Define.UIChat.UIRoomChat);
+			UIChat uichat = UIManager.Inst.AddUI(Define.eUIChat.UIRoomChat);
+			uichat.Init(RoomPacketMaker.SendChat, Define.eUIChat.UIRoomChat);
 		}
 
-		UIManager.Inst.AddUI(Define.UI.UIRoom_Users);
+		UIManager.Inst.AddUI(Define.eUI.UIRoom_Users);
 
 		{
-			GameObject parentObj = UIManager.Inst.AddUI(Define.UI.UIRoom_GamePanel);
+			GameObject parentObj = UIManager.Inst.AddUI(Define.eUI.UIRoom_GamePanel);
 			GameObject obj = Util.FindChild(parentObj, false, "MapChoiceBtn");
 			Button btn = obj.GetComponent<Button>();
 			btn.onClick.AddListener(OnMapChoiceBtnClicked);
 
-			obj = UIManager.Inst.AddUI(Define.UI.UIRoom_StartBtn);
+			obj = UIManager.Inst.AddUI(Define.eUI.UIRoom_StartBtn);
 			obj.transform.SetParent(parentObj.transform);
 			RectTransform rectTransform = obj.GetComponent<RectTransform>();
 			rectTransform.offsetMin = Vector2.zero;
@@ -43,7 +43,7 @@ public class RoomScene : BaseScene
 			UIButton uibtn = obj.GetComponent<UIButton>();
 			uibtn.Init(OnStartBtnClicked, obj);
 
-			obj = UIManager.Inst.AddUI(Define.UI.UIRoom_ReadyBtn);
+			obj = UIManager.Inst.AddUI(Define.eUI.UIRoom_ReadyBtn);
 			obj.transform.SetParent(parentObj.transform);
 			rectTransform = obj.GetComponent<RectTransform>();
 			rectTransform.offsetMin = Vector2.zero;
@@ -53,7 +53,7 @@ public class RoomScene : BaseScene
 			obj.transform.SetParent(parentObj.transform);
 			uibtn.Init(OnReadyBtnClicked, obj);
 			
-			obj = UIManager.Inst.AddUI(Define.UI.UIRoom_StandbyBtn);
+			obj = UIManager.Inst.AddUI(Define.eUI.UIRoom_StandbyBtn);
 			obj.transform.SetParent(parentObj.transform);
 			rectTransform = obj.GetComponent<RectTransform>();
 			rectTransform.offsetMin = Vector2.zero;
@@ -65,22 +65,22 @@ public class RoomScene : BaseScene
 		}
 
 		{
-			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UIGameStartFailPopup);
+			UIPopup popup = UIManager.Inst.AddUI(Define.eUIPopup.UIGameStartFailPopup);
 			GameObject obj = Util.FindChild(popup.gameObject, true, "OKBtn");
 			Button btn = obj.GetComponent<Button>();
 			btn.onClick.AddListener(() =>
 			{
-				UIManager.Inst.HidePopupUI(Define.UIPopup.UIGameStartFailPopup);
+				UIManager.Inst.HidePopupUI(Define.eUIPopup.UIGameStartFailPopup);
 			});
 		}
 
 		{ 
-			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopup.UIMapChoicePopup);
+			UIPopup popup = UIManager.Inst.AddUI(Define.eUIPopup.UIMapChoicePopup);
 			GameObject obj = Util.FindChild(popup.gameObject, true, "CancelBtn");
 			Button btn = obj.GetComponent<Button>();
 			btn.onClick.AddListener(() =>
 			{
-				UIManager.Inst.HidePopupUI(Define.UIPopup.UIMapChoicePopup);
+				UIManager.Inst.HidePopupUI(Define.eUIPopup.UIMapChoicePopup);
 			});
 		}
 
@@ -102,7 +102,7 @@ public class RoomScene : BaseScene
 
 	void OnMapChoiceBtnClicked()
 	{
-		UIManager.Inst.ShowPopupUI(Define.UIPopup.UIMapChoicePopup);
+		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIMapChoicePopup);
 	}
 
 	void OnStartBtnClicked(GameObject _obj)

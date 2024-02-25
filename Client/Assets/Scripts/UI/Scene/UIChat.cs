@@ -21,7 +21,7 @@ public class UIChat : MonoBehaviour
 
 	public uint ChatCount { get; set; } = 0;
 
-	public void Init(Func<string, Packet> _sendBtnFunc, Define.UIChat _uiChat)
+	public void Init(Func<string, Packet> _sendBtnFunc, Define.eUIChat _uiChat)
 	{
 		m_sendBtnFunc = _sendBtnFunc;
 		m_curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();

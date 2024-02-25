@@ -22,7 +22,7 @@ public class UIPage : MonoBehaviour
 	public byte MaxItemInPage { get; private set; }	
 
 	// SceneType¿∏∑Œ
-	public void Init(byte _maxPage, byte _maxItemInPage, string _itemPath, Define.UI _eItem, string _parentOfItemName)
+	public void Init(byte _maxPage, byte _maxItemInPage, string _itemPath, Define.eUI _eItem, string _parentOfItemName)
 	{
 		MaxPage = _maxPage;
 		MaxItemInPage = _maxItemInPage;

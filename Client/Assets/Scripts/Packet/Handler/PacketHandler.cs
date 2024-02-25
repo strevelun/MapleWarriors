@@ -6,11 +6,11 @@ public static class PacketHandler
 {
     public static void Handle(PacketReader _reader)
     {
-		Define.Scene eSceneType = SceneManagerEx.Inst.CurScene.SceneType;
+		Define.eScene eSceneType = SceneManagerEx.Inst.CurScene.SceneType;
 		PacketType.eServer type = _reader.GetPacketType();
 		//Debug.Log(eSceneType.ToString());
 
-		if (eSceneType == Define.Scene.Login)
+		if (eSceneType == Define.eScene.Login)
 		{
 			switch (type)
 			{
@@ -26,7 +26,7 @@ public static class PacketHandler
 					break;
 			}
 		}
-		else if (eSceneType == Define.Scene.Lobby)
+		else if (eSceneType == Define.eScene.Lobby)
 		{
 			switch (type)
 			{
@@ -62,7 +62,7 @@ public static class PacketHandler
 					break;
 			}
 		}
-		else if (eSceneType == Define.Scene.Room)
+		else if (eSceneType == Define.eScene.Room)
 		{
 			switch (type)
 			{
@@ -101,7 +101,7 @@ public static class PacketHandler
 					break;
 			}
 		}
-		else if (eSceneType == Define.Scene.InGame)
+		else if (eSceneType == Define.eScene.InGame)
 		{
 			switch (type)
 			{

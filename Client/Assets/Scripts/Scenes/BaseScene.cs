@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public abstract class BaseScene : MonoBehaviour
 {
 	public bool IsLoading { get; set; } = false;
-	public Define.Scene SceneType { get; protected set; } = Define.Scene.None;
+	public Define.eScene SceneType { get; protected set; } = Define.eScene.None;
 
 	void Start()
 	{

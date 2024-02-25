@@ -11,15 +11,15 @@ public class MonsterHitState : ICreatureState
 
 	AnimatorStateInfo m_stateInfo;
 
-	public bool CanEnter(CreatureController _cs)
-	{
-		return true;
-	}
-
 	// hit 애니메이션 도중 hit가 들어오면 처음부터 다시 
 	public MonsterHitState(int _damage)
 	{
 		m_damage = _damage;
+	}
+
+	public bool CanEnter(CreatureController _cs)
+	{
+		return true;
 	}
 
 	public void Enter(CreatureController _cs)
@@ -27,6 +27,7 @@ public class MonsterHitState : ICreatureState
 		m_mc = _cs as MonsterController;
 		m_mc.Anim.SetTrigger("Hit"); // 이게 실행될때마다 항상 0부터 시작해야
 		m_mc.Hit(m_damage);
+		//if(m_mc.CurState is MonsterRunState) m_mc.ChangeState(new MonsterIdleState());
 	}
 
 	public void Update()
@@ -57,12 +58,11 @@ public class MonsterHitState : ICreatureState
 		if (!m_animStart && m_stateInfo.IsName("Hit"))
 			m_animStart = true;
 
-		Debug.Log(m_animStart);
+		//Debug.Log(m_stateInfo.IsName("Hit"));
 
 		if (m_animStart && !m_stateInfo.IsName("Hit"))
 		{
-			if(IsDead())	
-				m_mc.ChangeState(new MonsterDeadState());
+			if(IsDead())	m_mc.ChangeState(new MonsterDeadState());
 			else			m_mc.ChangeState(new MonsterIdleState());
 
 			Debug.Log($"MonsterHitState HP : {m_mc.HP}");
