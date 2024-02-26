@@ -102,5 +102,16 @@ public class Define
 		None,
 		Slash,
 		Blast,
+		Skill1,
+		Skill2,
+		Skill3,
+	}
+
+	public enum eSkillType
+	{
+		None,
+		Melee,
+		Ranged,
+		Auto
 	}
 }

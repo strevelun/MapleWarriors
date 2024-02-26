@@ -1,12 +1,15 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
-using UnityEngine;
+using static Define;
 
 [System.Serializable]
 public class SkillData
 {
-    public string name;
-    public int mp;
+	[JsonConverter(typeof(StringEnumConverter))]
+	public eSkillType type;
+	public string name;
+    public int MP;
     public int hitCount;
     public int attack;
     public int attackCellRange;

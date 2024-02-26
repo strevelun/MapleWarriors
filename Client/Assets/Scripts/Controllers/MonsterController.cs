@@ -118,6 +118,7 @@ public class MonsterController : CreatureController
 
 		m_hpbarText = Util.FindChild(m_hpbarObj, true, "HPText").GetComponent<TextMeshProUGUI>();
 
+		GameManager.Inst.AddMonsterCnt();
 
 		StartCoroutine(ReadyForAttack());
 	}
@@ -375,6 +376,7 @@ public class MonsterController : CreatureController
 		base.Die();
 
 		gameObject.SetActive(false);
+		GameManager.Inst.SubMonsterCnt();
 	}
 
 	public void DequeueTarget()

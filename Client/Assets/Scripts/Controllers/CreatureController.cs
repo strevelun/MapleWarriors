@@ -285,7 +285,7 @@ public class CreatureController : MonoBehaviour
 		return new Vector2Int((int)(_xpos + m_cellSize), (int)(-_ypos + m_cellSize));
 	}
 
-	public void Flip()
+	public virtual void Flip()
 	{
 		if ((Dir == eDir.Right && m_bIsFacingLeft)
 			|| (Dir == eDir.Left && !m_bIsFacingLeft))

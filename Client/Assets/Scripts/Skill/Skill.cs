@@ -5,10 +5,23 @@ using static Define;
 
 public class Skill
 {
+	enum eSkillDir
+	{
+		None,
+		Left,
+		Up,
+		Right,
+		Down
+	}
+
 	SkillData m_skillData;
 	Vector2Int m_prevMouseCellPos = Vector2Int.zero;
 	Vector2Int m_dist;
 	Vector2Int m_mouseCellPos;
+	Vector2Int m_cellPos;
+	eSkillDir m_eDir, m_eLastDir;
+
+	Queue<Vector2Int> m_aims = new Queue<Vector2Int>();
 
 	public Skill(eSkill _skill)
 	{
@@ -17,7 +30,11 @@ public class Skill
 
 	public void SetSkill(eSkill _skill)
 	{
+		RemoveAimTiles();
+
 		m_skillData = DataManager.Inst.FindSkillData(_skill.ToString());
+		if (m_skillData.type == eSkillType.Melee && m_skillData.attackRadius >= 2) 
+			m_skillData.attackRadius = 2;
 	}
 
 	public bool Activate(List<MonsterController> _targets)
@@ -40,28 +57,102 @@ public class Skill
 		int r = m_skillData.attackRadius - 1;
 		HashSet<MonsterController> hsMonsters = new HashSet<MonsterController>();
 
-		for (int i = m_mouseCellPos.y - r; i <= m_mouseCellPos.y + r; ++i)
+		switch (m_skillData.type)
 		{
-			for (int j = m_mouseCellPos.x - r; j <= m_mouseCellPos.x + r; ++j)
-			{
-				mcs = MapManager.Inst.GetMonsters(j, i);
-				if (mcs == null) continue;
-
-				while (mcs.Count > 0)
+			case eSkillType.Melee:
 				{
-					MonsterController mc = mcs.Peek();
+					if (m_eDir == eSkillDir.None) break;
 
-					if (!hsMonsters.Contains(mc))
+					int startX = 0, endX = 0, startY = 0, endY = 0;
+					int pnt = 0;
+
+					if (m_eDir == eSkillDir.Left)
 					{
-						_targets.Add(mc);
-						hsMonsters.Add(mc);
-						++cnt;
-
-						if (cnt >= m_skillData.hitCount) return;
+						pnt = m_cellPos.y;
+						startX = m_mouseCellPos.x;
+						endX = m_cellPos.x;
+						startY = pnt - (m_skillData.attackRadius - 1);
+						endY = pnt + (m_skillData.attackRadius - 1);
 					}
-					mcs.Dequeue();
+					else if (m_eDir == eSkillDir.Right)
+					{
+						pnt = m_cellPos.y;
+						startX = m_cellPos.x;
+						endX = m_mouseCellPos.x;
+						startY = pnt - (m_skillData.attackRadius - 1);
+						endY = pnt + (m_skillData.attackRadius - 1);
+					}
+					else if (m_eDir == eSkillDir.Up)
+					{
+						pnt = m_cellPos.x;
+						startY = m_mouseCellPos.y;
+						endY = m_cellPos.y;
+						startX = pnt - (m_skillData.attackRadius - 1);
+						endX = pnt + (m_skillData.attackRadius - 1);
+					}
+					else if (m_eDir == eSkillDir.Down)
+					{
+						pnt = m_cellPos.x;
+						startY = m_cellPos.y;
+						endY = m_mouseCellPos.y;
+						startX = pnt - (m_skillData.attackRadius - 1);
+						endX = pnt + (m_skillData.attackRadius - 1);
+					}
+
+					for (int i = startX; i <= endX; ++i)
+					{
+						for (int j = startY; j <= endY; ++j)
+						{
+							mcs = MapManager.Inst.GetMonsters(i, j);
+							if (mcs == null) continue;
+
+							while (mcs.Count > 0)
+							{
+								MonsterController mc = mcs.Peek();
+
+								if (!hsMonsters.Contains(mc))
+								{
+									_targets.Add(mc);
+									hsMonsters.Add(mc);
+									++cnt;
+
+									if (cnt >= m_skillData.hitCount) return;
+								}
+								mcs.Dequeue();
+							}
+						}
+					}
 				}
-			}
+				break;
+			case eSkillType.Ranged:
+				{
+					for (int i = m_mouseCellPos.y - r; i <= m_mouseCellPos.y + r; ++i)
+					{
+						for (int j = m_mouseCellPos.x - r; j <= m_mouseCellPos.x + r; ++j)
+						{
+							mcs = MapManager.Inst.GetMonsters(j, i);
+							if (mcs == null) continue;
+
+							while (mcs.Count > 0)
+							{
+								MonsterController mc = mcs.Peek();
+
+								if (!hsMonsters.Contains(mc))
+								{
+									_targets.Add(mc);
+									hsMonsters.Add(mc);
+									++cnt;
+
+									if (cnt >= m_skillData.hitCount) return;
+								}
+								mcs.Dequeue();
+							}
+						}
+					}
+				}
+				break;
+			case eSkillType.Auto:
+				break;
 		}
 	}
 
@@ -71,6 +162,7 @@ public class Skill
 		mousePos.y = -mousePos.y + 1.0f;
 		m_mouseCellPos = MapManager.Inst.WorldToCell(mousePos.x, -mousePos.y);
 
+		m_cellPos = _cellPos;
 		m_dist = m_mouseCellPos - _cellPos;
 
 		if (m_prevMouseCellPos != m_mouseCellPos)
@@ -79,18 +171,8 @@ public class Skill
 
 			if (CheckAttackRange(m_dist.x, m_dist.y))
 			{
-				int r = m_skillData.attackRadius - 1;
-				for (int i = m_mouseCellPos.y - r; i <= m_mouseCellPos.y + r; ++i)
-				{
-					for (int j = m_mouseCellPos.x - r; j <= m_mouseCellPos.x + r; ++j)
-					{
-						MapManager.Inst.SetAimTile(j, i);
-						//Debug.Log($"{j}, {i}");
-					}
-				}
+				SetAimTiles();
 			}
-
-			
 			m_prevMouseCellPos = m_mouseCellPos;
 		}
 	}
@@ -104,14 +186,123 @@ public class Skill
 
 	public void RemoveAimTiles()
 	{
-		int r = m_skillData.attackRadius - 1;
-
-		for (int i = m_prevMouseCellPos.y - r; i <= m_prevMouseCellPos.y + r; ++i)
+		switch(m_skillData.type)
 		{
-			for (int j = m_prevMouseCellPos.x - r; j <= m_prevMouseCellPos.x + r; ++j)
-			{
-				MapManager.Inst.RemoveAimTile(j, i);
-			}
+			case eSkillType.Melee:
+				{
+					while (m_aims.Count > 0)
+					{
+						Vector2Int aim = m_aims.Peek();
+						MapManager.Inst.RemoveAimTile(aim.x, aim.y);
+						m_aims.Dequeue();
+					}
+				}
+				break;
+			case eSkillType.Ranged:
+				{
+					while (m_aims.Count > 0)
+					{
+						Vector2Int aim = m_aims.Peek();
+						MapManager.Inst.RemoveAimTile(aim.x, aim.y);
+						m_aims.Dequeue();
+					}
+				}
+				break;
+			case eSkillType.Auto:
+				break;
 		}
+		
+	}
+
+	void SetAimTiles()
+	{
+		switch (m_skillData.type)
+		{
+			case eSkillType.Melee:
+				{
+					FindDir();
+
+					if (m_eDir == eSkillDir.None) break;
+
+					int startX = 0, endX = 0, startY = 0, endY = 0;
+					int pnt = 0;
+
+					if (m_eDir == eSkillDir.Left)
+					{
+						pnt = m_cellPos.y;
+						startX = m_mouseCellPos.x;
+						endX = m_cellPos.x;
+						startY = pnt - (m_skillData.attackRadius - 1);
+						endY = pnt + (m_skillData.attackRadius - 1);
+						
+					}
+					else if(m_eDir == eSkillDir.Right)
+					{
+						pnt = m_cellPos.y;
+						startX = m_cellPos.x;
+						endX = m_mouseCellPos.x;
+						startY = pnt - (m_skillData.attackRadius - 1);
+						endY = pnt + (m_skillData.attackRadius - 1);
+					}
+					else if (m_eDir == eSkillDir.Up)
+					{
+						pnt = m_cellPos.x;
+						startY = m_mouseCellPos.y;
+						endY = m_cellPos.y;
+						startX = pnt - (m_skillData.attackRadius - 1);
+						endX = pnt + (m_skillData.attackRadius - 1);
+					}
+					else if (m_eDir == eSkillDir.Down)
+					{
+						pnt = m_cellPos.x;
+						startY = m_cellPos.y;
+						endY = m_mouseCellPos.y;
+						startX = pnt - (m_skillData.attackRadius - 1);
+						endX = pnt + (m_skillData.attackRadius - 1);
+					}
+					
+					for(int i=startX; i<=endX; ++i)
+					{
+						for (int j = startY; j <= endY; ++j)
+						{
+							MapManager.Inst.SetAimTile(i, j);
+							m_aims.Enqueue(new Vector2Int(i, j));
+						}
+					}
+				}
+				break;
+			case eSkillType.Ranged:
+				{
+					int r = m_skillData.attackRadius - 1;
+					for (int i = m_mouseCellPos.y - r; i <= m_mouseCellPos.y + r; ++i)
+						for (int j = m_mouseCellPos.x - r; j <= m_mouseCellPos.x + r; ++j)
+						{
+							MapManager.Inst.SetAimTile(j, i);
+							m_aims.Enqueue(new Vector2Int(j, i));
+						}
+				}
+				break;
+			case eSkillType.Auto:
+				break;
+		}
+	}
+
+	void FindDir()
+	{
+		eSkillDir dir;
+
+		if (m_dist.x <= -1 && -1 <= m_dist.y && m_dist.y <= 1) dir = eSkillDir.Left;
+		else if (m_dist.x >= 1 && -1 <= m_dist.y && m_dist.y <= 1) dir = eSkillDir.Right;
+		else if (m_dist.y <= -1 && -1 <= m_dist.x && m_dist.x <= 1) dir = eSkillDir.Up;
+		else if (m_dist.y >= 1 && -1 <= m_dist.x && m_dist.x <= 1) dir = eSkillDir.Down;
+		else dir = eSkillDir.None;
+
+		if(dir != m_eDir)
+		{
+			m_eLastDir = m_eDir;
+			m_eDir = dir;
+		}
+
+		//Debug.Log(m_eDir);
 	}
 }

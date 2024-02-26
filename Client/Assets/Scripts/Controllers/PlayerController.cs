@@ -44,7 +44,7 @@ public class PlayerController : CreatureController
 	{
 		base.Update();
 
-
+		/*
 		if (Dir == eDir.Right)
 		{
 			Vector3 currentScale = m_skillAnimObj.transform.localScale;
@@ -57,6 +57,7 @@ public class PlayerController : CreatureController
 			currentScale.x = 1;
 			m_skillAnimObj.transform.localScale = currentScale;
 		}
+		*/
 	}
 
 	protected override void FixedUpdate()
@@ -96,6 +97,8 @@ public class PlayerController : CreatureController
 
 		m_tombstoneAnimObj = Util.FindChild(gameObject, true, "Tombstone");
 		m_tombstoneAnimObj.SetActive(false);
+
+		GameManager.Inst.AddPlayerCnt();
 
 		ChangeState(new PlayerIdleState());
 	}
@@ -148,6 +151,28 @@ public class PlayerController : CreatureController
 		base.Die();
 
 		m_tombstoneAnimObj.SetActive(true);
-		//gameObject.SetActive(false);
+
+		GameManager.Inst.SubPlayerCnt();
+	}
+
+	public override void Flip()
+	{
+		if (Dir == eDir.Right && m_bIsFacingLeft)
+		{
+			m_skillAnimObj.transform.position = new Vector3(CellPos.x + 1, -CellPos.y);
+			Debug.Log("플립1");
+		}
+		else if(Dir == eDir.Left && !m_bIsFacingLeft)
+		{
+			m_skillAnimObj.transform.position = new Vector3(CellPos.x, -CellPos.y);
+			Debug.Log("플립2");
+		}
+
+		base.Flip();
+	}
+
+	void SetSkillObjPos(int _cellPosX, int _cellPosY)
+	{
+		m_skillAnimObj.transform.position = new Vector3(_cellPosX, -_cellPosY);
 	}
 }

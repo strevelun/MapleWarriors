@@ -1,57 +1,59 @@
-[
-  {
-    "name": "Slime",
-    "HP": 15,
-    "attack": 5,
-    "attackCellRange": 1,
-    "speed": 3,
-    "visionCellRange": 5,
-    "maxHitPlayer": 1,
-    "hitboxWidth": 1,
-    "hitboxHeight": 1
-  },
-  {
-    "name": "Blue_Mushroom",
-    "HP": 10,
-    "attack": 1,
-    "attackCellRange": 1,
-    "speed": 1,
-    "visionCellRange": 3,
-    "maxHitPlayer": 1,
-    "hitboxWidth": 1,
-    "hitboxHeight": 1
-  },
-  {
-    "name": "Dark_Stone_Golem",
-    "HP": 20,
-    "attack": 7,
-    "attackCellRange": 2,
-    "speed": 1,
-    "visionCellRange": 4,
-    "maxHitPlayer": 1,
-    "hitboxWidth": 2,
-    "hitboxHeight": 2
-  },
-  {
-    "name": "Boss1",
-    "HP": 20,
-    "attack": 1,
-    "attackCellRange": 3,
-    "speed": 1,
-    "visionCellRange": 5,
-    "maxHitPlayer": 2,
-    "hitboxWidth": 1,
-    "hitboxHeight": 2
-  },
-  {
-    "name": "Boss2",
-    "HP": 30,
-    "attack": 5,
-    "attackCellRange": 5,
-    "speed": 1,
-    "visionCellRange": 8,
-    "maxHitPlayer": 3,
-    "hitboxWidth": 3,
-    "hitboxHeight": 3
-  }
-]
+{
+  "monsters": [
+    {
+      "name": "Slime",
+      "HP": 15,
+      "attack": 5,
+      "attackCellRange": 1,
+      "speed": 3,
+      "visionCellRange": 5,
+      "maxHitPlayer": 1,
+      "hitboxWidth": 1,
+      "hitboxHeight": 1
+    },
+    {
+      "name": "Blue_Mushroom",
+      "HP": 10,
+      "attack": 1,
+      "attackCellRange": 1,
+      "speed": 1,
+      "visionCellRange": 3,
+      "maxHitPlayer": 1,
+      "hitboxWidth": 1,
+      "hitboxHeight": 1
+    },
+    {
+      "name": "Dark_Stone_Golem",
+      "HP": 20,
+      "attack": 7,
+      "attackCellRange": 2,
+      "speed": 1,
+      "visionCellRange": 4,
+      "maxHitPlayer": 1,
+      "hitboxWidth": 2,
+      "hitboxHeight": 2
+    },
+    {
+      "name": "Boss1",
+      "HP": 20,
+      "attack": 1,
+      "attackCellRange": 3,
+      "speed": 1,
+      "visionCellRange": 5,
+      "maxHitPlayer": 2,
+      "hitboxWidth": 1,
+      "hitboxHeight": 2
+    },
+    {
+      "name": "Boss2",
+      "HP": 30,
+      "attack": 5,
+      "attackCellRange": 5,
+      "speed": 1,
+      "visionCellRange": 8,
+      "maxHitPlayer": 3,
+      "hitboxWidth": 3,
+      "hitboxHeight": 3
+    }
+  ]
+}

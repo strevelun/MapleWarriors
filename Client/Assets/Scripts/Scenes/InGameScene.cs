@@ -31,6 +31,6 @@ public class InGameScene : BaseScene
 
 	void Update()
 	{
-
+		GameManager.Inst.Update();
 	}
 }

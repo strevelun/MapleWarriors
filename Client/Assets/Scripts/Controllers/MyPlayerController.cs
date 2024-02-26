@@ -137,6 +137,18 @@ public class MyPlayerController : PlayerController
 		{
 			curSkill = eSkill.Blast;
 		}
+		else if (Input.GetKeyDown(KeyCode.Alpha3))
+		{
+			curSkill = eSkill.Skill1;
+		}
+		else if (Input.GetKeyDown(KeyCode.Alpha4))
+		{
+			curSkill = eSkill.Skill2;
+		}
+		else if (Input.GetKeyDown(KeyCode.Alpha5))
+		{
+			curSkill = eSkill.Skill3;
+		}
 
 		if (curSkill != eSkill.None && curSkill != m_eCurSkill)
 		{

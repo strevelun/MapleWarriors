@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -47,7 +48,7 @@ public class DataManager : MonoBehaviour
 	{
 		string filePath = Path.Combine(Application.streamingAssetsPath, "Data/MonsterData.json");
 		string dataAsJson = File.ReadAllText(filePath);
-		MonsterDataList loadedData = JsonUtility.FromJson<MonsterDataList>("{\"monsters\":" + dataAsJson + "}");
+		MonsterDataList loadedData = JsonConvert.DeserializeObject<MonsterDataList>(dataAsJson);
 
 		foreach (MonsterData monster in loadedData.monsters)
 		{
@@ -59,7 +60,7 @@ public class DataManager : MonoBehaviour
 	{
 		string filePath = Path.Combine(Application.streamingAssetsPath, "Data/SkillData.json");
 		string dataAsJson = File.ReadAllText(filePath);
-		SkillDataList loadedData = JsonUtility.FromJson<SkillDataList>("{\"skills\":" + dataAsJson + "}");
+		SkillDataList loadedData = JsonConvert.DeserializeObject<SkillDataList>(dataAsJson);
 
 		foreach (SkillData skill in loadedData.skills)
 		{
