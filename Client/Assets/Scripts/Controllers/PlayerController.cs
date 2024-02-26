@@ -16,21 +16,23 @@ public class PlayerController : CreatureController
 		Attack
 	}
 
+	GameObject m_tombstoneAnimObj;
+
 	GameObject m_skillAnimObj;
 	public Animator SkillAnim { get; private set; }
 	protected eSkill m_eCurSkill = eSkill.None;
 	protected eSkill m_eBeforeSkill = eSkill.None;
 
 	TextMeshProUGUI m_nicknameTMP;
-	TextMeshProUGUI m_positionTMP;
+	//TextMeshProUGUI m_positionTMP;
 	string m_strNickname;
 
 	[SerializeField]
 	Vector2 m_nameTagOffset = new Vector2(0.5f, 1.5f); 
 	RectTransform m_nameTagUI;
 	[SerializeField]
-	Vector2 m_positionTagOffset = new Vector2(0.5f, 2.5f);
-	RectTransform m_positionTagUI;
+	//Vector2 m_positionTagOffset = new Vector2(0.5f, 2.5f);
+	//RectTransform m_positionTagUI;
 
 	public eState State { get; private set; } = eState.None;
 
@@ -61,10 +63,10 @@ public class PlayerController : CreatureController
 	{
 		base.FixedUpdate();
 
-		m_positionTMP.text = $"x = {transform.position.x}, y = {transform.position.y}";
+		//m_positionTMP.text = $"x = {transform.position.x}, y = {transform.position.y}";
 
 		m_nameTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_nameTagOffset);
-		m_positionTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_positionTagOffset);
+		//m_positionTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_positionTagOffset);
 	}
 
 	public override void Init(int _cellXPos, int _cellYPos)
@@ -85,12 +87,15 @@ public class PlayerController : CreatureController
 		m_nicknameTMP = nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 		m_nameTagUI = nickname.GetComponent<RectTransform>();
 
-		GameObject position = Util.FindChild(gameObject, true, "Position");
-		m_positionTMP = position.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-		m_positionTagUI = position.GetComponent<RectTransform>();
+		//GameObject position = Util.FindChild(gameObject, true, "Position");
+		//m_positionTMP = position.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		//m_positionTagUI = position.GetComponent<RectTransform>();
 
 		m_skillAnimObj = Util.FindChild(gameObject, true, "Skill");
 		SkillAnim = m_skillAnimObj.transform.GetChild(0).GetComponent<Animator>();
+
+		m_tombstoneAnimObj = Util.FindChild(gameObject, true, "Tombstone");
+		m_tombstoneAnimObj.SetActive(false);
 
 		ChangeState(new PlayerIdleState());
 	}
@@ -131,10 +136,18 @@ public class PlayerController : CreatureController
 		SkillAnim.Play(_eSkill.ToString());
 	}
 
+	public void Hit(int _damage)
+	{
+		if (HP <= 0) return;
+
+		HP -= _damage;
+	}
+
 	public override void Die()
 	{
 		base.Die();
 
+		m_tombstoneAnimObj.SetActive(true);
 		//gameObject.SetActive(false);
 	}
 }

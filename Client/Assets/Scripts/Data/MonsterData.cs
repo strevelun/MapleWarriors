@@ -11,6 +11,7 @@ public class MonsterData
 	public int			attackCellRange;	
 	public float		speed;
 	public int			visionCellRange;
+	public int			maxHitPlayer;
 	public int			hitboxWidth;
 	public int			hitboxHeight;
 }

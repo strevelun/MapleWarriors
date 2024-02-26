@@ -146,7 +146,8 @@ public class MapManager
 
 		int hitboxWidth = _hitboxWidth - 1;
 		int hitboxHeight = _hitboxHeight - 1;
-
+		// 3,6 3,7 3,8
+		// 5,6 5,7 5,8
 		for (int y = _cellYPos; y >= _cellYPos - hitboxHeight; --y)
 		{
 			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class ObjectManager
@@ -17,6 +18,8 @@ public class ObjectManager
 	Dictionary<string, PlayerController> m_dicPlayerObj = new Dictionary<string, PlayerController>();
 	Dictionary<string, MonsterController> m_dicMonsterObj = new Dictionary<string, MonsterController>();
 
+	int m_monsterIdx = 0;
+
 	public void AddPlayer(string _key, GameObject _obj)
 	{
 		PlayerController pc = _obj.GetComponent<PlayerController>();
@@ -25,12 +28,13 @@ public class ObjectManager
 		m_dicPlayerObj.Add(_key, pc);
 	}
 
-	public void AddMonster(string _key, GameObject _obj)
+	public void AddMonster(GameObject _obj)
 	{
+		_obj.name = $"{_obj.name}_{m_monsterIdx++}";
 		MonsterController pc = _obj.GetComponent<MonsterController>();
 		if (!pc) pc = _obj.AddComponent<MonsterController>();
 
-		m_dicMonsterObj.Add(_key, pc);
+		m_dicMonsterObj.Add(_obj.name, pc);
 	}
 
 	public PlayerController FindPlayer(string _key)

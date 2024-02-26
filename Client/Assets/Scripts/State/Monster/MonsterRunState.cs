@@ -19,6 +19,7 @@ public class MonsterRunState : ICreatureState
 
 	public void Update()
 	{
+		m_mc.Attack();
 	}
 
 	public void FixedUpdate()

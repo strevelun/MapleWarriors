@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +17,7 @@ public class MonsterController : CreatureController
 		Attack
 	}
 
-
+	public bool AttackReady { get; set; } = true;
 
 	AStar m_astar = new AStar();
 
@@ -28,12 +29,11 @@ public class MonsterController : CreatureController
 	//eState m_eState = eState.None;
 	public int PathIdx { get; set; } = 0;
 	public Vector2Int DestPos { get; set; } = new Vector2Int(0, 0);
-	public bool m_cellArrived { get; private set; } = true;
+	public bool CellArrived { get; private set; } = true;
+	public int MaxHitPlayer { get; private set; }
 
-	Vector3 m_knockbackOrigin;
 
 	Coroutine m_damamgeCoroutine = null;
-	Coroutine m_knockbackCoroutine = null;
 
 	GameObject m_damageObj;
 	CanvasGroup m_damageCanvasGroup;
@@ -49,13 +49,22 @@ public class MonsterController : CreatureController
 
 	TextMeshProUGUI m_hpbarText;
 
+	// 3칸이면 1.5
+	// 2칸이면 1
 	[SerializeField]
-	Vector2 m_hpBarUIOffset = new Vector2(0.5f, -0.3f);
+	Vector2 m_hpBarUIOffset;
+
 
 	void Start()
 	{
 		DestPos = CellPos;
 
+		Init((int)transform.position.x, (int)transform.position.y);
+
+		MonsterData monsterData = DataManager.Inst.FindMonsterData(gameObject.name);
+		SetMonsterData(monsterData);
+		ObjectManager.Inst.AddMonster(gameObject);
+		MapManager.Inst.AddMonster(this);
 	}
 
 	protected override void Update()
@@ -86,6 +95,8 @@ public class MonsterController : CreatureController
 
 	public override void Init(int _cellXPos, int _cellYPos)
 	{
+		if (_cellYPos < 0) _cellYPos = -_cellYPos;
+
 		base.Init(_cellXPos, _cellYPos);
 
 		ChangeState(new MonsterIdleState());
@@ -108,6 +119,7 @@ public class MonsterController : CreatureController
 		m_hpbarText = Util.FindChild(m_hpbarObj, true, "HPText").GetComponent<TextMeshProUGUI>();
 
 
+		StartCoroutine(ReadyForAttack());
 	}
 
 	public void SetMonsterData(MonsterData _data)
@@ -119,6 +131,7 @@ public class MonsterController : CreatureController
 		AttackRange = _data.attackCellRange;
 		HitboxWidth = _data.hitboxWidth;
 		HitboxHeight = _data.hitboxHeight;
+		MaxHitPlayer = _data.maxHitPlayer;
 
 		CircleCollider2D collider = GetComponent<CircleCollider2D>();
 		if(collider == null) collider = gameObject.AddComponent<CircleCollider2D>();
@@ -129,6 +142,8 @@ public class MonsterController : CreatureController
 		m_hpBarSlider.maxValue = MaxHP;
 		m_hpBarSlider.value = MaxHP;
 		m_hpbarText.text = MaxHP.ToString();
+
+		m_hpBarUIOffset = new Vector2(HitboxWidth / 2f, -0.3f);
 	}
 
 	public void CheckMoveState()
@@ -163,7 +178,7 @@ public class MonsterController : CreatureController
 	{
 		if (m_targets.Count == 0) return;
 		if (!m_targetMoved) return;
-		if (!m_cellArrived) return;
+		if (!CellArrived) return;
 
 		PlayerController pc = m_targets.Peek();
 		if ((Math.Abs(CellPos.x - pc.CellPos.x) <= 1 && CellPos.y == pc.CellPos.y) ||
@@ -194,7 +209,7 @@ public class MonsterController : CreatureController
 	
 	void UpdateChase()
 	{
-		if (m_cellArrived) return;
+		if (CellArrived) return;
 		if (Dir == eDir.None) return;
 		//if (m_eState == eState.None) return;
 
@@ -221,7 +236,7 @@ public class MonsterController : CreatureController
 		{
 			Dir = eDir.None;
 			//m_eState = eState.None;
-			m_cellArrived = true;
+			CellArrived = true;
 		}
 
 		if (UserData.Inst.IsRoomOwner)
@@ -265,7 +280,7 @@ public class MonsterController : CreatureController
 
 		//m_eState = eState.Chase;
 
-		m_cellArrived = false;
+		CellArrived = false;
 	}
 
 
@@ -325,50 +340,74 @@ public class MonsterController : CreatureController
 		m_damageObj.SetActive(false);
 	}
 
-	public void Knockback(float _duration)
+	public void Attack()
 	{
-		if (m_knockbackCoroutine != null)
+		if (!AttackReady) return;
+		if (m_targets.Count == 0) return;
+
+		Queue<PlayerController> targets = new Queue<PlayerController>(m_targets);
+		List<PlayerController> finalTargets = new List<PlayerController>();
+
+		for (int i = 0; i < m_targets.Count; ++i)
 		{
-			StopCoroutine(m_knockbackCoroutine);
-			transform.position = m_knockbackOrigin;
-			m_knockbackCoroutine = null;
-		}
-		else
-		{
-			m_knockbackOrigin = transform.position;
+			PlayerController pc = targets.Peek();
+			targets.Dequeue();
+
+			Vector2Int dist = pc.CellPos - CellPos;
+			int distX = Math.Abs(dist.x);
+			int distY = Math.Abs(dist.y);
+
+			if (distX <= AttackRange && distY <= AttackRange)
+			{
+				finalTargets.Add(pc);
+				if (finalTargets.Count >= MaxHitPlayer) break;
+			}
 		}
 
-		Debug.Log($"시간 : {_duration}");
-		m_knockbackCoroutine = StartCoroutine(KnockbackCoroutine(_duration));
-	}
+		if (finalTargets.Count == 0) return;
 
-	IEnumerator KnockbackCoroutine(float _duration)
-	{
-		Vector3 objDestPos = transform.position + new Vector3(m_bIsFacingLeft ? 0.2f : -0.2f, 0, 0);
-		float elapsed = 0f;
+		ChangeState(new MonsterAttackState(finalTargets));
 
-		while (elapsed <= _duration)
-		{
-			transform.position = Vector3.MoveTowards(transform.position, objDestPos, Time.deltaTime * 3);
-			elapsed += Time.deltaTime;
-			yield return null;
-		}
-		transform.position = m_knockbackOrigin;
-		m_knockbackCoroutine = null;
 	}
 
 	public override void Die()
 	{
 		base.Die();
 
-		//gameObject.SetActive(false);
+		gameObject.SetActive(false);
+	}
+
+	public void DequeueTarget()
+	{
+		if (m_targets.Count == 0) return;
+
+		m_targets.Dequeue();
+	}
+
+	IEnumerator ReadyForAttack()
+	{
+		while (true)
+		{
+			if (!AttackReady)
+			{
+				yield return new WaitForSeconds(3); 
+				AttackReady = true;
+			}
+			else
+			{
+				yield return null;
+			}
+		}
 	}
 
 	void OnTriggerEnter2D(Collider2D _other)
 	{
 		if (_other.gameObject.tag != "Player") return;
 
-		m_targets.Enqueue(_other.gameObject.GetComponent<PlayerController>());
+		PlayerController pc = _other.gameObject.GetComponent<PlayerController>();
+		if (pc.IsDead) return;
+
+		m_targets.Enqueue(pc);
 	}
 
 	void OnTriggerExit2D(Collider2D _other)

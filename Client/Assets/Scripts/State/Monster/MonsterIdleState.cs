@@ -10,8 +10,7 @@ public class MonsterIdleState : ICreatureState
 	{
 		MonsterController mc = _cs as MonsterController;
 		// 지금바로 Idle이 될 수 없는 조건
-		if (mc.CurState is MonsterDeadState) 
-			return false;
+		if (mc.CurState is MonsterDeadState) return false;
  
 		return true;
 	}
@@ -26,6 +25,7 @@ public class MonsterIdleState : ICreatureState
 	public void Update()
 	{
 		m_mc.CheckMoveState();
+		m_mc.Attack();
 	}
 
 	public void FixedUpdate()

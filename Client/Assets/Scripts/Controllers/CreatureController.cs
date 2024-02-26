@@ -8,7 +8,7 @@ using UnityEngine.Playables;
 public class CreatureController : MonoBehaviour
 {
 	public ICreatureState CurState { get; private set; } = null;
-	ICreatureState m_nextState = null;
+	//ICreatureState m_nextState = null;
 
 	public enum eDir
 	{
@@ -30,6 +30,10 @@ public class CreatureController : MonoBehaviour
 	public eDir LastDir { get; private set; } = eDir.None;
 	public float MaxSpeed { get; protected set; } = 1f;
 
+
+	Vector3 m_knockbackOrigin;
+	Coroutine m_knockbackCoroutine = null;
+
 	protected bool m_bIsFacingLeft = true;
 
 	public Vector2Int CellPos { get; protected set; }
@@ -42,6 +46,8 @@ public class CreatureController : MonoBehaviour
 
 	public int HitboxWidth { get; protected set; }
 	public int HitboxHeight { get; protected set; }
+
+	public bool IsDead { get { return HP <= 0; } }
 
 	void Start()
 	{
@@ -57,19 +63,21 @@ public class CreatureController : MonoBehaviour
 		CurState?.FixedUpdate();
 	}
 
-	public void ChangeState(ICreatureState _newState)
+	public bool ChangeState(ICreatureState _newState)
 	{
 		if(_newState.CanEnter(this) == false)
 		{
 			// 10명의 플레이어가 동시에 10번 몬스터 클릭하면 hit 애니가 10번 연속 순차적으로 재생 -> 마지막으로 때린 놈 기준(데미지는 전부 들어가야 : Enter할때 데미지 먹이기)
-			m_nextState = _newState; // 두 명 이상의 플레이어가 동시에 몬스터를 클릭하면 
-			return; 
+			//m_nextState = _newState; // 두 명 이상의 플레이어가 동시에 몬스터를 클릭하면 
+
+			return false; 
 		}
-		if (CurState != null && CurState.GetType() == _newState.GetType()) return;
+		if (CurState != null && CurState.GetType() == _newState.GetType()) return false;
 
 		CurState?.Exit();
 		CurState = _newState;
 		CurState.Enter(this);
+		return true;
 	}
 
 	public void UpdateMove()
@@ -290,6 +298,39 @@ public class CreatureController : MonoBehaviour
 	public virtual void Die()
 	{
 		MapManager.Inst.RemoveHitboxTile(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight);
-		gameObject.SetActive(false);
+		m_spriteObject.SetActive(false);
+		//IsDead = true;
+	}
+
+	public void Knockback(float _duration)
+	{
+		if (m_knockbackCoroutine != null)
+		{
+			StopCoroutine(m_knockbackCoroutine);
+			transform.position = m_knockbackOrigin;
+			m_knockbackCoroutine = null;
+		}
+		else
+		{
+			m_knockbackOrigin = transform.position;
+		}
+
+		//Debug.Log($"시간 : {_duration}");
+		m_knockbackCoroutine = StartCoroutine(KnockbackCoroutine(_duration));
+	}
+
+	IEnumerator KnockbackCoroutine(float _duration)
+	{
+		Vector3 objDestPos = transform.position + new Vector3(m_bIsFacingLeft ? 0.2f : -0.2f, 0, 0);
+		float elapsed = 0f;
+
+		while (elapsed <= _duration)
+		{
+			transform.position = Vector3.MoveTowards(transform.position, objDestPos, Time.deltaTime * 3);
+			elapsed += Time.deltaTime;
+			yield return null;
+		}
+		transform.position = m_knockbackOrigin;
+		m_knockbackCoroutine = null;
 	}
 }

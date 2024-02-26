@@ -99,6 +99,7 @@ public static class InGamePacketHandler
 			MapManager.Inst.AddMonster(mc);
 		}
 		*/
+		/*
 		for (int i = 0; i < 1; ++i)
 		{
 			monster = ResourceManager.Inst.Instantiate("Creature/Boss2");
@@ -111,6 +112,7 @@ public static class InGamePacketHandler
 			ObjectManager.Inst.AddMonster(monster.name, monster);
 			MapManager.Inst.AddMonster(mc);
 		}
+		*/
 	}
 
 	public static void BeginMove(PacketReader _reader)

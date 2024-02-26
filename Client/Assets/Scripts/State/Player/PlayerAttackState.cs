@@ -37,6 +37,9 @@ public class PlayerAttackState : ICreatureState
 		// 플레이어의 Dir로 Flip
 		// 스킬 이펙트 있으면 재생
 		m_player.PlayCurSkillAnim(m_eSkill);
+		
+		foreach(MonsterController mc in m_targets)
+			mc.Hit(m_player.AttackDamage);
 
 		// 몬스터 멈추기 Dir = None
 	}
@@ -72,8 +75,13 @@ public class PlayerAttackState : ICreatureState
 
 		if (!m_hit && m_targets.Count > 0 && m_stateInfo.normalizedTime >= 0.3f)
 		{
-			foreach(MonsterController mc in m_targets)
-				mc.ChangeState(new MonsterHitState(m_player.AttackDamage));
+			foreach (MonsterController mc in m_targets)
+			{
+				if(mc.ChangeState(new MonsterHitState()) == false)
+				{
+					if (mc.IsDead) mc.ChangeState(new MonsterDeadState());
+				}
+			}
 			
 			m_hit = true;
 		}

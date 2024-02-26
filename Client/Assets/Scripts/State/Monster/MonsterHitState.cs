@@ -5,20 +5,20 @@ using UnityEngine;
 public class MonsterHitState : ICreatureState
 {
 	MonsterController m_mc;
-	int m_damage;
 	bool m_knockback = false;
 	bool m_animStart = false;
 
 	AnimatorStateInfo m_stateInfo;
 
 	// hit 애니메이션 도중 hit가 들어오면 처음부터 다시 
-	public MonsterHitState(int _damage)
+	public MonsterHitState()
 	{
-		m_damage = _damage;
 	}
 
 	public bool CanEnter(CreatureController _cs)
 	{
+		if (_cs.CurState is MonsterAttackState) return false;
+
 		return true;
 	}
 
@@ -26,7 +26,6 @@ public class MonsterHitState : ICreatureState
 	{
 		m_mc = _cs as MonsterController;
 		m_mc.Anim.SetTrigger("Hit"); // 이게 실행될때마다 항상 0부터 시작해야
-		m_mc.Hit(m_damage);
 		//if(m_mc.CurState is MonsterRunState) m_mc.ChangeState(new MonsterIdleState());
 	}
 
@@ -38,7 +37,6 @@ public class MonsterHitState : ICreatureState
 			m_mc.Knockback(m_stateInfo.length);
 			m_knockback = true;
 		}
-
 	}
 
 	public void FixedUpdate()
@@ -62,19 +60,10 @@ public class MonsterHitState : ICreatureState
 
 		if (m_animStart && !m_stateInfo.IsName("Hit"))
 		{
-			if(IsDead())	m_mc.ChangeState(new MonsterDeadState());
-			else			m_mc.ChangeState(new MonsterIdleState());
+			if(m_mc.IsDead)		m_mc.ChangeState(new MonsterDeadState());
+			else				m_mc.ChangeState(new MonsterIdleState());
 
 			Debug.Log($"MonsterHitState HP : {m_mc.HP}");
-
-			return;
 		}
-	}
-
-	bool IsDead()
-	{
-		if (m_mc.HP <= 0) return true;
-		
-		return false;
 	}
 }
