@@ -118,8 +118,6 @@ public class MonsterController : CreatureController
 
 		m_hpbarText = Util.FindChild(m_hpbarObj, true, "HPText").GetComponent<TextMeshProUGUI>();
 
-		GameManager.Inst.AddMonsterCnt();
-
 		StartCoroutine(ReadyForAttack());
 	}
 

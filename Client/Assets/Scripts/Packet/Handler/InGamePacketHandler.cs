@@ -16,7 +16,8 @@ public static class InGamePacketHandler
 		GameObject camObj = GameObject.Find("CM vcam1");
 		CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
 
-		MapManager.Inst.Load(1, 1, camObj); // TestMap : 1
+		MapManager.Inst.Load(1, camObj); // TestMap : 1
+		GameManager.Inst.SetPlayerCnt(numOfUsers);
 
 		for (int i = 0; i < numOfUsers; ++i)
 		{

@@ -1,6 +1,8 @@
 ﻿using Cinemachine;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -13,6 +15,13 @@ public class MapManager
 			return s_inst; 
 		} 
 	}
+
+	GameObject m_camObj;
+
+	MapData m_mapData = null;
+	int m_mapID;
+	int m_stage = 0;
+	GameObject m_map = null;
 
 	public Grid CurMap { get; private set; }
 	Tilemap m_tmBase, m_tmCollision, m_tmAim, m_tmHitbox;
@@ -29,14 +38,30 @@ public class MapManager
 	bool[,] m_collisionMap;
 	Queue<MonsterController>[,] m_monsterMap;
 
-	// Map_1_1, Map_1_2, Map_1_3
-	public void Load(int _mapID, int _stageID, GameObject _camObj)
+	public void Load(int _mapID, GameObject _camObj)
 	{
-		string name = "Map_" + _mapID + "_" + _stageID;
-		GameObject go = ResourceManager.Inst.Instantiate($"Map/{name}");
-		go.name = "Map";
+		if (m_mapData != null) return;
 
-		m_tmBase = Util.FindChild<Tilemap>(go, true, "TM_Base");
+		m_mapID = _mapID;
+		m_camObj = _camObj;
+
+		string name = "Map_" + m_mapID;
+		m_mapData = DataManager.Inst.FindMapData(name);
+		name = m_mapData.mapList[m_stage];
+		m_map = ResourceManager.Inst.Instantiate($"Map/{name}");
+		//go.name = "Map";
+		++m_stage;
+
+		GameObject monsters = Util.FindChild(m_map, false, "Monsters");
+		int monsterCnt = monsters.transform.childCount;
+		GameManager.Inst.SetMonsterCnt(monsterCnt);
+
+		TileInit();
+	}
+
+	void TileInit()
+	{
+		m_tmBase = Util.FindChild<Tilemap>(m_map, true, "TM_Base");
 		m_tmBase.CompressBounds();
 		MinX = m_tmBase.cellBounds.xMin;
 		MaxX = m_tmBase.cellBounds.xMax;
@@ -45,40 +70,23 @@ public class MapManager
 		YSize = MaxY - MinY;
 		XSize = MaxX - MinX;
 
-		Debug.Log($"{MaxX} - {MinX} = {XSize}");
-		Debug.Log($"{m_tmBase.cellBounds.xMax} - {m_tmBase.cellBounds.xMin} = {m_tmBase.cellBounds.xMax - m_tmBase.cellBounds.xMin}");
+		CreateMapBound();
+		CreateCollisionMap(m_map);
 
-		CinemachineConfiner confiner = _camObj.GetComponent<CinemachineConfiner>();
-		GameObject collider = ResourceManager.Inst.Instantiate("Map/MapBound");
-		PolygonCollider2D polyCollider = collider.GetComponent<PolygonCollider2D>();
-		Vector2[] points = polyCollider.points;
-		points[0] = new Vector2(0, 1);
-		points[1] = new Vector2(XSize, 1);
-		points[2] = new Vector2(XSize, -(YSize-1));
-		points[3] = new Vector2(0, -(YSize - 1));
-		polyCollider.points = points;
-		confiner.m_BoundingShape2D = polyCollider;
-		confiner.enabled = false;
-		confiner.enabled = true;
+		CurMap = m_map.GetComponent<Grid>();
 
-		CreateCollisionMap(go);
-
-		CurMap = go.GetComponent<Grid>();
-
-		m_tmAim = Util.FindChild<Tilemap>(go, true, "TM_Aim");
+		m_tmAim = Util.FindChild<Tilemap>(m_map, true, "TM_Aim");
 		m_aimTile = ScriptableObject.CreateInstance<Tile>();
 		m_aimTile.sprite = ResourceManager.Inst.LoadSprite("Etc/Aim");
 
-		m_tmHitbox = Util.FindChild<Tilemap>(go, true, "TM_Hitbox");
+		m_tmHitbox = Util.FindChild<Tilemap>(m_map, true, "TM_Hitbox");
 		m_hitboxTile = ScriptableObject.CreateInstance<Tile>();
 		m_hitboxTile.sprite = ResourceManager.Inst.LoadSprite("Etc/Hitbox");
 	}
 
-	private void CreateCollisionMap(GameObject _prefabMap)
+	void CreateCollisionMap(GameObject _prefabMap)
 	{
 		m_tmCollision = Util.FindChild<Tilemap>(_prefabMap, true, "TM_Collision");
-
-
 
 		m_collisionMap = new bool[YSize, XSize];
 		m_monsterMap = new Queue<MonsterController>[YSize, XSize];
@@ -102,6 +110,39 @@ public class MapManager
 			}
 		}
 		m_tmCollision.gameObject.SetActive(false);
+	}
+
+	void CreateMapBound()
+	{
+		CinemachineConfiner confiner = m_camObj.GetComponent<CinemachineConfiner>();
+		GameObject collider = ResourceManager.Inst.Instantiate("Map/MapBound");
+		PolygonCollider2D polyCollider = collider.GetComponent<PolygonCollider2D>();
+		Vector2[] points = polyCollider.points;
+		points[0] = new Vector2(0, 1);
+		points[1] = new Vector2(XSize, 1);
+		points[2] = new Vector2(XSize, -(YSize - 1));
+		points[3] = new Vector2(0, -(YSize - 1));
+		polyCollider.points = points;
+		confiner.m_BoundingShape2D = polyCollider;
+		confiner.enabled = false;
+		confiner.enabled = true;
+	}
+
+	public void LoadNextStage()
+	{
+		if (m_map == null) return;
+
+		Object.Destroy(m_map);
+
+		string name = m_mapData.mapList[m_stage];
+		m_map = ResourceManager.Inst.Instantiate($"Map/{name}");
+		++m_stage;
+
+		GameObject monsters = Util.FindChild(m_map, false, "Monsters");
+		int monsterCnt = monsters.transform.childCount;
+		GameManager.Inst.SetMonsterCnt(monsterCnt);
+
+		TileInit();
 	}
 
 	public bool IsBlocked(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight)
@@ -221,7 +262,8 @@ public class MapManager
 
 	public void Destroy()
 	{
-		Object.Destroy(CurMap.gameObject);
+		//Object.Destroy(CurMap.gameObject);
+		Object.Destroy(m_map);
 		CurMap = null;
 		MinX = 0;
 		MaxX = 0;
@@ -229,5 +271,9 @@ public class MapManager
 		MaxY = 0;
 		YSize = 0;
 		XSize = 0;
+		m_mapData = null;
+		m_map = null;
+		m_stage = 0;
+		m_mapID = 0;
 	}
 }

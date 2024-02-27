@@ -98,8 +98,6 @@ public class PlayerController : CreatureController
 		m_tombstoneAnimObj = Util.FindChild(gameObject, true, "Tombstone");
 		m_tombstoneAnimObj.SetActive(false);
 
-		GameManager.Inst.AddPlayerCnt();
-
 		ChangeState(new PlayerIdleState());
 	}
 

@@ -13,6 +13,7 @@ public class DataManager : MonoBehaviour
 
 	Dictionary<string, MonsterData> m_monsterData = new Dictionary<string, MonsterData>();
 	Dictionary<string, SkillData> m_skillData = new Dictionary<string, SkillData>();
+	Dictionary<string, MapData> m_mapData = new Dictionary<string, MapData>();
 
 	private void Awake()
 	{
@@ -23,25 +24,34 @@ public class DataManager : MonoBehaviour
 
 	public MonsterData FindMonsterData(string _name)
 	{
-		MonsterData monster;
-		if (m_monsterData.TryGetValue(_name, out monster)) return monster;
+		MonsterData monster = null;
+		m_monsterData.TryGetValue(_name, out monster);
 
-		return null;
+		return monster;
 	}
 
 
 	public SkillData FindSkillData(string _name)
 	{
-		SkillData skill;
-		if (m_skillData.TryGetValue(_name, out skill)) return skill;
+		SkillData skill = null;
+		m_skillData.TryGetValue(_name, out skill);
 
-		return null;
+		return skill;
+	}
+
+	public MapData FindMapData(string _name)
+	{
+		MapData map = null;
+		m_mapData.TryGetValue(_name, out map);
+
+		return map;
 	}
 
 	void LoadAllData()
 	{
 		LoadMonsterData();
 		LoadSkillData();
+		LoadMapData();
 	}
 
 	public void LoadMonsterData()
@@ -65,6 +75,18 @@ public class DataManager : MonoBehaviour
 		foreach (SkillData skill in loadedData.skills)
 		{
 			m_skillData.Add(skill.name, skill);
+		}
+	}
+
+	public void LoadMapData()
+	{
+		string filePath = Path.Combine(Application.streamingAssetsPath, "Data/MapData.json");
+		string dataAsJson = File.ReadAllText(filePath);
+		MapDataList loadedData = JsonConvert.DeserializeObject<MapDataList>(dataAsJson);
+
+		foreach (MapData map in loadedData.maps)
+		{
+			m_mapData.Add(map.name, map);
 		}
 	}
 }
