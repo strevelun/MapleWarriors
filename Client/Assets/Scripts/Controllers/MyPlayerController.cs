@@ -37,6 +37,8 @@ public class MyPlayerController : PlayerController
 
     protected override void Update()
     {
+		if (IsDead) return;
+
 		base.Update();
 
 		if (Input.GetKeyUp(m_curKeyCode))
@@ -53,6 +55,8 @@ public class MyPlayerController : PlayerController
 
 	protected override void FixedUpdate()
 	{
+		if (IsDead) return;
+
 		base.FixedUpdate();
 	}
 	

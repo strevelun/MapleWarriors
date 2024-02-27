@@ -57,9 +57,9 @@ public class MonsterController : CreatureController
 
 	void Start()
 	{
-		DestPos = CellPos;
-
 		Init((int)transform.position.x, (int)transform.position.y);
+
+		DestPos = CellPos;
 
 		MonsterData monsterData = DataManager.Inst.FindMonsterData(gameObject.name);
 		SetMonsterData(monsterData);
@@ -182,6 +182,7 @@ public class MonsterController : CreatureController
 		if (!CellArrived) return;
 
 		PlayerController pc = m_targets.Peek();
+		
 		if ((Math.Abs(CellPos.x - pc.CellPos.x) <= 1 && CellPos.y == pc.CellPos.y) ||
 			(Math.Abs(CellPos.y - pc.CellPos.y) <= 1 && CellPos.x == pc.CellPos.x)) return;
 
@@ -193,7 +194,7 @@ public class MonsterController : CreatureController
 			return;
 		}
 
-		if (m_path.Count <= 2)
+		if (m_path.Count <= 2 + AttackRange)
 		{
 			Dir = eDir.None;
 			//m_eState = eState.None;

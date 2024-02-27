@@ -13,9 +13,10 @@ public static class InGamePacketHandler
 		int mapID = _reader.GetByte();
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
-		CinemachineVirtualCamera vcam1 = GameObject.Find("CM vcam1").GetComponent<CinemachineVirtualCamera>();
+		GameObject camObj = GameObject.Find("CM vcam1");
+		CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
 
-		MapManager.Inst.Load(1, 1); // TestMap : 1
+		MapManager.Inst.Load(1, 1, camObj); // TestMap : 1
 
 		for (int i = 0; i < numOfUsers; ++i)
 		{

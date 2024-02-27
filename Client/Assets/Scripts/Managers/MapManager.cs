@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Cinemachine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -29,13 +30,36 @@ public class MapManager
 	Queue<MonsterController>[,] m_monsterMap;
 
 	// Map_1_1, Map_1_2, Map_1_3
-	public void Load(int _mapID, int _stageID)
+	public void Load(int _mapID, int _stageID, GameObject _camObj)
 	{
-
 		string name = "Map_" + _mapID + "_" + _stageID;
 		GameObject go = ResourceManager.Inst.Instantiate($"Map/{name}");
 		go.name = "Map";
 
+		m_tmBase = Util.FindChild<Tilemap>(go, true, "TM_Base");
+		m_tmBase.CompressBounds();
+		MinX = m_tmBase.cellBounds.xMin;
+		MaxX = m_tmBase.cellBounds.xMax;
+		MinY = m_tmBase.cellBounds.yMin;
+		MaxY = m_tmBase.cellBounds.yMax;
+		YSize = MaxY - MinY;
+		XSize = MaxX - MinX;
+
+		Debug.Log($"{MaxX} - {MinX} = {XSize}");
+		Debug.Log($"{m_tmBase.cellBounds.xMax} - {m_tmBase.cellBounds.xMin} = {m_tmBase.cellBounds.xMax - m_tmBase.cellBounds.xMin}");
+
+		CinemachineConfiner confiner = _camObj.GetComponent<CinemachineConfiner>();
+		GameObject collider = ResourceManager.Inst.Instantiate("Map/MapBound");
+		PolygonCollider2D polyCollider = collider.GetComponent<PolygonCollider2D>();
+		Vector2[] points = polyCollider.points;
+		points[0] = new Vector2(0, 1);
+		points[1] = new Vector2(XSize, 1);
+		points[2] = new Vector2(XSize, -(YSize-1));
+		points[3] = new Vector2(0, -(YSize - 1));
+		polyCollider.points = points;
+		confiner.m_BoundingShape2D = polyCollider;
+		confiner.enabled = false;
+		confiner.enabled = true;
 
 		CreateCollisionMap(go);
 
@@ -52,17 +76,9 @@ public class MapManager
 
 	private void CreateCollisionMap(GameObject _prefabMap)
 	{
-		m_tmBase = Util.FindChild<Tilemap>(_prefabMap, true, "TM_Base");
 		m_tmCollision = Util.FindChild<Tilemap>(_prefabMap, true, "TM_Collision");
 
-		m_tmBase.CompressBounds();
 
-		MinX = m_tmBase.cellBounds.xMin;
-		MaxX = m_tmBase.cellBounds.xMax;
-		MinY = m_tmBase.cellBounds.yMin;
-		MaxY = m_tmBase.cellBounds.yMax;
-		YSize = MaxY - MinY;
-		XSize = MaxX - MinX;
 
 		m_collisionMap = new bool[YSize, XSize];
 		m_monsterMap = new Queue<MonsterController>[YSize, XSize];
