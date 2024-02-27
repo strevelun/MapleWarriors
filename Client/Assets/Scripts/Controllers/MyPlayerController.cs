@@ -33,12 +33,14 @@ public class MyPlayerController : PlayerController
 		m_eCurSkill = eSkill.Slash;
 		m_eBeforeSkill = eSkill.Slash;
 		m_curSkill = new Skill(m_eCurSkill);
-    }
+	}
 
-    protected override void Update()
+	private void OnEnable()
+	{
+	}
+
+	protected override void Update()
     {
-		if (IsDead) return;
-
 		base.Update();
 
 		if (Input.GetKeyUp(m_curKeyCode))
@@ -48,15 +50,15 @@ public class MyPlayerController : PlayerController
 			Dir = eDir.None;
 		}
 
-		InputSkillChoice();
-
-		m_curSkill.Update(CellPos);
+		if (!IsDead)
+		{
+			InputSkillChoice();
+			m_curSkill.Update(CellPos);
+		}
 	}
 
 	protected override void FixedUpdate()
 	{
-		if (IsDead) return;
-
 		base.FixedUpdate();
 	}
 	
@@ -160,5 +162,12 @@ public class MyPlayerController : PlayerController
 			m_curSkill.RemoveAimTiles();
 			m_curSkill.SetSkill(curSkill);
 		}
+	}
+
+	public override void Die()
+	{
+		base.Die();
+
+		m_curSkill.RemoveAimTiles();
 	}
 }

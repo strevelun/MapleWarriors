@@ -158,6 +158,8 @@ public class Skill
 
 	public void Update(Vector2Int _cellPos)
     {
+
+
 		Vector2 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
 		mousePos.y = -mousePos.y + 1.0f;
 		m_mouseCellPos = MapManager.Inst.WorldToCell(mousePos.x, -mousePos.y);
