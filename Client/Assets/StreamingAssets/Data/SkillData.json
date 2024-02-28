@@ -36,7 +36,7 @@
       "MP": 0,
       "hitCount": 10,
       "attack": 10,
-      "attackCellRange": 4,
+      "attackCellRange": 2,
       "attackRadius": 2,
       "hitTime": 0.9
     },

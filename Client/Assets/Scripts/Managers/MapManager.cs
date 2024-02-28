@@ -214,11 +214,12 @@ public class MapManager
 		}
 	}
 
-	public void SetAimTile(int _cellXPos, int _cellYPos)
+	public bool SetAimTile(int _cellXPos, int _cellYPos)
 	{
-		if (IsBlocked(_cellXPos, _cellYPos, 1, 1)) return;
+		if (IsBlocked(_cellXPos, _cellYPos, 1, 1)) return false;
 
 		m_tmAim.SetTile(new Vector3Int(_cellXPos, -_cellYPos, 0), m_aimTile);
+		return true;
 	}
 
 	public void RemoveAimTile(int _cellXPos, int _cellYPos)

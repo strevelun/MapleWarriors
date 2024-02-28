@@ -18,8 +18,8 @@ public class Skill
 	Vector2Int m_prevMouseCellPos = Vector2Int.zero;
 	Vector2Int m_dist;
 	Vector2Int m_mouseCellPos;
-	Vector2Int m_cellPos;
-	eSkillDir m_eDir, m_eLastDir;
+	Vector2Int m_cellPos, m_lastCellPos;
+	eSkillDir m_eDir;
 
 	Queue<Vector2Int> m_aims = new Queue<Vector2Int>();
 
@@ -158,23 +158,27 @@ public class Skill
 
 	public void Update(Vector2Int _cellPos)
     {
-
-
 		Vector2 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
 		mousePos.y = -mousePos.y + 1.0f;
 		m_mouseCellPos = MapManager.Inst.WorldToCell(mousePos.x, -mousePos.y);
 
-		m_cellPos = _cellPos;
 		m_dist = m_mouseCellPos - _cellPos;
+
+		if (m_cellPos != _cellPos)
+		{
+			RemoveAimTiles();
+			m_cellPos = _cellPos;
+			if (CheckAttackRange(m_dist.x, m_dist.y))
+				SetAimTiles();
+		}
 
 		if (m_prevMouseCellPos != m_mouseCellPos)
 		{
+			m_cellPos = _cellPos;
 			RemoveAimTiles();
 
 			if (CheckAttackRange(m_dist.x, m_dist.y))
-			{
 				SetAimTiles();
-			}
 			m_prevMouseCellPos = m_mouseCellPos;
 		}
 	}
@@ -232,11 +236,22 @@ public class Skill
 					if (m_eDir == eSkillDir.Left)
 					{
 						pnt = m_cellPos.y;
-						startX = m_mouseCellPos.x;
-						endX = m_cellPos.x;
+						startX = m_cellPos.x;
+						endX = m_mouseCellPos.x;
 						startY = pnt - (m_skillData.attackRadius - 1);
 						endY = pnt + (m_skillData.attackRadius - 1);
-						
+
+						for (int j = startY; j <= endY; ++j)
+						{
+							for (int i = startX; i >= endX; --i)
+							{
+								if (MapManager.Inst.SetAimTile(i, j) == false)
+								{
+									break;
+								}
+								m_aims.Enqueue(new Vector2Int(i, j));
+							}
+						}
 					}
 					else if(m_eDir == eSkillDir.Right)
 					{
@@ -245,14 +260,38 @@ public class Skill
 						endX = m_mouseCellPos.x;
 						startY = pnt - (m_skillData.attackRadius - 1);
 						endY = pnt + (m_skillData.attackRadius - 1);
+						
+						for (int j = startY; j <= endY; ++j)
+						{
+							for (int i = startX; i <= endX; ++i)
+							{
+								if (MapManager.Inst.SetAimTile(i, j) == false)
+								{
+									break;
+								}
+								m_aims.Enqueue(new Vector2Int(i, j));
+							}
+						}
 					}
 					else if (m_eDir == eSkillDir.Up)
 					{
 						pnt = m_cellPos.x;
-						startY = m_mouseCellPos.y;
-						endY = m_cellPos.y;
+						startY = m_cellPos.y;
+						endY = m_mouseCellPos.y;
 						startX = pnt - (m_skillData.attackRadius - 1);
 						endX = pnt + (m_skillData.attackRadius - 1);
+
+						for (int i = startX; i <= endX; ++i)
+						{
+							for (int j = startY; j >= endY; --j)
+							{
+								if (MapManager.Inst.SetAimTile(i, j) == false)
+								{
+									break;
+								}
+								m_aims.Enqueue(new Vector2Int(i, j));
+							}
+						}
 					}
 					else if (m_eDir == eSkillDir.Down)
 					{
@@ -261,14 +300,17 @@ public class Skill
 						endY = m_mouseCellPos.y;
 						startX = pnt - (m_skillData.attackRadius - 1);
 						endX = pnt + (m_skillData.attackRadius - 1);
-					}
-					
-					for(int i=startX; i<=endX; ++i)
-					{
-						for (int j = startY; j <= endY; ++j)
+
+						for (int i = startX; i <= endX; ++i)
 						{
-							MapManager.Inst.SetAimTile(i, j);
-							m_aims.Enqueue(new Vector2Int(i, j));
+							for (int j = startY; j <= endY; ++j)
+							{
+								if (MapManager.Inst.SetAimTile(i, j) == false)
+								{
+									break;
+								}
+								m_aims.Enqueue(new Vector2Int(i, j));
+							}
 						}
 					}
 				}
@@ -301,7 +343,7 @@ public class Skill
 
 		if(dir != m_eDir)
 		{
-			m_eLastDir = m_eDir;
+			//m_eLastDir = m_eDir;
 			m_eDir = dir;
 		}
 
