@@ -27,7 +27,7 @@ public class CreatureController : MonoBehaviour
 	protected SpriteRenderer m_spriteRenderer;
 	//private State m_eState = State.Idle;
 	public eDir Dir { get; set; } = eDir.None;
-	public eDir LastDir { get; private set; } = eDir.None;
+	public eDir LastDir { get; protected set; } = eDir.None;
 	public float MaxSpeed { get; protected set; } = 1f;
 
 

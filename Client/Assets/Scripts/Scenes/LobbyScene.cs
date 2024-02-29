@@ -112,6 +112,10 @@ public class LobbyScene : BaseScene
 		UpdateLobbyInfo();
 
 		IsLoading = false;
+
+		InputManager.Inst.SetInputEnabled(false);
+		IsLoading = false;
+		StartFadeCoroutine();
 	}
 
 	public override void Clear()

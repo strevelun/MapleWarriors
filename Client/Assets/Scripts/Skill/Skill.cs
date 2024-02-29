@@ -349,4 +349,35 @@ public class Skill
 
 		//Debug.Log(m_eDir);
 	}
+
+	public void SetSkillDir(GameObject _skillAnimObj, ref CreatureController.eDir _eAfterSkillPlayerDir)
+	{
+		if(m_eDir == eSkillDir.Up)
+		{
+			_skillAnimObj.transform.position = new Vector3(0f, 0.5f);
+			_skillAnimObj.transform.rotation = new Quaternion(0, 0, -90f, 0);
+			Debug.Log("위");
+		}
+		else if(m_eDir == eSkillDir.Down)
+		{
+			_skillAnimObj.transform.position = new Vector3(1f, 0.5f);
+			_skillAnimObj.transform.rotation = new Quaternion(0, 0, 90f, 0);
+			Debug.Log("아래");
+		}
+		else
+		{
+			_skillAnimObj.transform.position = new Vector3(0.5f, 0f);
+			_skillAnimObj.transform.rotation = new Quaternion(0, 0, 0, 0);
+			Debug.Log("위 아래 아님");
+		}
+
+		if(m_eDir == eSkillDir.Left)
+		{
+			_eAfterSkillPlayerDir = CreatureController.eDir.Left;
+		}
+		else if(m_eDir == eSkillDir.Right)
+		{
+			_eAfterSkillPlayerDir = CreatureController.eDir.Right;
+		}
+	}
 }

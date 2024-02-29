@@ -16,6 +16,10 @@ public class InGameScene : BaseScene
 		Packet pkt = InGamePacketMaker.ReqInitInfo();
 		NetworkManager.Inst.Send(pkt);
 		IsLoading = false;
+
+		InputManager.Inst.SetInputEnabled(false);
+		IsLoading = false;
+		StartFadeCoroutine();
 	}
 
 	public override void Clear()

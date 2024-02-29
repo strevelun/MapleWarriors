@@ -19,7 +19,7 @@ public static class RoomPacketHandler
 	public static void ExitRoom(PacketReader _reader)
 	{
 		UserData.Inst.IsRoomOwner = false;
-		SceneManagerEx.Inst.LoadScene(Define.eScene.Lobby);
+		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.eScene.Lobby);
 		Debug.Log("ExitRoom");
 	}	
 	
@@ -133,7 +133,7 @@ public static class RoomPacketHandler
 	public static void StartGame_Success(PacketReader _reader)
 	{
 		// πÊ ∏‚πˆµÈ¿∫ πÊ¿Â¿Ã ∏ ¿ª πŸ≤Ÿ∏È πŸ≤Ô 
-		SceneManagerEx.Inst.LoadScene(Define.eScene.InGame);
+		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.eScene.InGame);
 	}
 
 	public static void StartGame_Fail(PacketReader _reader)

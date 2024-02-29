@@ -19,7 +19,6 @@ public class MyPlayerController : PlayerController
 		RightDown
 	}
 
-	Skill m_curSkill = null;
 
 	KeyCode m_curKeyCode = KeyCode.None;
 	bool m_bIsKeyDown = false;

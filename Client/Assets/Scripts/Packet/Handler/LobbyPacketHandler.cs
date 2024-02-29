@@ -159,7 +159,7 @@ public static class LobbyPacketHandler
 	public static void CreateRoom_Success(PacketReader _reader)
 	{
 		UserData.Inst.IsRoomOwner = true;
-		SceneManagerEx.Inst.LoadScene(Define.eScene.Room);
+		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.eScene.Room);
 	}
 
 	public static void CreateRoom_Fail(PacketReader _reader)
@@ -171,7 +171,7 @@ public static class LobbyPacketHandler
 	{
 		UserData.Inst.IsRoomOwner = false;
 		// ¾À ÀüÈ¯ ÈÄ ·ë¿¡ ÀÖ´Â ½½·Ô °»½Å
-		SceneManagerEx.Inst.LoadScene(Define.eScene.Room);
+		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.eScene.Room);
 	}
 
 	public static void EnterRoom_Full(PacketReader _reader)

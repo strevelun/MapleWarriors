@@ -12,6 +12,8 @@ public class LoginScene : BaseScene
 	{
 		base.Init();
 
+
+		Application.runInBackground = true;
 		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = 60;
 		Screen.SetResolution(1280, 720, false);
@@ -53,13 +55,16 @@ public class LoginScene : BaseScene
 #endif
 		});
 
-		IsLoading = false;
 
 		//NetworkManager.Inst.Connect("119.67.216.164", 30001); // 포트포워딩
-		NetworkManager.Inst.Connect("192.168.219.173", 30001); 
+		NetworkManager.Inst.Connect("192.168.219.173", 30001);
 		//NetworkManager.Inst.Connect("220.121.252.11", 30001); // gpm
 
 		//InputManager.Inst.KeyAction += OnKeyboardEnter;
+
+		InputManager.Inst.SetInputEnabled(false);
+		IsLoading = false;
+		StartFadeCoroutine();
 	}
 
 	public override void Clear()
@@ -72,9 +77,9 @@ public class LoginScene : BaseScene
 		Init();
 	}
 
-	void Update()
+	protected override void Update()
 	{
-
+		base.Update();
 	}
 
 	void OnLoginButtonClicked()

@@ -39,10 +39,12 @@ public class PlayerIdleState : ICreatureState
 			m_mpc.InputMovement();
 			m_mpc.CheckMoveState();
 			m_mpc.InputAttack();
+			m_mpc.Flip();
 		}
 		else
 		{
 			m_pc.CheckMoveState();
+			m_pc.Flip();
 		}
 	}
 

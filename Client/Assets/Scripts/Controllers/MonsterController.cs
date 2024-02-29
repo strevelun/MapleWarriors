@@ -18,6 +18,7 @@ public class MonsterController : CreatureController
 	}
 
 	public bool AttackReady { get; set; } = true;
+	public int VisionCellRange { get; set; }
 
 	AStar m_astar = new AStar();
 
@@ -128,6 +129,7 @@ public class MonsterController : CreatureController
 		HP = _data.HP;
 		AttackDamage = _data.attack;
 		AttackRange = _data.attackCellRange;
+		VisionCellRange = _data.visionCellRange;
 		HitboxWidth = _data.hitboxWidth;
 		HitboxHeight = _data.hitboxHeight;
 		MaxHitPlayer = _data.maxHitPlayer;
@@ -189,6 +191,12 @@ public class MonsterController : CreatureController
 		{
 			Dir = eDir.None;
 			//m_eState = eState.None;
+			return;
+		}
+		if(m_path.Count > VisionCellRange)
+		{
+			m_path = null;
+			Dir = eDir.None;
 			return;
 		}
 

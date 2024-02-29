@@ -87,6 +87,11 @@ public class RoomScene : BaseScene
 		IsLoading = false;
 		Packet pkt = RoomPacketMaker.ReqRoomUsersInfo();
 		NetworkManager.Inst.Send(pkt);
+
+
+		InputManager.Inst.SetInputEnabled(false);
+		IsLoading = false;
+		StartFadeCoroutine();
 	}
 
 	public override void Clear()

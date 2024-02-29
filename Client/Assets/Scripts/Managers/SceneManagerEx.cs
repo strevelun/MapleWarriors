@@ -17,12 +17,17 @@ public class SceneManagerEx
 
 	public BaseScene CurScene { get; set; }
 
-    public void LoadScene(Define.eScene _type)
+	public void LoadScene(Define.eScene _type)
     {
 		CurScene.IsLoading = true;
         CurScene.Clear();
         SceneManager.LoadScene(GetSceneName(_type));
     }
+
+	public void LoadSceneWithFadeOut(Define.eScene _type)
+	{
+		CurScene.StartFadeOutCoroutine(_type); 
+	}
 
 	private string GetSceneName(Define.eScene _type)
     {

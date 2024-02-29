@@ -16,6 +16,8 @@ public class PlayerController : CreatureController
 		Attack
 	}
 
+	protected Skill m_curSkill = null;
+
 	GameObject m_tombstoneAnimObj;
 
 	GameObject m_skillAnimObj;
@@ -155,22 +157,24 @@ public class PlayerController : CreatureController
 
 	public override void Flip()
 	{
+		/*
+		eDir eAfterSkillPlayerDir = eDir.None;
+		m_curSkill.SetSkillDir(m_skillAnimObj, ref eAfterSkillPlayerDir);
+		if (eAfterSkillPlayerDir != eDir.None)
+			LastDir = eAfterSkillPlayerDir;
+		*/
 		if (Dir == eDir.Right && m_bIsFacingLeft)
 		{
-			m_skillAnimObj.transform.position = new Vector3(CellPos.x + 1, -CellPos.y);
+			m_skillAnimObj.transform.localScale = new Vector3(-1, 1);
 			Debug.Log("플립1");
 		}
 		else if(Dir == eDir.Left && !m_bIsFacingLeft)
 		{
-			m_skillAnimObj.transform.position = new Vector3(CellPos.x, -CellPos.y);
+			m_skillAnimObj.transform.localScale = new Vector3(1, 1);
 			Debug.Log("플립2");
 		}
 
-		base.Flip();
-	}
 
-	void SetSkillObjPos(int _cellPosX, int _cellPosY)
-	{
-		m_skillAnimObj.transform.position = new Vector3(_cellPosX, -_cellPosY);
+		base.Flip();
 	}
 }
