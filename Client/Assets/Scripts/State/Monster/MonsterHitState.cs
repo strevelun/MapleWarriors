@@ -18,6 +18,7 @@ public class MonsterHitState : ICreatureState
 	public bool CanEnter(CreatureController _cs)
 	{
 		if (_cs.CurState is MonsterAttackState) return false;
+		if (_cs.CurState is MonsterDeadState) return false;
 
 		return true;
 	}

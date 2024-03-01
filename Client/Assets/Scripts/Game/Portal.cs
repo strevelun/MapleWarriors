@@ -4,7 +4,15 @@ using UnityEngine;
 
 public class Portal : MonoBehaviour
 {
-    int m_cntPlayer = 0;
+	Vector3[] m_positions = new Vector3[] {
+	new Vector3(1, -1), 
+    new Vector3(1, -3), 
+    new Vector3(3, -1), 
+    new Vector3(3, -3)  
+};
+
+	int m_cntPlayer = 0;
+    Dictionary<string, GameObject> m_playerObj = new Dictionary<string, GameObject>();
 
     void Start()
     {
@@ -19,24 +27,32 @@ public class Portal : MonoBehaviour
         if(GameManager.Inst.CheckMapClear())
         {
             if(m_cntPlayer == GameManager.Inst.PlayerCnt)
-            {
+			{
+                (SceneManagerEx.Inst.CurScene as InGameScene).SetClearImageVisible(false);
+				int i = 0;
+                foreach(GameObject obj in m_playerObj.Values)
+                {
+                    obj.transform.position = m_positions[i++];
+                }
                 MapManager.Inst.LoadNextStage();
             }
         }
     }
 
-	private void OnTriggerEnter2D(Collider2D collision)
+	private void OnTriggerEnter2D(Collider2D _collision)
 	{
-        Debug.Log($"{collision.gameObject.name} Enter");
+        if (!GameManager.Inst.CheckMapClear()) return;
 
-        ++m_cntPlayer;
+        m_playerObj.Add(_collision.gameObject.name, _collision.gameObject);
+		++m_cntPlayer;
 	}
 
-	private void OnTriggerExit2D(Collider2D collision)
+	private void OnTriggerExit2D(Collider2D _collision)
 	{
-		Debug.Log($"{collision.gameObject.name} Exit");
-        if (m_cntPlayer <= 0) return;
+		if (!GameManager.Inst.CheckMapClear()) return;
+		if (m_cntPlayer <= 0) return;
 
+		m_playerObj.Remove(_collision.gameObject.name);
 		--m_cntPlayer;
 	}
 }

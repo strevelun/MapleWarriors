@@ -90,7 +90,6 @@ public class RoomScene : BaseScene
 
 
 		InputManager.Inst.SetInputEnabled(false);
-		IsLoading = false;
 		StartFadeCoroutine();
 	}
 

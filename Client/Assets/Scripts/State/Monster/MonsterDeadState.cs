@@ -10,6 +10,7 @@ public class MonsterDeadState : ICreatureState
 
 	public bool CanEnter(CreatureController _cs)
 	{
+
 		return true;
 	}
 

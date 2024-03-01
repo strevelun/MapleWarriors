@@ -9,6 +9,7 @@ public class PlayerDeadState : ICreatureState
 
 	public bool CanEnter(CreatureController _cs)
 	{
+
 		return true;
 	}
 

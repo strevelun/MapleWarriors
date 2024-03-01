@@ -68,4 +68,12 @@ public static class InGamePacketMaker
 
 		return pkt;
 	}
+
+	public static Packet GameOver()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eClient.GameOver);
+		return pkt;
+	}
 }

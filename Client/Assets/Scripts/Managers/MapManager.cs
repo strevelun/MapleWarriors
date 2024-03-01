@@ -20,7 +20,8 @@ public class MapManager
 
 	MapData m_mapData = null;
 	int m_mapID;
-	int m_stage = 0;
+	public int MaxStage { get; private set; } = 0;
+	public int CurStage { get; private set; } = 0;
 	GameObject m_map = null;
 
 	public Grid CurMap { get; private set; }
@@ -38,25 +39,25 @@ public class MapManager
 	bool[,] m_collisionMap;
 	Queue<MonsterController>[,] m_monsterMap;
 
-	public void Load(int _mapID, GameObject _camObj)
+	public GameObject Load(int _mapID, GameObject _camObj)
 	{
-		if (m_mapData != null) return;
+		if (m_mapData != null) return null;
 
 		m_mapID = _mapID;
 		m_camObj = _camObj;
 
 		string name = "Map_" + m_mapID;
 		m_mapData = DataManager.Inst.FindMapData(name);
-		name = m_mapData.mapList[m_stage];
+		name = m_mapData.mapList[CurStage];
 		m_map = ResourceManager.Inst.Instantiate($"Map/{name}");
 		//go.name = "Map";
-		++m_stage;
+		++CurStage;
 
-		GameObject monsters = Util.FindChild(m_map, false, "Monsters");
-		int monsterCnt = monsters.transform.childCount;
-		GameManager.Inst.SetMonsterCnt(monsterCnt);
+		MaxStage = m_mapData.mapList.Count;
 
 		TileInit();
+
+		return m_map;
 	}
 
 	void TileInit()
@@ -134,9 +135,9 @@ public class MapManager
 
 		Object.Destroy(m_map);
 
-		string name = m_mapData.mapList[m_stage];
+		string name = m_mapData.mapList[CurStage];
 		m_map = ResourceManager.Inst.Instantiate($"Map/{name}");
-		++m_stage;
+		++CurStage;
 
 		GameObject monsters = Util.FindChild(m_map, false, "Monsters");
 		int monsterCnt = monsters.transform.childCount;
@@ -264,7 +265,7 @@ public class MapManager
 	public void Destroy()
 	{
 		//Object.Destroy(CurMap.gameObject);
-		Object.Destroy(m_map);
+		//Object.Destroy(m_map);
 		CurMap = null;
 		MinX = 0;
 		MaxX = 0;
@@ -274,7 +275,12 @@ public class MapManager
 		XSize = 0;
 		m_mapData = null;
 		m_map = null;
-		m_stage = 0;
+		CurStage = 0;
 		m_mapID = 0;
+		//m_tmBase = null;
+		//m_tmCollision = null;
+		//m_tmAim = null;
+		//m_tmHitbox = null;
+		MaxStage = 0;
 	}
 }

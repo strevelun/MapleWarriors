@@ -77,9 +77,9 @@ public class LoginScene : BaseScene
 		Init();
 	}
 
-	protected override void Update()
+	void Update()
 	{
-		base.Update();
+		//base.Update();
 	}
 
 	void OnLoginButtonClicked()

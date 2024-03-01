@@ -23,7 +23,7 @@ public class ObjectManager
 	public void AddPlayer(string _key, GameObject _obj)
 	{
 		PlayerController pc = _obj.GetComponent<PlayerController>();
-		if (!pc) pc = _obj.AddComponent<PlayerController>();
+		//if (!pc) pc = _obj.AddComponent<PlayerController>();
 
 		m_dicPlayerObj.Add(_key, pc);
 	}
@@ -32,7 +32,7 @@ public class ObjectManager
 	{
 		_obj.name = $"{_obj.name}_{m_monsterIdx++}";
 		MonsterController pc = _obj.GetComponent<MonsterController>();
-		if (!pc) pc = _obj.AddComponent<MonsterController>();
+		//if (!pc) pc = _obj.AddComponent<MonsterController>();
 
 		m_dicMonsterObj.Add(_obj.name, pc);
 	}
@@ -51,5 +51,15 @@ public class ObjectManager
 		m_dicMonsterObj.TryGetValue(_key, out mc);
 
 		return mc;
+	}
+
+	public void ClearPlayers()
+	{
+		m_dicPlayerObj.Clear();
+	}
+
+	public void ClearMonsters()
+	{
+		m_dicMonsterObj.Clear();
 	}
 }

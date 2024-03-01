@@ -14,37 +14,46 @@ public class GameManager
 		}
 	}
 
-
+	public bool GameStart { get; set; } = false;
 	public int PlayerCnt { get; private set; } = 0;
-	int m_monsterCnt = 0;
+	public int MonsterCnt { get; private set; } = 0;
 
-	public void Update()
+	public bool CheckGameOver()
 	{
-		CheckGameOver();
-	}
+		if (!GameStart) return false;
+		if (PlayerCnt > 0) return false;
 
-	void CheckGameOver()
-	{
-		if (PlayerCnt > 0) return;
-
-
+		// 패배 UI 띄운 후 2초 후 대기실로 돌아감
+		return true;
 	}
 
 	public bool CheckMapClear()
 	{
-		if (m_monsterCnt == 0) return true;
+		if (!GameStart) return false;
+		if (MonsterCnt > 0) return false;
 
-		return false;
+		return true;
 	}
 
 	public void SetPlayerCnt(int _cnt) { PlayerCnt = _cnt; }
-	public void SetMonsterCnt(int _cnt) { m_monsterCnt = _cnt; }
+	public void SetMonsterCnt(int _cnt) { MonsterCnt = _cnt; }
 
-	public void SubPlayerCnt() { --PlayerCnt; }
+	public void SubPlayerCnt() 
+	{
+		if (PlayerCnt <= 0) return; 
+
+		--PlayerCnt; 
+	}
 	public void SubMonsterCnt() 
 	{
-		if (m_monsterCnt <= 0) return;
+		if (MonsterCnt <= 0) return;
 		
-		--m_monsterCnt; 
+		--MonsterCnt; 
+	}
+
+	public void Clear()
+	{
+		PlayerCnt = 0;
+		MonsterCnt = 0;
 	}
 }

@@ -16,8 +16,12 @@ public static class InGamePacketHandler
 		GameObject camObj = GameObject.Find("CM vcam1");
 		CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
 
-		MapManager.Inst.Load(1, camObj); // TestMap : 1
+		GameObject mapObj = MapManager.Inst.Load(1, camObj); // TestMap : 1
 		GameManager.Inst.SetPlayerCnt(numOfUsers);
+
+		GameObject monsters = Util.FindChild(mapObj, false, "Monsters");
+		int monsterCnt = monsters.transform.childCount;
+		GameManager.Inst.SetMonsterCnt(monsterCnt);
 
 		for (int i = 0; i < numOfUsers; ++i)
 		{
@@ -45,76 +49,11 @@ public static class InGamePacketHandler
 			}
 		}
 
-		
-		
-		GameObject monster;
-		/*
-		for (int i = 0; i < 5; ++i)
-		{
-			monster = ResourceManager.Inst.Instantiate("Creature/Slime");
-			MonsterController mc = monster.GetComponent<MonsterController>();
-			MonsterData monsterData = DataManager.Inst.FindMonsterData("Slime");
-			mc.Init(i * 5, 8);
-			mc.SetMonsterData(monsterData);
+		Debug.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
+		Debug.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
+		Debug.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
 
-			monster.name = $"Slime_{i}";
-			ObjectManager.Inst.AddMonster(monster.name, monster);
-			MapManager.Inst.AddMonster(mc);
-		}
-
-		for (int i = 0; i < 5; ++i)
-		{
-			monster = ResourceManager.Inst.Instantiate("Creature/Blue_Mushroom");
-			MonsterController mc = monster.GetComponent<MonsterController>();
-			MonsterData monsterData = DataManager.Inst.FindMonsterData("Blue_Mushroom");
-			mc.Init(i * 5, 9);
-			mc.SetMonsterData(monsterData);
-
-			monster.name = $"Blue_Mushroom_{i}";
-			ObjectManager.Inst.AddMonster(monster.name, monster);
-			MapManager.Inst.AddMonster(mc);
-		}
-
-		for (int i = 0; i < 2; ++i)
-		{
-			monster = ResourceManager.Inst.Instantiate("Creature/Dark_Stone_Golem");
-			MonsterController mc = monster.GetComponent<MonsterController>();
-			MonsterData monsterData = DataManager.Inst.FindMonsterData("Dark_Stone_Golem");
-			mc.Init(i+5,5);
-			mc.SetMonsterData(monsterData);
-
-			monster.name = $"Dark_Stone_Golem_{i}";
-			ObjectManager.Inst.AddMonster(monster.name, monster);
-			MapManager.Inst.AddMonster(mc);
-		}
-
-		for (int i = 0; i < 1; ++i)
-		{
-			monster = ResourceManager.Inst.Instantiate("Creature/Boss1");
-			MonsterController mc = monster.GetComponent<MonsterController>();
-			MonsterData monsterData = DataManager.Inst.FindMonsterData("Boss1");
-			mc.Init(20, 15);
-			mc.SetMonsterData(monsterData);
-
-			monster.name = $"Boss1_{i}";
-			ObjectManager.Inst.AddMonster(monster.name, monster);
-			MapManager.Inst.AddMonster(mc);
-		}
-		*/
-		/*
-		for (int i = 0; i < 1; ++i)
-		{
-			monster = ResourceManager.Inst.Instantiate("Creature/Boss2");
-			MonsterController mc = monster.GetComponent<MonsterController>();
-			MonsterData monsterData = DataManager.Inst.FindMonsterData("Boss2");
-			mc.Init(5, 5);
-			mc.SetMonsterData(monsterData);
-
-			monster.name = $"Boss2_{i}";
-			ObjectManager.Inst.AddMonster(monster.name, monster);
-			MapManager.Inst.AddMonster(mc);
-		}
-		*/
+		GameManager.Inst.GameStart = true;
 	}
 
 	public static void BeginMove(PacketReader _reader)
@@ -176,5 +115,14 @@ public static class InGamePacketHandler
 		eSkill skill = (eSkill)_reader.GetByte();
 
 		pc.ChangeState(new PlayerAttackState(targets, skill));
+	}
+
+	public static void GameOver(PacketReader _reader)
+	{
+		GameManager.Inst.Clear();
+		ObjectManager.Inst.ClearPlayers();
+		ObjectManager.Inst.ClearMonsters();
+		MapManager.Inst.Destroy();
+		SceneManagerEx.Inst.LoadSceneWithFadeOut(eScene.Room);
 	}
 }

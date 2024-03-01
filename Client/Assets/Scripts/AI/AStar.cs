@@ -44,6 +44,8 @@ public class AStar
 		int XSize = MapManager.Inst.XSize;
 		int YSize = MapManager.Inst.YSize;
 
+		if (XSize <= 0 || YSize <= 0) return null;
+
 		m_best = new int[YSize, XSize];
 
 		for (int i = 0; i < YSize; ++i)
@@ -57,7 +59,13 @@ public class AStar
 		int g = 0;
 		int h = 10 * (Math.Abs(_destCellPos.y - _startCellPos.y) + Math.Abs(_destCellPos.x - _startCellPos.x));
 		m_pq.Enqueue(new Node(g + h, g, _startCellPos));
-		m_best[_startCellPos.y, _startCellPos.x] = g + h; // index out of bounds
+		try
+		{
+			m_best[_startCellPos.y, _startCellPos.x] = g + h; // index out of bounds
+		}catch(IndexOutOfRangeException _ex)
+		{
+			Debug.Log($"에러 : {_startCellPos.x}, {_startCellPos.y}");
+		}
 		m_dicParent[_startCellPos] = _startCellPos;
 
 		Node node = null;

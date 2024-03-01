@@ -19,7 +19,7 @@ public abstract class BaseScene : MonoBehaviour
 		
 	}
 
-	protected virtual void Update()
+	void Update()
 	{
 
 	}

@@ -114,7 +114,6 @@ public class LobbyScene : BaseScene
 		IsLoading = false;
 
 		InputManager.Inst.SetInputEnabled(false);
-		IsLoading = false;
 		StartFadeCoroutine();
 	}
 
