@@ -143,6 +143,8 @@ public class MapManager
 		int monsterCnt = monsters.transform.childCount;
 		GameManager.Inst.SetMonsterCnt(monsterCnt);
 
+		//m_hitboxTile.
+
 		TileInit();
 	}
 
