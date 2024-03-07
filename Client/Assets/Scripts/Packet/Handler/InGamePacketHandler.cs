@@ -59,11 +59,13 @@ public static class InGamePacketHandler
 	public static void BeginMove(PacketReader _reader)
 	{
 		byte roomSlot = _reader.GetByte();
+		float xpos = _reader.GetInt32() / 1000000.0f;
+		float ypos = _reader.GetInt32() / 1000000.0f;
 		byte dir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
-		pc.SetDir((CreatureController.eDir)dir);
-		//pc.BeginMove();
+		pc.SetDir(dir);
+		pc.EndMovePosition(xpos, ypos);
 	}
 
 	public static void EndMove(PacketReader _reader)
@@ -71,14 +73,10 @@ public static class InGamePacketHandler
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
-		//byte dir = _reader.GetByte();
-		//long tick = _reader.GetInt64();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
-		//pc.UnSetDir((CreatureController.Dir)dir);
-		pc.SetDir(CreatureController.eDir.None);
+		pc.SetDir(0);
 		pc.EndMovePosition(xpos, ypos);
-		//pc.EndMovePosition(xpos, ypos);
 	}
 
 	public static void BeginMoveMonster(PacketReader _reader)

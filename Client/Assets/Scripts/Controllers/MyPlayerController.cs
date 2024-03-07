@@ -21,9 +21,21 @@ public class MyPlayerController : PlayerController
 
 
 	KeyCode m_curKeyCode = KeyCode.None;
+	KeyCode m_curSecondKeyCode = KeyCode.None;
 	bool m_bIsKeyDown = false;
 	bool m_bIsKeyUp = false;
 
+	Dictionary<KeyCode, bool> m_keyPressed = new Dictionary<KeyCode, bool>();
+	Dictionary<KeyCode, eDir> m_keyCodeDir = new Dictionary<KeyCode, eDir>()
+	{
+		{ KeyCode.W, eDir.Up },
+		{ KeyCode.S, eDir.Down },
+		{ KeyCode.A, eDir.Left },
+		{ KeyCode.D, eDir.Right }
+	};
+
+
+	//int m_keyPressedCnt = 0;
 
 	//eDir m_eDirInput = eDir.None;
 
@@ -42,12 +54,7 @@ public class MyPlayerController : PlayerController
     {
 		base.Update();
 
-		if (Input.GetKeyUp(m_curKeyCode))
-		{
-			m_curKeyCode = KeyCode.None;
-			m_bIsKeyUp = true;
-			Dir = eDir.None;
-		}
+		InputMovement();
 
 		if (!IsDead)
 		{
@@ -61,32 +68,59 @@ public class MyPlayerController : PlayerController
 		base.FixedUpdate();
 	}
 	
-	// 이동 방향키를 누르고 있다가 다른 상태에서 방향키를 떼면 계속 이동함
 	public void InputMovement()
 	{
-		if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.W))
+		if (Input.GetKeyDown(KeyCode.W))
 		{
-			m_curKeyCode = KeyCode.W;
-			Dir = eDir.Up;
 			m_bIsKeyDown = true;
+			ByteDir |= (byte)eDir.Up;
 		}
-		else if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.S))
+		if (Input.GetKeyDown(KeyCode.S))
 		{
-			m_curKeyCode = KeyCode.S;
-			Dir = eDir.Down;
 			m_bIsKeyDown = true;
+			ByteDir |= (byte)eDir.Down;
 		}
-		else if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.A))
+		if (Input.GetKeyDown(KeyCode.A))
 		{
-			m_curKeyCode = KeyCode.A;
-			Dir = eDir.Left;
 			m_bIsKeyDown = true;
+			ByteDir |= (byte)eDir.Left;
 		}
-		else if (m_curKeyCode == KeyCode.None && Input.GetKey(KeyCode.D))
+		if (Input.GetKeyDown(KeyCode.D))
 		{
-			m_curKeyCode = KeyCode.D;
-			Dir = eDir.Right;
 			m_bIsKeyDown = true;
+			ByteDir |= (byte)eDir.Right;
+		}
+
+		byte temp;
+		if (Input.GetKeyUp(KeyCode.W))
+		{
+			m_bIsKeyUp = true;
+			temp = (byte)eDir.Up;
+			ByteDir &= (byte)~temp;
+		}
+		if (Input.GetKeyUp(KeyCode.S))
+		{
+			m_bIsKeyUp = true;
+			temp = (byte)eDir.Down;
+			ByteDir &= (byte)~temp;
+		}
+		if (Input.GetKeyUp(KeyCode.A))
+		{
+			m_bIsKeyUp = true;
+			temp = (byte)eDir.Left;
+			ByteDir &= (byte)~temp;
+		}
+		if (Input.GetKeyUp(KeyCode.D))
+		{
+			m_bIsKeyUp = true;
+			temp = (byte)eDir.Right;
+			ByteDir &= (byte)~temp;
+		}
+
+		if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+		{
+			ByteDir = 0;
+			m_bIsKeyUp = true;
 		}
 
 		HandleInputMovement();
@@ -94,18 +128,19 @@ public class MyPlayerController : PlayerController
 
 	void HandleInputMovement()
 	{
-		if (m_bIsKeyUp)
+		if (m_bIsKeyUp && ByteDir == (byte)eDir.None)
 		{
-			Packet pkt = InGamePacketMaker.EndMove(transform.position.x, transform.position.y);
+			Packet pkt = InGamePacketMaker.EndMove(transform.position);
 			NetworkManager.Inst.Send(pkt);
 			m_bIsKeyUp = false;
 		}
 
-		if (m_bIsKeyDown)
+		if (m_bIsKeyDown || m_bIsKeyUp)
 		{
-			Packet pkt = InGamePacketMaker.BeginMove(Dir);
+			Packet pkt = InGamePacketMaker.BeginMove(transform.position, ByteDir);
 			NetworkManager.Inst.Send(pkt);
 			m_bIsKeyDown = false;
+			m_bIsKeyUp = false;
 		}
 	}
 

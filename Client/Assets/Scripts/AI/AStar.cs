@@ -6,10 +6,10 @@ using UnityEngine;
 
 public class AStar 
 {
-	const int DirLen = 4;
+	const int DirLen = 8;
 
 	Vector2Int[] m_dir = new Vector2Int[DirLen];
-	int[] m_cost = { 10, 10, 10, 10 };//, 14, 14, 14, 14 };
+	int[] m_cost = { 10, 10, 10, 10, 14, 14, 14, 14 };
 
 	int[,] m_best;
 	bool[,] m_visited;
@@ -21,28 +21,32 @@ public class AStar
 
 	public AStar()
 	{
-		m_dir[0] = new Vector2Int(0, -1);
-		m_dir[1] = new Vector2Int(1, 0);
-		m_dir[2] = new Vector2Int(0, 1);
-		m_dir[3] = new Vector2Int(-1, 0);
-
 		//m_dir[0] = new Vector2Int(0, -1);
-		//m_dir[1] = new Vector2Int(1, -1);
-		//m_dir[2] = new Vector2Int(1, 0);
-		//m_dir[3] = new Vector2Int(1, 1);
-		//m_dir[4] = new Vector2Int(0, 1);
-		//m_dir[5] = new Vector2Int(-1, 1);
-		//m_dir[6] = new Vector2Int(-1, 0);
-		//m_dir[7] = new Vector2Int(-1, -1);
+		//m_dir[1] = new Vector2Int(1, 0);
+		//m_dir[2] = new Vector2Int(0, 1);
+		//m_dir[3] = new Vector2Int(-1, 0);
+
+		m_dir[0] = new Vector2Int(0, -1);
+		m_dir[1] = new Vector2Int(1, -1);
+		m_dir[2] = new Vector2Int(1, 0);
+		m_dir[3] = new Vector2Int(1, 1);
+		m_dir[4] = new Vector2Int(0, 1);
+		m_dir[5] = new Vector2Int(-1, 1);
+		m_dir[6] = new Vector2Int(-1, 0);
+		m_dir[7] = new Vector2Int(-1, -1);
 	}
 
 	// 시작점부터 목적지까지 path 만들기 (중간에 없던 장애물이 갑자기 생기면 다시 호출할 것)
 	public List<Vector2Int> Search(Vector2Int _startCellPos, Vector2Int _destCellPos, int _hitboxWidth, int _hitboxHeight)
 	{
-		List<Vector2Int> path = new List<Vector2Int>();
-
 		int XSize = MapManager.Inst.XSize;
 		int YSize = MapManager.Inst.YSize;
+
+		if (_startCellPos.x < 0 || _startCellPos.x >= XSize || _startCellPos.y < 0 || _startCellPos.y >= YSize) return null;
+		if (_destCellPos.x < 0 || _destCellPos.x >= XSize || _destCellPos.y < 0 || _destCellPos.y >= YSize) return null;
+
+		List<Vector2Int> path = new List<Vector2Int>();
+
 
 		if (XSize <= 0 || YSize <= 0) return null;
 

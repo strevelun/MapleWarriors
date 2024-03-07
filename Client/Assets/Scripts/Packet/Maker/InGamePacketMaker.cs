@@ -19,23 +19,24 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet BeginMove(CreatureController.eDir _dir)
+	public static Packet BeginMove(Vector3 _vecStartPos, byte _byteDir)
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.BeginMove) 
-			.Add((byte)_dir);
+			.Add(PacketType.eClient.BeginMove)
+			.Add((int)(_vecStartPos.x * 1000000))
+			.Add((int)(_vecStartPos.y * 1000000))
+			.Add(_byteDir);
 		return pkt;
 	}
 
-	public static Packet EndMove(float _xpos, float _ypos)
+	public static Packet EndMove(Vector3 _vecEndPos)
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eClient.EndMove)
-			//.Add(_tick);
-			.Add((int)(_xpos * 1000000)) // 소수점 6자리 정밀도
-			.Add((int)(_ypos * 1000000));
+			.Add((int)(_vecEndPos.x * 1000000)) // 소수점 6자리 정밀도
+			.Add((int)(_vecEndPos.y * 1000000));
 		return pkt;
 	}
 

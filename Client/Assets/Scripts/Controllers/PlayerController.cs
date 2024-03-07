@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
 using static Define;
@@ -37,6 +33,7 @@ public class PlayerController : CreatureController
 	//RectTransform m_positionTagUI;
 
 	public eState State { get; private set; } = eState.None;
+	public eDir SecondDir { get; protected set; } = eDir.None;
 
 	void Start()
 	{
@@ -64,7 +61,9 @@ public class PlayerController : CreatureController
 
 	protected override void FixedUpdate()
 	{
-		base.FixedUpdate();
+			base.FixedUpdate();
+
+	
 
 		//m_positionTMP.text = $"x = {transform.position.x}, y = {transform.position.y}";
 
@@ -103,8 +102,36 @@ public class PlayerController : CreatureController
 		ChangeState(new PlayerIdleState());
 	}
 
-	// 매 프레임마다 new
-	public void CheckMoveState()
+	/*
+public void UpdateSecondMove()
+{
+	float newX = transform.position.x, newY = transform.position.y;
+	switch (SecondDir)
+	{
+		case eDir.Up:
+			if (Dir != eDir.Down)
+				newY = transform.position.y + (MaxSpeed * Time.fixedDeltaTime);
+			break;
+		case eDir.Down:
+			if (Dir != eDir.Up)
+				newY = transform.position.y - (MaxSpeed * Time.fixedDeltaTime);
+			break;
+		case eDir.Left:
+			if (Dir != eDir.Right)
+				newX = transform.position.x - (MaxSpeed * Time.fixedDeltaTime);
+			break;
+		case eDir.Right:
+			if (Dir != eDir.Left)
+				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
+			break;
+	}
+
+	transform.position = new Vector3(newX, newY);
+	
+}
+	*/
+// 매 프레임마다 new
+public void CheckMoveState()
 	{
 		if(CurState is PlayerIdleState)
 		{

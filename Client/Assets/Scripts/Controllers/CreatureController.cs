@@ -13,10 +13,14 @@ public class CreatureController : MonoBehaviour
 	public enum eDir
 	{
 		None,
-		Up = 0b1,
-		Right = 0b10,
-		Down = 0b100,
-		Left = 0b1000,
+		Up = 1, // 0001
+		Right = 2, // 0010
+		Down = 4, // 0100
+		Left = 8, // 1000
+		UpLeft = 9, // 1001
+		UpRight = 3, // 0011
+		DownLeft = 12, // 1100
+		DownRight = 6 // 0110
 	}
 
 	const float m_cellSize = 0.5f;
@@ -26,6 +30,7 @@ public class CreatureController : MonoBehaviour
 	protected Vector2 CenterPos { get; private set; }
 	protected SpriteRenderer m_spriteRenderer;
 	//private State m_eState = State.Idle;
+	public byte ByteDir { get; set; } = 0;
 	public eDir Dir { get; set; } = eDir.None;
 	public eDir LastDir { get; protected set; } = eDir.None;
 	public float MaxSpeed { get; protected set; } = 1f;
@@ -82,6 +87,17 @@ public class CreatureController : MonoBehaviour
 
 	public void UpdateMove()
 	{
+		if (ByteDir == (byte)eDir.UpRight)			Dir = eDir.UpRight;
+		else if (ByteDir == (byte)eDir.UpLeft)		Dir = eDir.UpLeft;
+		else if (ByteDir == (byte)eDir.DownLeft)	Dir = eDir.DownLeft;
+		else if (ByteDir == (byte)eDir.DownRight)	Dir = eDir.DownRight;
+		else if (ByteDir == (byte)eDir.Up)			Dir = eDir.Up;
+		else if (ByteDir == (byte)eDir.Down)		Dir = eDir.Down;
+		else if (ByteDir == (byte)eDir.Left)		Dir = eDir.Left;
+		else if (ByteDir == (byte)eDir.Right)		Dir = eDir.Right;
+		else										Dir = eDir.None;
+
+
 		float newX = transform.position.x, newY = transform.position.y;
 		switch (Dir)
 		{
@@ -97,15 +113,34 @@ public class CreatureController : MonoBehaviour
 			case eDir.Right:
 				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
 				break;
+			case eDir.UpLeft:
+				newX = transform.position.x - (MaxSpeed * Time.fixedDeltaTime);
+				newY = transform.position.y + (MaxSpeed * Time.fixedDeltaTime);
+				break;
+			case eDir.UpRight:
+				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
+				newY = transform.position.y + (MaxSpeed * Time.fixedDeltaTime);
+				break;
+			case eDir.DownLeft:
+				newX = transform.position.x - (MaxSpeed * Time.fixedDeltaTime);
+				newY = transform.position.y - (MaxSpeed * Time.fixedDeltaTime);
+				break;
+			case eDir.DownRight:
+				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
+				newY = transform.position.y - (MaxSpeed * Time.fixedDeltaTime);
+				break;
 		}
+
+		Debug.Log(Dir);
 
 		if (Dir != eDir.None)
 		{
 			AdjustXPosition(ref newX, ref newY);
 			AdjustYPosition(ref newX, ref newY);
 
-			transform.position = new Vector3(newX, newY);
-			Vector2Int tempCellPos = ConvertToCellPos(transform.position.x, transform.position.y);
+			
+
+			Vector2Int tempCellPos = ConvertToCellPos(newX, newY);
 			if (tempCellPos != CellPos)
 			{
 				LastCellPos = CellPos;
@@ -116,11 +151,78 @@ public class CreatureController : MonoBehaviour
 
 			if (LastDir != Dir) LastDir = Dir;
 
+			AdjustXYPosition(ref newX, ref newY, tempCellPos);
+
+			transform.position = new Vector3(newX, newY);
+
 			//Debug.Log($"{CellPos.x}, {CellPos.y}");
 			CenterPos = new Vector2(m_spriteObject.transform.position.x, m_spriteObject.transform.position.y - 0.5f);
 
 		}
+	}
 
+	void AdjustXYPosition(ref float _newX, ref float _newY, Vector2Int _tempCellPos)
+	{
+		if (Dir == eDir.UpRight)
+		{
+			if (MapManager.Inst.IsBlocked(_tempCellPos.x + 1, _tempCellPos.y, HitboxWidth, HitboxHeight))
+			{
+				int targetX = _tempCellPos.x;
+				if (Mathf.Abs(_newX - targetX) < 0.1f)
+					_newX = _tempCellPos.x;
+			}
+			if (MapManager.Inst.IsBlocked(_tempCellPos.x, _tempCellPos.y - 1, HitboxWidth, HitboxHeight))
+			{
+				int targetY = -_tempCellPos.y;
+				if (Mathf.Abs(_newY - targetY) < 0.1f)
+					_newY = targetY;
+			}
+		}
+		else if (Dir == eDir.UpLeft)
+		{
+			if (MapManager.Inst.IsBlocked(_tempCellPos.x - 1, _tempCellPos.y, HitboxWidth, HitboxHeight))
+			{
+				int targetX = _tempCellPos.x;
+				if (Mathf.Abs(_newX - targetX) < 0.1f)
+					_newX = _tempCellPos.x;
+			}
+			if (MapManager.Inst.IsBlocked(_tempCellPos.x, _tempCellPos.y - 1, HitboxWidth, HitboxHeight))
+			{
+				int targetY = -_tempCellPos.y;
+				if (Mathf.Abs(_newY - targetY) < 0.1f)
+					_newY = targetY;
+			}
+		}
+		else if (Dir == eDir.DownRight)
+		{
+			if (MapManager.Inst.IsBlocked(_tempCellPos.x + 1, _tempCellPos.y, HitboxWidth, HitboxHeight))
+			{
+				int targetX = _tempCellPos.x;
+				if (Mathf.Abs(_newX - targetX) < 0.1f)
+					_newX = _tempCellPos.x;
+			}
+			if (MapManager.Inst.IsBlocked(_tempCellPos.x, _tempCellPos.y + 1, HitboxWidth, HitboxHeight))
+			{
+				int targetY = -_tempCellPos.y;
+				if (Mathf.Abs(_newY - targetY) < 0.1f)
+					_newY = targetY;
+			}
+		}
+		else if (Dir == eDir.DownLeft)
+		{
+			if (MapManager.Inst.IsBlocked(_tempCellPos.x - 1, _tempCellPos.y, HitboxWidth, HitboxHeight))
+			{
+				int targetX = _tempCellPos.x;
+				if (Mathf.Abs(_newX - targetX) < 0.1f)
+					_newX = _tempCellPos.x;
+			}
+			if (MapManager.Inst.IsBlocked(_tempCellPos.x, _tempCellPos.y + 1, HitboxWidth, HitboxHeight))
+			{
+				int targetY = -_tempCellPos.y;
+				if (Mathf.Abs(_newY - targetY) < 0.1f)
+					_newY = targetY;
+			}
+		}
 	}
 
 	void AdjustXPosition(ref float _newX, ref float _newY)
@@ -259,10 +361,9 @@ public class CreatureController : MonoBehaviour
 		SetPosition(_cellXPos, _cellYPos);
 	}
 
-	public void SetDir(eDir _eDir) 
+	public void SetDir(byte _byteDir) 
 	{
-		//m_eDir |= _eDir; 
-		Dir = _eDir;
+		ByteDir = _byteDir;
 	}
 	/*
 	public void UnSetDir(eDir _eDir)
@@ -287,8 +388,8 @@ public class CreatureController : MonoBehaviour
 
 	public virtual void Flip()
 	{
-		if ((Dir == eDir.Right && m_bIsFacingLeft)
-			|| (Dir == eDir.Left && !m_bIsFacingLeft))
+		if (((Dir == eDir.Right || Dir == eDir.UpRight || Dir == eDir.DownRight) && m_bIsFacingLeft)
+			|| ((Dir == eDir.Left || Dir == eDir.UpLeft || Dir == eDir.DownLeft)&& !m_bIsFacingLeft))
 		{
 			m_spriteRenderer.flipX = m_bIsFacingLeft;
 			m_bIsFacingLeft = !m_bIsFacingLeft;
