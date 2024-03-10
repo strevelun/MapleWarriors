@@ -5,7 +5,7 @@
       "HP": 15,
       "attack": 5,
       "attackCellRange": 1,
-      "speed": 3,
+      "speed": 2,
       "visionCellRange": 5,
       "maxHitPlayer": 1,
       "hitboxWidth": 1,

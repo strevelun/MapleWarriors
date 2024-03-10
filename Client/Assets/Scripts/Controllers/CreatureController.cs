@@ -163,62 +163,185 @@ public class CreatureController : MonoBehaviour
 
 		if (Dir == eDir.UpRight)
 		{
-			if (MapManager.Inst.IsBlocked(tempCellPos.x + 1, tempCellPos.y, HitboxWidth, HitboxHeight))
+			bool rightBlocked = MapManager.Inst.IsBlocked(tempCellPos.x + 1, tempCellPos.y, HitboxWidth, HitboxHeight);
+			bool upBlocked = MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y - 1, HitboxWidth, HitboxHeight);
+
+			if (rightBlocked)
 			{
 				int targetX = tempCellPos.x;
 				if (Mathf.Abs(_newX - targetX) < 0.1f)
 					_newX = tempCellPos.x;
 			}
-			if (MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y - 1, HitboxWidth, HitboxHeight))
+			if (upBlocked)
 			{
 				int targetY = -tempCellPos.y;
 				if (Mathf.Abs(_newY - targetY) < 0.1f)
 					_newY = targetY;
+			}
+			if (!rightBlocked && !upBlocked) // 모서리 블록으로 갈 경우 처리 로직
+			{
+				if (MapManager.Inst.IsBlocked(tempCellPos.x + 1, tempCellPos.y - 1, HitboxWidth, HitboxHeight))
+				{
+					if (Mathf.RoundToInt(transform.position.x + 0.5f) == CellPos.x + 1) // cellpos:14는 13.5~14.5
+					{
+						int targetY = -tempCellPos.y;
+						if (Mathf.Abs(_newY - targetY) < 0.1f)
+							_newY = targetY;
+					}
+					else
+					{
+						int targetX = tempCellPos.x;
+						if (Mathf.Abs(_newX - targetX) < 0.1f)
+							_newX = tempCellPos.x;
+					}
+					
+					//Debug.Log($"들어감 : {Mathf.RoundToInt(transform.position.x)}");
+				}
+				// UpRight인채로 모서리를 지날 때 미세한 겹침 방지
+				else if(MapManager.Inst.IsBlocked(tempCellPos.x - 1, tempCellPos.y - 1, HitboxWidth, HitboxHeight)) 
+				{
+					if (Mathf.RoundToInt(transform.position.x) == CellPos.x) // cellpos:14는 13.5~14.5
+					{
+						int targetY = -tempCellPos.y;
+						if (Mathf.Abs(_newY - targetY) < 0.1f)
+							_newY = targetY;
+					}
+				}
 			}
 		}
 		else if (Dir == eDir.UpLeft)
 		{
-			if (MapManager.Inst.IsBlocked(tempCellPos.x - 1, tempCellPos.y, HitboxWidth, HitboxHeight))
+			bool leftBlocked = MapManager.Inst.IsBlocked(tempCellPos.x - 1, tempCellPos.y, HitboxWidth, HitboxHeight);
+			bool upBlocked = MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y - 1, HitboxWidth, HitboxHeight);
+
+			if (leftBlocked)
 			{
 				int targetX = tempCellPos.x;
 				if (Mathf.Abs(_newX - targetX) < 0.1f)
 					_newX = tempCellPos.x;
 			}
-			if (MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y - 1, HitboxWidth, HitboxHeight))
+			if (upBlocked)
 			{
 				int targetY = -tempCellPos.y;
 				if (Mathf.Abs(_newY - targetY) < 0.1f)
 					_newY = targetY;
+			}
+			if (!leftBlocked && !upBlocked)
+			{
+				if (MapManager.Inst.IsBlocked(tempCellPos.x - 1, tempCellPos.y - 1, HitboxWidth, HitboxHeight))
+				{
+					if (Mathf.FloorToInt(transform.position.x) == CellPos.x)  
+					{
+						int targetX = tempCellPos.x;
+						if (Mathf.Abs(_newX - targetX) < 0.1f)
+							_newX = tempCellPos.x;
+					}
+					else
+					{
+						int targetY = -tempCellPos.y;
+						if (Mathf.Abs(_newY - targetY) < 0.1f)
+							_newY = targetY;
+					}
+				}
+				else if (MapManager.Inst.IsBlocked(tempCellPos.x + 1, tempCellPos.y - 1, HitboxWidth, HitboxHeight))
+				{
+					if (Mathf.RoundToInt(transform.position.x) == CellPos.x) // cellpos:14는 13.5~14.5
+					{
+						int targetY = -tempCellPos.y;
+						if (Mathf.Abs(_newY - targetY) < 0.1f)
+							_newY = targetY;
+					}
+				}
 			}
 		}
 		else if (Dir == eDir.DownRight)
 		{
-			if (MapManager.Inst.IsBlocked(tempCellPos.x + 1, tempCellPos.y, HitboxWidth, HitboxHeight))
+			bool rightBlocked = MapManager.Inst.IsBlocked(tempCellPos.x + 1, tempCellPos.y, HitboxWidth, HitboxHeight);
+			bool downBlocked = MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y + 1, HitboxWidth, HitboxHeight);
+
+			if (rightBlocked)
 			{
 				int targetX = tempCellPos.x;
 				if (Mathf.Abs(_newX - targetX) < 0.1f)
 					_newX = tempCellPos.x;
 			}
-			if (MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y + 1, HitboxWidth, HitboxHeight))
+			if (downBlocked)
 			{
 				int targetY = -tempCellPos.y;
 				if (Mathf.Abs(_newY - targetY) < 0.1f)
 					_newY = targetY;
+			}
+			if (!rightBlocked && !downBlocked)
+			{
+				if (MapManager.Inst.IsBlocked(tempCellPos.x + 1, tempCellPos.y + 1, HitboxWidth, HitboxHeight))
+				{
+					if (Mathf.RoundToInt(transform.position.x + 0.5f) == CellPos.x + 1)  // cellxpos=24 : 24.5~25.5
+					{
+						int targetY = -tempCellPos.y;
+						if (Mathf.Abs(_newY - targetY) < 0.1f)
+							_newY = targetY;
+					}
+					else
+					{
+						int targetX = tempCellPos.x;
+						if (Mathf.Abs(_newX - targetX) < 0.1f)
+							_newX = tempCellPos.x;
+					}
+				}
+				else if (MapManager.Inst.IsBlocked(tempCellPos.x - 1, tempCellPos.y + 1, HitboxWidth, HitboxHeight))
+				{
+					if (Mathf.RoundToInt(transform.position.x) == CellPos.x) // cellpos:14는 13.5~14.5
+					{
+						int targetY = -tempCellPos.y;
+						if (Mathf.Abs(_newY - targetY) < 0.1f)
+							_newY = targetY;
+					}
+				}
 			}
 		}
 		else if (Dir == eDir.DownLeft)
 		{
-			if (MapManager.Inst.IsBlocked(tempCellPos.x - 1, tempCellPos.y, HitboxWidth, HitboxHeight))
+			bool lefttBlocked = MapManager.Inst.IsBlocked(tempCellPos.x - 1, tempCellPos.y, HitboxWidth, HitboxHeight);
+			bool downBlocked = MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y + 1, HitboxWidth, HitboxHeight);
+
+			if (lefttBlocked)
 			{
 				int targetX = tempCellPos.x;
 				if (Mathf.Abs(_newX - targetX) < 0.1f)
 					_newX = tempCellPos.x;
 			}
-			if (MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y + 1, HitboxWidth, HitboxHeight))
+			if (downBlocked)
 			{
 				int targetY = -tempCellPos.y;
 				if (Mathf.Abs(_newY - targetY) < 0.1f)
 					_newY = targetY;
+			}
+			if (!lefttBlocked && !downBlocked)
+			{
+				if (MapManager.Inst.IsBlocked(tempCellPos.x - 1, tempCellPos.y + 1, HitboxWidth, HitboxHeight))
+				{
+					if (Mathf.FloorToInt(transform.position.x) == CellPos.x)  // cellxpos=24 : 24.5~25.5
+					{
+						int targetX = tempCellPos.x;
+						if (Mathf.Abs(_newX - targetX) < 0.1f)
+							_newX = tempCellPos.x;
+					}
+					else
+					{
+						int targetY = -tempCellPos.y;
+						if (Mathf.Abs(_newY - targetY) < 0.1f)
+							_newY = targetY;
+					}
+				}
+				else if (MapManager.Inst.IsBlocked(tempCellPos.x + 1, tempCellPos.y + 1, HitboxWidth, HitboxHeight))
+				{
+					if (Mathf.RoundToInt(transform.position.x) == CellPos.x) // cellpos:14는 13.5~14.5
+					{
+						int targetY = -tempCellPos.y;
+						if (Mathf.Abs(_newY - targetY) < 0.1f)
+							_newY = targetY;
+					}
+				}
 			}
 		}
 	}
@@ -226,6 +349,7 @@ public class CreatureController : MonoBehaviour
 	void AdjustXPosition(ref float _newX, ref float _newY)
 	{
 		if (Dir != eDir.Left && Dir != eDir.Right) return;
+	
 
 		Vector2Int vec = MapManager.Inst.WorldToCell(_newX, _newY);
 		float absNewY = Math.Abs(_newY);
