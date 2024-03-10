@@ -37,6 +37,7 @@ public class MapManager
 	public int YSize { get; private set; }
 
 	bool[,] m_collisionMap;
+	bool[,] m_monsterCollision;
 	Queue<MonsterController>[,] m_monsterMap;
 
 	public GameObject Load(int _mapID, GameObject _camObj)
@@ -90,6 +91,7 @@ public class MapManager
 		m_tmCollision = Util.FindChild<Tilemap>(_prefabMap, true, "TM_Collision");
 
 		m_collisionMap = new bool[YSize, XSize];
+		m_monsterCollision = new bool[YSize, XSize];
 		m_monsterMap = new Queue<MonsterController>[YSize, XSize];
 		for (int i = 0; i < YSize; ++i)
 		{
@@ -154,7 +156,7 @@ public class MapManager
 		int hitboxHeight = _hitboxHeight - 1;
 		if (_cellXPos < 0 || _cellYPos - hitboxHeight < 0 || _cellXPos + hitboxWidth >= XSize || _cellYPos >= YSize) return true;
 
-		for(int y = _cellYPos; y >= _cellYPos - hitboxHeight; --y)
+		for (int y = _cellYPos; y >= _cellYPos - hitboxHeight; --y)
 		{
 			for(int x= _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
 			{
@@ -262,6 +264,16 @@ public class MapManager
 				m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), null);
 			}
 		}
+	}
+
+	public void SetMonsterCollision(int _cellXPos, int _cellYPos, bool _flag)
+	{
+		m_monsterCollision[_cellYPos, _cellXPos] = _flag;
+	}
+
+	public bool IsMonsterCollision(int _cellXPos, int _cellYPos)
+	{
+		return m_monsterCollision[_cellYPos, _cellXPos];
 	}
 
 	public void Destroy()

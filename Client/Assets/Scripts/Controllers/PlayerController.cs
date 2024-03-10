@@ -192,6 +192,7 @@ public void CheckMoveState()
 		if (HP <= 0) return;
 
 		HP -= _damage;
+		if (HP < 0) HP = 0;
 		m_hpbarText.text = HP.ToString();
 		m_hpBarSlider.value -= _damage;
 	}

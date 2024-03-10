@@ -128,6 +128,8 @@ public class MonsterController : CreatureController
 
 		m_hpbarText = Util.FindChild(m_hpbarObj, true, "HPText").GetComponent<TextMeshProUGUI>();
 
+		MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, true);
+
 		StartCoroutine(ReadyForAttack());
 	}
 
@@ -239,6 +241,10 @@ public class MonsterController : CreatureController
 
 		PathIdx = 1;
 
+		if (MapManager.Inst.IsMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y)) return;
+
+		MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, true);
+
 		Packet pkt = InGamePacketMaker.BeginMoveMonster(name, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
 		NetworkManager.Inst.Send(pkt);
 
@@ -259,7 +265,7 @@ public class MonsterController : CreatureController
 
 		float dist = Vector2.Distance(transform.position, dest);
 
-		Debug.Log($"{dist} -> {transform.position} : {Dir}, 목적지 : {dest}");
+		//Debug.Log($"{dist} -> {transform.position} : {Dir}, 목적지 : {dest}");
 
 		if (dist > MaxSpeed * Time.fixedDeltaTime * 2) return;
 
@@ -273,9 +279,11 @@ public class MonsterController : CreatureController
 			m_dest.Clear();
 		}
 
+
 		if (m_dest.Count > 0)
 		{
-			Vector2 dir = CellPos - new Vector2(m_dest.Peek().x, m_dest.Peek().y);
+			Vector2Int vecDest = m_dest.Peek();
+			Vector2 dir = CellPos - new Vector2(vecDest.x, vecDest.y);
 
 			ByteDir = 0;
 
@@ -284,14 +292,19 @@ public class MonsterController : CreatureController
 			if (dir.y <= -1) ByteDir |= (byte)eDir.Down;
 			if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
 
+			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, false);
+			MapManager.Inst.SetMonsterCollision(vecDest.x, vecDest.y, true);
+			Debug.Log($"{CellPos.x}, {CellPos.y} -> {vecDest.x}, {vecDest.y}");
 			//Debug.Log("UpdateChase에서 방향전환");
 		}
 		else
 		{
 			ByteDir = 0;
 			//m_eState = eState.None;
-			CellArrived = true;
+			Debug.Log($"{CellPos.x}, {CellPos.y} 도착");
 		}
+			
+		CellArrived = true;
 
 		if (UserData.Inst.IsRoomOwner)
 		{
@@ -308,6 +321,15 @@ public class MonsterController : CreatureController
 				
 			if (PathIdx < m_path.Count-1)
 			{
+				if (MapManager.Inst.IsMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y))
+				{
+					// 경로 다시 생성해야
+					m_targetMoved = true;
+					return;
+				}
+
+				MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, true);
+
 				Packet pkt = InGamePacketMaker.BeginMoveMonster(name, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
 				NetworkManager.Inst.Send(pkt);
 			}
@@ -347,8 +369,11 @@ public class MonsterController : CreatureController
 
 			transform.position = new Vector3(CellPos.x, -CellPos.y);
 
-			Debug.Log("BeginMove 방향전환");
+			//Debug.Log("BeginMove 방향전환");
 			CellArrived = false;
+			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, false);
+			MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, true);
+			Debug.Log($"{CellPos.x}, {CellPos.y} -> {_cellXPos}, {_cellYPos}");
 		}
 		
 

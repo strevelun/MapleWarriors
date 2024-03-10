@@ -62,6 +62,7 @@ public class AStar
 		m_dicParent[_startCellPos] = _startCellPos;
 
 		Node node = null;
+		Node finalNode = null; 
 
 		while (m_pq.Count() > 0)
 		{
@@ -71,6 +72,7 @@ public class AStar
 			if (m_visited[node.CurPos.y, node.CurPos.x]) continue;
 
 			m_visited[node.CurPos.y, node.CurPos.x] = true;
+			finalNode = node;
 
 			if (node.CurPos == _destCellPos) break;
 
@@ -78,7 +80,9 @@ public class AStar
 			{
 				Vector2Int nextPos = node.CurPos + m_dir[i];
 				if (MapManager.Inst.IsBlocked(nextPos.x, nextPos.y, _hitboxWidth, _hitboxHeight)) continue;
+				if (MapManager.Inst.IsMonsterCollision(nextPos.x, nextPos.y)) continue;
 				if (m_visited[nextPos.y, nextPos.x]) continue;
+				
 				if (i == 1) // UpRight
 				{
 					if (MapManager.Inst.IsBlocked(nextPos.x - 1, nextPos.y, _hitboxWidth, _hitboxHeight)
@@ -116,22 +120,19 @@ public class AStar
 
 		//Debug.Log($"크기 : {m_dicParent.Count}");
 
-		Vector2Int pos = node.CurPos;
-		int totalSize = XSize * YSize;
-
-		while (totalSize > 0)
+		if (finalNode != null)
 		{
-			//if (MapManager.Inst.IsBlocked(pos.x, pos.y, _hitboxWidth, _hitboxHeight)) return null;
+			Vector2Int pos = finalNode.CurPos;
 
-			path.Add(pos); 
-
-			if (pos == m_dicParent[pos]) break;
-		
-			pos = m_dicParent[pos];
-			--totalSize;
+			while (pos != _startCellPos) 
+			{
+				path.Add(pos);
+				pos = m_dicParent[pos];
+			}
+			path.Add(_startCellPos); 
+			path.Reverse();
 		}
 
-		path.Reverse();
 		return path;
 	}
 }

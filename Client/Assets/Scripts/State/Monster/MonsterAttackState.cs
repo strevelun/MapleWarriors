@@ -59,7 +59,7 @@ public class MonsterAttackState : ICreatureState
 		if (m_animStart && !m_stateInfo.IsName("Attack"))
 		{
 			m_mc.ChangeState(new MonsterIdleState());
-			Debug.Log($"몬스터 어택 끝 : {m_mc.Dir}");
+			//Debug.Log($"몬스터 어택 끝 : {m_mc.Dir}");
 			return;
 		}
 
