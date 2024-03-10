@@ -41,9 +41,6 @@ public class MyPlayerController : PlayerController
 
     void Start()
 	{
-		m_eCurSkill = eSkill.Slash;
-		m_eBeforeSkill = eSkill.Slash;
-		m_curSkill = new Skill(m_eCurSkill);
 	}
 
 	private void OnEnable()
@@ -59,7 +56,7 @@ public class MyPlayerController : PlayerController
 		if (!IsDead)
 		{
 			InputSkillChoice();
-			m_curSkill.Update(CellPos);
+			CurSkill.Update(CellPos);
 		}
 	}
 
@@ -117,10 +114,13 @@ public class MyPlayerController : PlayerController
 			ByteDir &= (byte)~temp;
 		}
 
-		if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+		if (ByteDir != 0)
 		{
-			ByteDir = 0;
-			m_bIsKeyUp = true;
+			if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+			{
+				ByteDir = 0;
+				m_bIsKeyUp = true;
+			}
 		}
 
 		HandleInputMovement();
@@ -155,10 +155,10 @@ public class MyPlayerController : PlayerController
 		if (Input.GetMouseButtonDown(0))
 		{
 			List<MonsterController> targets = new List<MonsterController>();
-			bool activated = m_curSkill.Activate(targets);
+			bool activated = CurSkill.Activate(targets);
 			if (activated)
 			{
-				ChangeState(new PlayerAttackState(targets, m_eCurSkill));
+				ChangeState(new PlayerAttackState(targets, CurSkill));
 				Packet pkt = InGamePacketMaker.Attack(targets, m_eCurSkill); //mc ? mc.name : string.Empty);
 				NetworkManager.Inst.Send(pkt);
 			}
@@ -193,8 +193,8 @@ public class MyPlayerController : PlayerController
 		if (curSkill != eSkill.None && curSkill != m_eCurSkill)
 		{
 			m_eCurSkill = curSkill;
-			m_curSkill.RemoveAimTiles();
-			m_curSkill.SetSkill(curSkill);
+			CurSkill.RemoveAimTiles();
+			CurSkill.SetSkill(curSkill);
 		}
 	}
 
@@ -202,6 +202,6 @@ public class MyPlayerController : PlayerController
 	{
 		base.Die();
 
-		m_curSkill.RemoveAimTiles();
+		CurSkill.RemoveAimTiles();
 	}
 }

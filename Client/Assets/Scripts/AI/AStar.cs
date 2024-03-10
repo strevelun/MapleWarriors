@@ -9,7 +9,7 @@ public class AStar
 	const int DirLen = 8;
 
 	Vector2Int[] m_dir = new Vector2Int[DirLen];
-	int[] m_cost = { 10, 10, 10, 10, 14, 14, 14, 14 };
+	int[] m_cost = { 10, 14, 10, 14, 10, 14, 10, 14 };
 
 	int[,] m_best;
 	bool[,] m_visited;
@@ -21,11 +21,6 @@ public class AStar
 
 	public AStar()
 	{
-		//m_dir[0] = new Vector2Int(0, -1);
-		//m_dir[1] = new Vector2Int(1, 0);
-		//m_dir[2] = new Vector2Int(0, 1);
-		//m_dir[3] = new Vector2Int(-1, 0);
-
 		m_dir[0] = new Vector2Int(0, -1);
 		m_dir[1] = new Vector2Int(1, -1);
 		m_dir[2] = new Vector2Int(1, 0);
@@ -63,13 +58,7 @@ public class AStar
 		int g = 0;
 		int h = 10 * (Math.Abs(_destCellPos.y - _startCellPos.y) + Math.Abs(_destCellPos.x - _startCellPos.x));
 		m_pq.Enqueue(new Node(g + h, g, _startCellPos));
-		try
-		{
-			m_best[_startCellPos.y, _startCellPos.x] = g + h; // index out of bounds
-		}catch(IndexOutOfRangeException _ex)
-		{
-			Debug.Log($"에러 : {_startCellPos.x}, {_startCellPos.y}");
-		}
+		m_best[_startCellPos.y, _startCellPos.x] = g + h; 
 		m_dicParent[_startCellPos] = _startCellPos;
 
 		Node node = null;
@@ -90,6 +79,30 @@ public class AStar
 				Vector2Int nextPos = node.CurPos + m_dir[i];
 				if (MapManager.Inst.IsBlocked(nextPos.x, nextPos.y, _hitboxWidth, _hitboxHeight)) continue;
 				if (m_visited[nextPos.y, nextPos.x]) continue;
+				if (i == 1) // UpRight
+				{
+					if (MapManager.Inst.IsBlocked(nextPos.x - 1, nextPos.y, _hitboxWidth, _hitboxHeight)
+						|| MapManager.Inst.IsBlocked(nextPos.x, nextPos.y + 1, _hitboxWidth, _hitboxHeight))
+						continue;
+				}
+				else if (i == 3) // DownRight
+				{
+					if (MapManager.Inst.IsBlocked(nextPos.x - 1, nextPos.y, _hitboxWidth, _hitboxHeight)
+						|| MapManager.Inst.IsBlocked(nextPos.x, nextPos.y - 1, _hitboxWidth, _hitboxHeight))
+						continue;
+				}
+				else if (i == 5) // DownLeft
+				{
+					if (MapManager.Inst.IsBlocked(nextPos.x + 1, nextPos.y, _hitboxWidth, _hitboxHeight)
+						|| MapManager.Inst.IsBlocked(nextPos.x, nextPos.y - 1, _hitboxWidth, _hitboxHeight))
+						continue;
+				}
+				else if (i == 7) // UpLeft
+				{
+					if (MapManager.Inst.IsBlocked(nextPos.x + 1, nextPos.y, _hitboxWidth, _hitboxHeight)
+						|| MapManager.Inst.IsBlocked(nextPos.x, nextPos.y + 1, _hitboxWidth, _hitboxHeight))
+						continue;
+				}
 
 				g = node.G + m_cost[i];
 				h = 10 * (Math.Abs(_destCellPos.y - nextPos.y) + Math.Abs(_destCellPos.x - nextPos.x));
@@ -108,13 +121,12 @@ public class AStar
 
 		while (totalSize > 0)
 		{
-			if (MapManager.Inst.IsBlocked(pos.x, pos.y, _hitboxWidth, _hitboxHeight)) return null;
+			//if (MapManager.Inst.IsBlocked(pos.x, pos.y, _hitboxWidth, _hitboxHeight)) return null;
 
 			path.Add(pos); 
 
 			if (pos == m_dicParent[pos]) break;
 		
-
 			pos = m_dicParent[pos];
 			--totalSize;
 		}

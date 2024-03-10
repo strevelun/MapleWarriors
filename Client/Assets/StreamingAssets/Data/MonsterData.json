@@ -26,9 +26,9 @@
       "name": "Dark_Stone_Golem",
       "HP": 20,
       "attack": 7,
-      "attackCellRange": 2,
+      "attackCellRange": 4,
       "speed": 1,
-      "visionCellRange": 4,
+      "visionCellRange": 8,
       "maxHitPlayer": 1,
       "hitboxWidth": 2,
       "hitboxHeight": 2

@@ -24,6 +24,7 @@ public class MonsterIdleState : ICreatureState
 
 	public void Update()
 	{
+		m_mc.UpdateMove();
 		m_mc.CheckMoveState();
 		m_mc.Attack();
 	}

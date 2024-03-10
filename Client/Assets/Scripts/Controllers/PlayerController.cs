@@ -1,5 +1,7 @@
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static Define;
 
 public class PlayerController : CreatureController
@@ -12,7 +14,7 @@ public class PlayerController : CreatureController
 		Attack
 	}
 
-	protected Skill m_curSkill = null;
+	public Skill CurSkill { get; protected set; } = null;
 
 	GameObject m_tombstoneAnimObj;
 
@@ -35,28 +37,27 @@ public class PlayerController : CreatureController
 	public eState State { get; private set; } = eState.None;
 	public eDir SecondDir { get; protected set; } = eDir.None;
 
+	GameObject m_hpbarObj;
+	Slider m_hpBarSlider;
+	RectTransform m_sliderRect;
+
+	TextMeshProUGUI m_hpbarText;
+
+	// 3칸이면 1.5
+	// 2칸이면 1
+	[SerializeField]
+	Vector2 m_hpBarUIOffset;
+
 	void Start()
 	{
+		
 	}
 
 	protected override void Update()
 	{
 		base.Update();
 
-		/*
-		if (Dir == eDir.Right)
-		{
-			Vector3 currentScale = m_skillAnimObj.transform.localScale;
-			currentScale.x = -1;
-			m_skillAnimObj.transform.localScale = currentScale;
-		}
-		else if(Dir == eDir.Left)
-		{
-			Vector3 currentScale = m_skillAnimObj.transform.localScale;
-			currentScale.x = 1;
-			m_skillAnimObj.transform.localScale = currentScale;
-		}
-		*/
+		m_sliderRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_hpBarUIOffset);
 	}
 
 	protected override void FixedUpdate()
@@ -76,6 +77,7 @@ public class PlayerController : CreatureController
 		base.Init(_cellXPos, _cellYPos);
 
 		MaxSpeed = 4f;
+		MaxHP = 100;
 		HP = 100;
 		AttackDamage = 5;
 		AttackRange = 2;
@@ -84,20 +86,40 @@ public class PlayerController : CreatureController
 		HitboxHeight = 1;
 
 		//m_eCurSkill = eSkill.Slash;
+		m_eCurSkill = eSkill.Slash;
+		m_eBeforeSkill = eSkill.Slash;
+		CurSkill = new Skill(m_eCurSkill);
 
-		GameObject nickname = Util.FindChild(gameObject, true, "Nickname");
-		m_nicknameTMP = nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-		m_nameTagUI = nickname.GetComponent<RectTransform>();
 
-		//GameObject position = Util.FindChild(gameObject, true, "Position");
-		//m_positionTMP = position.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-		//m_positionTagUI = position.GetComponent<RectTransform>();
 
 		m_skillAnimObj = Util.FindChild(gameObject, true, "Skill");
 		SkillAnim = m_skillAnimObj.transform.GetChild(0).GetComponent<Animator>();
 
 		m_tombstoneAnimObj = Util.FindChild(gameObject, true, "Tombstone");
 		m_tombstoneAnimObj.SetActive(false);
+
+		GameObject playerUI = ResourceManager.Inst.Instantiate("Creature/UI/PlayerUI", gameObject.transform);
+
+		GameObject nickname = Util.FindChild(playerUI, true, "Nickname");
+		m_nicknameTMP = nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		m_nameTagUI = nickname.GetComponent<RectTransform>();
+
+		//GameObject position = Util.FindChild(playerUI, true, "Position");
+		//m_positionTMP = position.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		//m_positionTagUI = position.GetComponent<RectTransform>();
+
+		m_hpbarObj = Util.FindChild(playerUI, true, "HPBar");
+		m_hpBarSlider = Util.FindChild(m_hpbarObj, true, "Slider").GetComponent<Slider>();
+
+		m_sliderRect = m_hpBarSlider.GetComponent<RectTransform>();
+		m_sliderRect.sizeDelta = new Vector2(m_spriteRenderer.sprite.rect.width * transform.localScale.x, m_sliderRect.sizeDelta.y);
+
+		m_hpbarText = Util.FindChild(m_hpbarObj, true, "HPText").GetComponent<TextMeshProUGUI>();
+
+		m_hpBarSlider.maxValue = MaxHP;
+		m_hpBarSlider.value = MaxHP;
+		m_hpbarText.text = MaxHP.ToString();
+		m_hpBarUIOffset = new Vector2(HitboxWidth / 2f, -0.3f);
 
 		ChangeState(new PlayerIdleState());
 	}
@@ -156,8 +178,7 @@ public void CheckMoveState()
 	// _destXPos가 0이 나오는 경우
 	public void EndMovePosition(float _destXPos, float _destYPos)
 	{
-		CellPos = ConvertToCellPos(_destXPos, _destYPos);
-
+		// CellPos갱신은 CreatureController에서 
 		transform.position = new Vector3(_destXPos, _destYPos);
 	}
 
@@ -171,6 +192,8 @@ public void CheckMoveState()
 		if (HP <= 0) return;
 
 		HP -= _damage;
+		m_hpbarText.text = HP.ToString();
+		m_hpBarSlider.value -= _damage;
 	}
 
 	public override void Die()
@@ -193,12 +216,12 @@ public void CheckMoveState()
 		if (Dir == eDir.Right && m_bIsFacingLeft)
 		{
 			m_skillAnimObj.transform.localScale = new Vector3(-1, 1);
-			Debug.Log("플립1");
+			//Debug.Log("플립1");
 		}
 		else if(Dir == eDir.Left && !m_bIsFacingLeft)
 		{
 			m_skillAnimObj.transform.localScale = new Vector3(1, 1);
-			Debug.Log("플립2");
+			//Debug.Log("플립2");
 		}
 
 

@@ -131,14 +131,13 @@ public class CreatureController : MonoBehaviour
 				break;
 		}
 
-		Debug.Log(Dir);
+		//Debug.Log(Dir);
 
 		if (Dir != eDir.None)
 		{
 			AdjustXPosition(ref newX, ref newY);
 			AdjustYPosition(ref newX, ref newY);
-
-			
+			AdjustXYPosition(ref newX, ref newY);
 
 			Vector2Int tempCellPos = ConvertToCellPos(newX, newY);
 			if (tempCellPos != CellPos)
@@ -151,74 +150,73 @@ public class CreatureController : MonoBehaviour
 
 			if (LastDir != Dir) LastDir = Dir;
 
-			AdjustXYPosition(ref newX, ref newY, tempCellPos);
-
 			transform.position = new Vector3(newX, newY);
 
 			//Debug.Log($"{CellPos.x}, {CellPos.y}");
 			CenterPos = new Vector2(m_spriteObject.transform.position.x, m_spriteObject.transform.position.y - 0.5f);
-
 		}
 	}
 
-	void AdjustXYPosition(ref float _newX, ref float _newY, Vector2Int _tempCellPos)
+	void AdjustXYPosition(ref float _newX, ref float _newY)
 	{
+		Vector2Int tempCellPos = ConvertToCellPos(_newX, _newY);
+
 		if (Dir == eDir.UpRight)
 		{
-			if (MapManager.Inst.IsBlocked(_tempCellPos.x + 1, _tempCellPos.y, HitboxWidth, HitboxHeight))
+			if (MapManager.Inst.IsBlocked(tempCellPos.x + 1, tempCellPos.y, HitboxWidth, HitboxHeight))
 			{
-				int targetX = _tempCellPos.x;
+				int targetX = tempCellPos.x;
 				if (Mathf.Abs(_newX - targetX) < 0.1f)
-					_newX = _tempCellPos.x;
+					_newX = tempCellPos.x;
 			}
-			if (MapManager.Inst.IsBlocked(_tempCellPos.x, _tempCellPos.y - 1, HitboxWidth, HitboxHeight))
+			if (MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y - 1, HitboxWidth, HitboxHeight))
 			{
-				int targetY = -_tempCellPos.y;
+				int targetY = -tempCellPos.y;
 				if (Mathf.Abs(_newY - targetY) < 0.1f)
 					_newY = targetY;
 			}
 		}
 		else if (Dir == eDir.UpLeft)
 		{
-			if (MapManager.Inst.IsBlocked(_tempCellPos.x - 1, _tempCellPos.y, HitboxWidth, HitboxHeight))
+			if (MapManager.Inst.IsBlocked(tempCellPos.x - 1, tempCellPos.y, HitboxWidth, HitboxHeight))
 			{
-				int targetX = _tempCellPos.x;
+				int targetX = tempCellPos.x;
 				if (Mathf.Abs(_newX - targetX) < 0.1f)
-					_newX = _tempCellPos.x;
+					_newX = tempCellPos.x;
 			}
-			if (MapManager.Inst.IsBlocked(_tempCellPos.x, _tempCellPos.y - 1, HitboxWidth, HitboxHeight))
+			if (MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y - 1, HitboxWidth, HitboxHeight))
 			{
-				int targetY = -_tempCellPos.y;
+				int targetY = -tempCellPos.y;
 				if (Mathf.Abs(_newY - targetY) < 0.1f)
 					_newY = targetY;
 			}
 		}
 		else if (Dir == eDir.DownRight)
 		{
-			if (MapManager.Inst.IsBlocked(_tempCellPos.x + 1, _tempCellPos.y, HitboxWidth, HitboxHeight))
+			if (MapManager.Inst.IsBlocked(tempCellPos.x + 1, tempCellPos.y, HitboxWidth, HitboxHeight))
 			{
-				int targetX = _tempCellPos.x;
+				int targetX = tempCellPos.x;
 				if (Mathf.Abs(_newX - targetX) < 0.1f)
-					_newX = _tempCellPos.x;
+					_newX = tempCellPos.x;
 			}
-			if (MapManager.Inst.IsBlocked(_tempCellPos.x, _tempCellPos.y + 1, HitboxWidth, HitboxHeight))
+			if (MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y + 1, HitboxWidth, HitboxHeight))
 			{
-				int targetY = -_tempCellPos.y;
+				int targetY = -tempCellPos.y;
 				if (Mathf.Abs(_newY - targetY) < 0.1f)
 					_newY = targetY;
 			}
 		}
 		else if (Dir == eDir.DownLeft)
 		{
-			if (MapManager.Inst.IsBlocked(_tempCellPos.x - 1, _tempCellPos.y, HitboxWidth, HitboxHeight))
+			if (MapManager.Inst.IsBlocked(tempCellPos.x - 1, tempCellPos.y, HitboxWidth, HitboxHeight))
 			{
-				int targetX = _tempCellPos.x;
+				int targetX = tempCellPos.x;
 				if (Mathf.Abs(_newX - targetX) < 0.1f)
-					_newX = _tempCellPos.x;
+					_newX = tempCellPos.x;
 			}
-			if (MapManager.Inst.IsBlocked(_tempCellPos.x, _tempCellPos.y + 1, HitboxWidth, HitboxHeight))
+			if (MapManager.Inst.IsBlocked(tempCellPos.x, tempCellPos.y + 1, HitboxWidth, HitboxHeight))
 			{
-				int targetY = -_tempCellPos.y;
+				int targetY = -tempCellPos.y;
 				if (Mathf.Abs(_newY - targetY) < 0.1f)
 					_newY = targetY;
 			}

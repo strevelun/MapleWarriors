@@ -20,6 +20,7 @@ public class Skill
 	Vector2Int m_mouseCellPos;
 	Vector2Int m_cellPos, m_lastCellPos;
 	eSkillDir m_eDir;
+	eSkill m_eSkill;
 
 	Queue<Vector2Int> m_aims = new Queue<Vector2Int>();
 
@@ -30,9 +31,10 @@ public class Skill
 
 	public void SetSkill(eSkill _skill)
 	{
+		m_eSkill = _skill;
 		RemoveAimTiles();
 
-		m_skillData = DataManager.Inst.FindSkillData(_skill.ToString());
+		m_skillData = DataManager.Inst.FindSkillData(m_eSkill.ToString());
 		if (m_skillData.type == eSkillType.Melee && m_skillData.attackRadius >= 2) 
 			m_skillData.attackRadius = 2;
 	}
@@ -48,6 +50,16 @@ public class Skill
 		}
 
 		return activated;
+	}
+
+	public void Play(PlayerController _pc)
+	{
+		_pc.PlayCurSkillAnim(m_eSkill);
+	}
+
+	public int GetDamage()
+	{
+		return m_skillData.attack;
 	}
 
 	void FindHitTargets(List<MonsterController> _targets)

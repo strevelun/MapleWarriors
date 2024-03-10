@@ -62,12 +62,12 @@ public class PlayerHitState : ICreatureState
 		{
 			if (m_player.IsDead)
 			{
-				m_monster.DequeueTarget();
+				m_monster.RemoveTarget(m_player);
 				m_player.ChangeState(new PlayerDeadState());
 			}
 			else m_player.ChangeState(new PlayerIdleState());
 
-			Debug.Log($"PlayerHitState HP : {m_player.HP}, {m_player.IsDead}");
+			//Debug.Log($"PlayerHitState HP : {m_player.HP}, {m_player.IsDead}");
 		}
 	}
 }

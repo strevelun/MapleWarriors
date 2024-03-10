@@ -96,6 +96,21 @@ public static class InGamePacketHandler
 		mc.BeginMove(pathIdx, destCellXPos, destCellYPos);
 	}
 
+	public static void InGameExit(PacketReader _reader)
+	{
+		byte leftUserIdx = _reader.GetByte();
+		byte nextRoomOwnerIdx = _reader.GetByte();
+
+		if (UserData.Inst.MyRoomSlot == nextRoomOwnerIdx)
+			UserData.Inst.IsRoomOwner = true;
+
+		GameManager.Inst.SubPlayerCnt();
+		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{leftUserIdx}");
+		ObjectManager.Inst.RemovePlayer($"Player_1_{leftUserIdx}");
+		MapManager.Inst.RemoveAimTile(pc.CellPos.x, pc.CellPos.y);
+		ResourceManager.Inst.Destroy(pc.gameObject);
+	}
+
 	public static void Attack(PacketReader _reader)
 	{
 		byte roomSlot = _reader.GetByte();
@@ -111,8 +126,9 @@ public static class InGamePacketHandler
 		}
 
 		eSkill skill = (eSkill)_reader.GetByte();
+		pc.CurSkill.SetSkill(skill);
 
-		pc.ChangeState(new PlayerAttackState(targets, skill));
+		pc.ChangeState(new PlayerAttackState(targets, pc.CurSkill));
 	}
 
 	public static void GameOver(PacketReader _reader)

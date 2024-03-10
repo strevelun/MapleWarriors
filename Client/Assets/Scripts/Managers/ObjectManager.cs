@@ -53,6 +53,13 @@ public class ObjectManager
 		return mc;
 	}
 
+	public void RemovePlayer(string _key)
+	{
+		if (m_dicPlayerObj.Count == 0) return;
+
+		m_dicPlayerObj.Remove(_key);
+	}
+
 	public void ClearPlayers()
 	{
 		m_dicPlayerObj.Clear();

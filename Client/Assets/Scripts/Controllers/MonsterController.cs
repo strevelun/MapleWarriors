@@ -7,6 +7,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+// 1. 플레이어 발견하면 경로 생성
+// 2. 경로의 첫번째 도착지점을 자신 포함 모두에게 보냄
+// 3. 패킷 받은 정보를 토대로 한 칸 씩 이동
+
+
 public class MonsterController : CreatureController
 {
 	enum eState
@@ -23,7 +28,9 @@ public class MonsterController : CreatureController
 	AStar m_astar = new AStar();
 
 	List<Vector2Int> m_path = null;
-	Queue<PlayerController> m_targets = new Queue<PlayerController>();
+	List<PlayerController> m_targets = new List<PlayerController>();
+	PlayerController m_target = null;
+
 	Queue<Vector2Int> m_dest = new Queue<Vector2Int>();
 	Vector2Int m_prevTargetPos = new Vector2Int(-1,-1);
 	bool m_targetMoved = false;
@@ -72,16 +79,18 @@ public class MonsterController : CreatureController
 	{
 		base.Update();
 
+		PeekTarget();
+
 		if (UserData.Inst.IsRoomOwner)
 		{
 			CheckTargetPosChanged();
 			BeginSearch();
 		}
 
-
 		m_sliderRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_hpBarUIOffset);
 
-
+		//if(m_dest.Count != 0)
+		//	Debug.Log($"{CellPos} -> {m_dest.Peek()}");
 	}
 
 
@@ -163,14 +172,38 @@ public class MonsterController : CreatureController
 		}
 	}
 
+	void PeekTarget()
+	{
+		if (m_targets.Count == 0)
+		{
+			//ByteDir = 0;
+			m_target = null;
+			return;
+		}
+
+		int distCell = int.MaxValue;
+		int distIdx = 0, tempIdx = 0;
+		int distCellTemp;
+		foreach(PlayerController pc in m_targets)
+		{
+			distCellTemp = Math.Abs(pc.CellPos.x - CellPos.x) + Math.Abs(pc.CellPos.y - CellPos.y);
+			if (distCellTemp < distCell)
+			{
+				distIdx = tempIdx;
+				distCell = distCellTemp;
+			}
+			++tempIdx;
+		}
+		m_target = m_targets[distIdx];
+	}
+
 	void CheckTargetPosChanged()
 	{
 		if (m_targets.Count == 0) return;
 		
-		PlayerController pc = m_targets.Peek();
-		if (m_prevTargetPos != pc.CellPos)
+		if (m_prevTargetPos != m_target.CellPos)
 		{
-			m_prevTargetPos = pc.CellPos;
+			m_prevTargetPos = m_target.CellPos;
 			m_targetMoved = true;
 		}
 	}
@@ -179,30 +212,27 @@ public class MonsterController : CreatureController
 	{
 		if (m_targets.Count == 0) return;
 		if (!m_targetMoved) return;
-		if (!CellArrived) return;
+		if (!CellArrived) return; 
+				
+		if (Math.Abs(CellPos.x - m_target.CellPos.x) <= 1 && Math.Abs(CellPos.y - m_target.CellPos.y) <= 1) return;
 
-		PlayerController pc = m_targets.Peek();
-		
-		if ((Math.Abs(CellPos.x - pc.CellPos.x) <= 1 && CellPos.y == pc.CellPos.y) ||
-			(Math.Abs(CellPos.y - pc.CellPos.y) <= 1 && CellPos.x == pc.CellPos.x)) return;
-
-		m_path = m_astar.Search(CellPos, pc.CellPos, HitboxWidth, HitboxHeight);
+		m_path = m_astar.Search(CellPos, m_target.CellPos, HitboxWidth, HitboxHeight);
 		if (m_path == null)
 		{
-			Dir = eDir.None;
+			ByteDir = 0;
 			//m_eState = eState.None;
 			return;
 		}
 		if(m_path.Count > VisionCellRange)
 		{
 			m_path = null;
-			Dir = eDir.None;
+			ByteDir = 0;
 			return;
 		}
 
-		if (m_path.Count <= 2 + AttackRange)
+		if (m_path.Count <= 1 + AttackRange)
 		{
-			Dir = eDir.None;
+			ByteDir = 0;
 			//m_eState = eState.None;
 			return;
 		}
@@ -213,16 +243,23 @@ public class MonsterController : CreatureController
 		NetworkManager.Inst.Send(pkt);
 
 		m_targetMoved = false;
+		//Debug.Log($"BeginSearch : {m_path}");
 	}
 	
 	void UpdateChase()
 	{
 		if (CellArrived) return;
-		if (Dir == eDir.None) return;
+		//if (Dir == eDir.None) return;
+		//if (ByteDir == 0) return;
 		//if (m_eState == eState.None) return;
 
+		//Debug.Log($"{Dir}, {ByteDir}");
+
 		Vector2 dest = new Vector2(m_dest.Peek().x, -m_dest.Peek().y);
+
 		float dist = Vector2.Distance(transform.position, dest);
+
+		Debug.Log($"{dist} -> {transform.position} : {Dir}, 목적지 : {dest}");
 
 		if (dist > MaxSpeed * Time.fixedDeltaTime * 2) return;
 
@@ -231,18 +268,27 @@ public class MonsterController : CreatureController
 		transform.position = dest;
 		m_dest.Dequeue();
 
+		if(m_target == null)
+		{
+			m_dest.Clear();
+		}
+
 		if (m_dest.Count > 0)
 		{
 			Vector2 dir = CellPos - new Vector2(m_dest.Peek().x, m_dest.Peek().y);
 
-			if (dir.x <= -1) Dir = eDir.Right;
-			else if (dir.x >= 1) Dir = eDir.Left;
-			else if (dir.y <= -1) Dir = eDir.Down;
-			else if (dir.y >= 1) Dir = eDir.Up;
+			ByteDir = 0;
+
+			if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
+			if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
+			if (dir.y <= -1) ByteDir |= (byte)eDir.Down;
+			if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
+
+			//Debug.Log("UpdateChase에서 방향전환");
 		}
 		else
 		{
-			Dir = eDir.None;
+			ByteDir = 0;
 			//m_eState = eState.None;
 			CellArrived = true;
 		}
@@ -254,7 +300,7 @@ public class MonsterController : CreatureController
 			if (m_path == null) return;
 			if (PathIdx >= m_path.Count)
 			{
-				Dir = eDir.None;
+				ByteDir = 0;
 				return;
 			}
 
@@ -271,51 +317,72 @@ public class MonsterController : CreatureController
 
 	public void BeginMove(int _pathIdx, int _cellXPos, int _cellYPos)
 	{
+		//Debug.Log($"BeginMove : {ByteDir}");
 		Vector2Int dest = new Vector2Int(_cellXPos, _cellYPos);
-		if (!CanGo(CellPos, dest)) return;
+		Vector2Int start = m_dest.Count == 0 ? CellPos : m_dest.Peek();
+		if (!CanGo(start, dest))
+		{
+			// 만약 갈 수 없는 dest가 나오면 현재 m_Dest에 있는 경로 전부 삭제 후 경로 재설정해야
+			m_targetMoved = true;
+			if (m_dest.Count > 0)
+			{
+				Vector2Int curDest = m_dest.Peek();
+				m_dest.Clear();
+				m_dest.Enqueue(curDest);
+			}
+			Debug.Log($"{start}에서 {dest}로 갈 수 없음");
+			return;
+		}
 
+		// 현재 셀에 도착하지 않을 수 있는 상태에서 방향 전환을 할 가능성이 있기 때문에 방향전환은 UpdateChase에서만
+		
 		if (m_dest.Count == 0)
 		{
 			Vector2 dir = CellPos - dest;
 
-			if (dir.x <= -1) Dir = eDir.Right;
-			else if (dir.x >= 1) Dir = eDir.Left;
-			else if (dir.y <= -1) Dir = eDir.Down;
-			else if (dir.y >= 1) Dir = eDir.Up;
+			if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
+			if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
+			if (dir.y <= -1) ByteDir |= (byte)eDir.Down;
+			if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
+
+			transform.position = new Vector3(CellPos.x, -CellPos.y);
+
+			Debug.Log("BeginMove 방향전환");
+			CellArrived = false;
 		}
+		
 
 		m_dest.Enqueue(dest);
 
 		//m_eState = eState.Chase;
-
-		CellArrived = false;
 	}
 
 
 	bool CanGo(Vector2Int _from, Vector2Int _to)
 	{
-		if (Math.Abs(_from.x - _to.x) + Math.Abs(_from.y - _to.y) != 1) return false;
-		Vector2 dir = _from - _to;
-		if (dir.normalized.x != -1 && dir.normalized.x != 1 && dir.normalized.y != -1 && dir.normalized.y != 1) return false;
-		return true;
+		if (Math.Abs(_from.x - _to.x) <= 1 && Math.Abs(_from.y - _to.y) <= 1) return true;
+		return false;
 	}
 
-	public void Hit(int _damage)
+	public void Hit(Skill _skill)
 	{
 		if (HP <= 0) return;
 
 		//m_dest.Clear();
 
-		HP -= _damage;
+		int damage = _skill.GetDamage();
+
+		HP -= damage;
+		if (HP < 0) HP = 0;
 		m_hpbarText.text = HP.ToString();
 
 		m_damageObj.SetActive(true);
 		m_damageCanvasGroup.alpha = 1f;
 
 		m_damageTMP_RT.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_damageUIOffset);
-		m_damageTMP.text = _damage.ToString();
+		m_damageTMP.text = damage.ToString();
 
-		m_hpBarSlider.value -= _damage;
+		m_hpBarSlider.value -= damage;
 
 		if (m_damamgeCoroutine != null)
 		{
@@ -386,11 +453,11 @@ public class MonsterController : CreatureController
 		GameManager.Inst.SubMonsterCnt();
 	}
 
-	public void DequeueTarget()
+	public void RemoveTarget(PlayerController _target)
 	{
 		if (m_targets.Count == 0) return;
 
-		m_targets.Dequeue();
+		m_targets.Remove(_target);
 	}
 
 	IEnumerator ReadyForAttack()
@@ -416,19 +483,26 @@ public class MonsterController : CreatureController
 		PlayerController pc = _other.gameObject.GetComponent<PlayerController>();
 		if (pc.IsDead) return;
 
-		m_targets.Enqueue(pc);
+		m_targets.Add(pc);
 	}
 
+	// 몬스터가 셀과 셀 사이에 있을 때 플레이어가 exit하면 거기서 멈추게 하지 말것
 	void OnTriggerExit2D(Collider2D _other)
 	{
 		if (_other.gameObject.tag != "Player") return;
 
-		m_targets.Dequeue();
+		foreach(PlayerController pc in m_targets)
+		{
+			if(pc.name == _other.gameObject.name)
+			{
+				m_targets.Remove(pc);
+				break;
+			}
+		}
 		if (m_targets.Count == 0)
 		{
-			m_path = null;
-			//Packet pkt = InGamePacketMaker.EndMoveMonster(name);
-			//NetworkManager.Inst.Send(pkt);
+			//m_path = null;
+			//m_target = null;
 		}
 	}
 }

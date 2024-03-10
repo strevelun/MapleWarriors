@@ -7,7 +7,7 @@ using static Define;
 public class PlayerAttackState : ICreatureState
 {
 	PlayerController m_player;
-	eSkill m_eSkill;
+	Skill m_skill;
 	List<MonsterController> m_targets;
 	bool m_animStart = false;
 	AnimatorStateInfo m_stateInfo, m_skillStateInfo;
@@ -24,9 +24,9 @@ public class PlayerAttackState : ICreatureState
 
 	// 타겟이 없으면 그냥 공격 모션만 하고 끝
 	// 스킬 정보(애니이름, 언제 히트가 되는지 등)를 담고 있는 객체를 매개변수로
-	public PlayerAttackState(List<MonsterController> _targets, eSkill _eSkill) // 마우스 어디 클릭했는지 정보 받아서 원거리 스킬 이동
+	public PlayerAttackState(List<MonsterController> _targets, Skill _skill) // 마우스 어디 클릭했는지 정보 받아서 원거리 스킬 이동
 	{
-		m_eSkill = _eSkill;
+		m_skill = _skill;
 		m_targets = new List<MonsterController>(_targets);
 	}
 
@@ -36,12 +36,13 @@ public class PlayerAttackState : ICreatureState
 		m_player.Anim.SetTrigger("Attack");
 		// 플레이어의 Dir로 Flip
 		// 스킬 이펙트 있으면 재생
-		m_player.PlayCurSkillAnim(m_eSkill);
+
+		m_skill.Play(m_player);
 
 		//m_player.SkillAnim.transform.position = new Vector3(m_player.CellPos.x, -m_player.CellPos.y);
 		
 		foreach(MonsterController mc in m_targets)
-			mc.Hit(m_player.AttackDamage);
+			mc.Hit(m_skill);
 
 		// 몬스터 멈추기 Dir = None
 	}
