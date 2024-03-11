@@ -214,17 +214,30 @@ public void CheckMoveState()
 		if (eAfterSkillPlayerDir != eDir.None)
 			LastDir = eAfterSkillPlayerDir;
 		*/
-		if (Dir == eDir.Right && m_bIsFacingLeft)
+		if (Dir == eDir.Right || Dir == eDir.DownRight) // 각 상하좌우는 시계방향 쪽 대각선 방향과 같도록
 		{
-			m_skillAnimObj.transform.localScale = new Vector3(-1, 1);
-			//Debug.Log("플립1");
+			m_skillAnimObj.transform.localPosition = new Vector3(0.5f, 0f);
+			m_skillAnimObj.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+			m_skillAnimObj.transform.localScale = new Vector3(-1, 1, 1);
 		}
-		else if(Dir == eDir.Left && !m_bIsFacingLeft)
+		else if(Dir == eDir.Left || Dir == eDir.UpLeft)
 		{
-			m_skillAnimObj.transform.localScale = new Vector3(1, 1);
-			//Debug.Log("플립2");
+			m_skillAnimObj.transform.localPosition = new Vector3(0.5f, 0f);
+			m_skillAnimObj.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+			m_skillAnimObj.transform.localScale = new Vector3(1, 1, 1);
 		}
-
+		else if (Dir == eDir.Up || Dir == eDir.UpRight)
+		{
+			m_skillAnimObj.transform.localPosition = new Vector3(0f, 0.5f);
+			m_skillAnimObj.transform.localRotation = Quaternion.Euler(0f, 0f, -90f);
+			m_skillAnimObj.transform.localScale = new Vector3(1, 1, 1);
+		}
+		else if (Dir == eDir.Down || Dir == eDir.DownLeft)
+		{
+			m_skillAnimObj.transform.localPosition = new Vector3(1f, 0.5f);
+			m_skillAnimObj.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
+			m_skillAnimObj.transform.localScale = new Vector3(1, 1, 1);
+		}
 
 		base.Flip();
 	}
