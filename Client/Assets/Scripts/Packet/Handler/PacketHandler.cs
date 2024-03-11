@@ -122,6 +122,9 @@ public static class PacketHandler
 					break;
 				case PacketType.eServer.Attack:
 					InGamePacketHandler.Attack(_reader);
+					break;	
+				case PacketType.eServer.RangedAttack:
+					InGamePacketHandler.RangedAttack(_reader);
 					break;
 				case PacketType.eServer.GameOver:
 					InGamePacketHandler.GameOver(_reader);

@@ -20,6 +20,9 @@ public class PlayerController : CreatureController
 
 	GameObject m_skillAnimObj;
 	public Animator SkillAnim { get; private set; }
+	GameObject m_rangedSkillAnimObj;
+	public Animator RangedSkillAnim { get; private set; }
+
 	protected eSkill m_eCurSkill = eSkill.None;
 	protected eSkill m_eBeforeSkill = eSkill.None;
 
@@ -90,10 +93,11 @@ public class PlayerController : CreatureController
 		m_eBeforeSkill = eSkill.Slash;
 		CurSkill = new Skill(m_eCurSkill);
 
-
-
 		m_skillAnimObj = Util.FindChild(gameObject, true, "Skill");
 		SkillAnim = m_skillAnimObj.transform.GetChild(0).GetComponent<Animator>();
+
+		m_rangedSkillAnimObj = Util.FindChild(gameObject, true, "RangedSkill");
+		RangedSkillAnim = m_rangedSkillAnimObj.transform.GetChild(0).GetComponent<Animator>();
 
 		m_tombstoneAnimObj = Util.FindChild(gameObject, true, "Tombstone");
 		m_tombstoneAnimObj.SetActive(false);
@@ -182,9 +186,17 @@ public void CheckMoveState()
 		transform.position = new Vector3(_destXPos, _destYPos);
 	}
 
-	public void PlayCurSkillAnim(eSkill _eSkill)
+	public void PlayCurSkillAnim(Skill _skill)
 	{
-		SkillAnim.Play(_eSkill.ToString());
+		eSkillType type = _skill.GetSkillType();
+		if (type == eSkillType.Ranged)
+		{
+			RangedSkillAnim.Play(_skill.GetSkillName());
+		}
+		else
+		{
+			SkillAnim.Play(_skill.GetSkillName());
+		}
 	}
 
 	public void Hit(int _damage)
@@ -208,12 +220,8 @@ public void CheckMoveState()
 
 	public override void Flip()
 	{
-		/*
-		eDir eAfterSkillPlayerDir = eDir.None;
-		m_curSkill.SetSkillDir(m_skillAnimObj, ref eAfterSkillPlayerDir);
-		if (eAfterSkillPlayerDir != eDir.None)
-			LastDir = eAfterSkillPlayerDir;
-		*/
+		eSkillType type = CurSkill.GetSkillType();
+
 		if (Dir == eDir.Right || Dir == eDir.DownRight) // 각 상하좌우는 시계방향 쪽 대각선 방향과 같도록
 		{
 			m_skillAnimObj.transform.localPosition = new Vector3(0.5f, 0f);
@@ -238,7 +246,11 @@ public void CheckMoveState()
 			m_skillAnimObj.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
 			m_skillAnimObj.transform.localScale = new Vector3(1, 1, 1);
 		}
-
 		base.Flip();
+	}
+
+	public void SetRangedSkillObjPos(Vector2Int _pos)
+	{
+		m_rangedSkillAnimObj.transform.localPosition = new Vector3(_pos.x, _pos.y);
 	}
 }

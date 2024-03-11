@@ -4,24 +4,14 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
+using static Define;
 
 public class CreatureController : MonoBehaviour
 {
 	public ICreatureState CurState { get; private set; } = null;
 	//ICreatureState m_nextState = null;
 
-	public enum eDir
-	{
-		None,
-		Up = 1, // 0001
-		Right = 2, // 0010
-		Down = 4, // 0100
-		Left = 8, // 1000
-		UpLeft = 9, // 1001
-		UpRight = 3, // 0011
-		DownLeft = 12, // 1100
-		DownRight = 6 // 0110
-	}
+
 
 	const float m_cellSize = 0.5f;
 
@@ -32,6 +22,7 @@ public class CreatureController : MonoBehaviour
 	//private State m_eState = State.Idle;
 	public byte ByteDir { get; set; } = 0;
 	public eDir Dir { get; set; } = eDir.None;
+	//public eDir MoveDir { get; set; } = eDir.None; // 움직일때만 Dir 갱신, 안 움직이면 None
 	public eDir LastDir { get; protected set; } = eDir.None;
 	public float MaxSpeed { get; protected set; } = 1f;
 

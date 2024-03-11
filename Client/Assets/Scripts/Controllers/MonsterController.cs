@@ -6,6 +6,7 @@ using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Define;
 
 // 1. 플레이어 발견하면 경로 생성
 // 2. 경로의 첫번째 도착지점을 자신 포함 모두에게 보냄

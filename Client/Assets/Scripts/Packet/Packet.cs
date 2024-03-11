@@ -20,6 +20,7 @@ public class Packet
 	//public Packet Add(bool _type) { return Add(GetBytes(_type)); }
 	public Packet Add(byte _type) { return Add(new byte[1] { _type }); }
 	//public Packet Add(char _type) { return Add(GetBytes(_type)); }
+	public Packet Add(short _type) { return Add(GetBytes(_type)); }
 	public Packet Add(ushort _type) { return Add(GetBytes(_type)); }
 	public Packet Add(int _type) { return Add(GetBytes(_type)); }
 	public Packet Add(uint _type) { return Add(GetBytes(_type)); }
@@ -46,6 +47,7 @@ public class Packet
 
 	//private byte[] GetBytes(bool _type) { return BitConverter.GetBytes(_type); }
 	//private byte[] GetBytes(char _type) { return BitConverter.GetBytes(_type); }
+	private byte[] GetBytes(short _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(ushort _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(int _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(uint _type) { return BitConverter.GetBytes(_type); }

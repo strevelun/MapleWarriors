@@ -114,4 +114,17 @@ public class Define
 		Ranged,
 		Auto
 	}
+
+	public enum eDir
+	{
+		None,
+		Up = 1, // 0001
+		Right = 2, // 0010
+		Down = 4, // 0100
+		Left = 8, // 1000
+		UpLeft = 9, // 1001
+		UpRight = 3, // 0011
+		DownLeft = 12, // 1100
+		DownRight = 6 // 0110
+	}
 }

@@ -5,21 +5,12 @@ using static Define;
 
 public class Skill
 {
-	enum eSkillDir
-	{
-		None,
-		Left,
-		Up,
-		Right,
-		Down
-	}
-
 	SkillData m_skillData;
 	Vector2Int m_prevMouseCellPos = Vector2Int.zero;
 	Vector2Int m_dist;
 	Vector2Int m_mouseCellPos;
 	Vector2Int m_cellPos, m_lastCellPos;
-	eSkillDir m_eDir;
+	eDir m_eDir;
 	eSkill m_eSkill;
 
 	Queue<Vector2Int> m_aims = new Queue<Vector2Int>();
@@ -39,6 +30,16 @@ public class Skill
 			m_skillData.attackRadius = 2;
 	}
 
+	public eSkillType GetSkillType()
+	{
+		return m_skillData.type;
+	}
+
+	public string GetSkillName()
+	{
+		return m_skillData.name;
+	}
+
 	public bool Activate(List<MonsterController> _targets)
 	{
 		bool activated = false;
@@ -54,7 +55,7 @@ public class Skill
 
 	public void Play(PlayerController _pc)
 	{
-		_pc.PlayCurSkillAnim(m_eSkill);
+		_pc.PlayCurSkillAnim(this);
 	}
 
 	public int GetDamage()
@@ -73,12 +74,12 @@ public class Skill
 		{
 			case eSkillType.Melee:
 				{
-					if (m_eDir == eSkillDir.None) break;
+					if (m_eDir == eDir.None) break;
 
 					int startX = 0, endX = 0, startY = 0, endY = 0;
 					int pnt = 0;
 
-					if (m_eDir == eSkillDir.Left)
+					if (m_eDir == eDir.Left || m_eDir == eDir.UpLeft)
 					{
 						pnt = m_cellPos.y;
 						startX = m_mouseCellPos.x;
@@ -86,7 +87,7 @@ public class Skill
 						startY = pnt - (m_skillData.attackRadius - 1);
 						endY = pnt + (m_skillData.attackRadius - 1);
 					}
-					else if (m_eDir == eSkillDir.Right)
+					else if (m_eDir == eDir.Right || m_eDir == eDir.DownRight)
 					{
 						pnt = m_cellPos.y;
 						startX = m_cellPos.x;
@@ -94,7 +95,7 @@ public class Skill
 						startY = pnt - (m_skillData.attackRadius - 1);
 						endY = pnt + (m_skillData.attackRadius - 1);
 					}
-					else if (m_eDir == eSkillDir.Up)
+					else if (m_eDir == eDir.Up || m_eDir == eDir.UpRight)
 					{
 						pnt = m_cellPos.x;
 						startY = m_mouseCellPos.y;
@@ -102,7 +103,7 @@ public class Skill
 						startX = pnt - (m_skillData.attackRadius - 1);
 						endX = pnt + (m_skillData.attackRadius - 1);
 					}
-					else if (m_eDir == eSkillDir.Down)
+					else if (m_eDir == eDir.Down || m_eDir == eDir.DownLeft)
 					{
 						pnt = m_cellPos.x;
 						startY = m_cellPos.y;
@@ -168,8 +169,10 @@ public class Skill
 		}
 	}
 
-	public void Update(Vector2Int _cellPos)
+	public void Update(Vector2Int _cellPos, Define.eDir _eDir)
     {
+		m_eDir = _eDir;
+
 		Vector2 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
 		mousePos.y = -mousePos.y + 1.0f;
 		m_mouseCellPos = MapManager.Inst.WorldToCell(mousePos.x, -mousePos.y);
@@ -197,8 +200,11 @@ public class Skill
 
 	bool CheckAttackRange(int _distX, int _distY)
 	{
-		if ((-m_skillData.attackCellRange <= _distX && _distX <= m_skillData.attackCellRange)
-			&& (-m_skillData.attackCellRange <= _distY && _distY <= m_skillData.attackCellRange)) return true;
+		if ((m_eDir == eDir.Left || m_eDir == eDir.UpLeft)&& -m_skillData.attackCellRange <= _distX && _distX <= 0) return true;
+		if ((m_eDir == eDir.Right || m_eDir == eDir.DownRight) && 0 <= _distX && _distX <= m_skillData.attackCellRange) return true;
+		if ((m_eDir == eDir.Up || m_eDir == eDir.UpRight) && -m_skillData.attackCellRange <= _distY && _distY <= 0) return true;
+		if((m_eDir == eDir.Down || m_eDir == eDir.DownLeft) && 0 <= _distY && _distY <= m_skillData.attackCellRange) return true;
+
 		return false;
 	}
 
@@ -238,14 +244,14 @@ public class Skill
 		{
 			case eSkillType.Melee:
 				{
-					FindDir();
+					// FindDir();
 
-					if (m_eDir == eSkillDir.None) break;
+					if (m_eDir == eDir.None) break;
 
 					int startX = 0, endX = 0, startY = 0, endY = 0;
 					int pnt = 0;
 
-					if (m_eDir == eSkillDir.Left)
+					if (m_eDir == eDir.Left || m_eDir == eDir.UpLeft)
 					{
 						pnt = m_cellPos.y;
 						startX = m_cellPos.x;
@@ -265,7 +271,7 @@ public class Skill
 							}
 						}
 					}
-					else if(m_eDir == eSkillDir.Right)
+					else if(m_eDir == eDir.Right || m_eDir == eDir.DownRight)
 					{
 						pnt = m_cellPos.y;
 						startX = m_cellPos.x;
@@ -285,7 +291,7 @@ public class Skill
 							}
 						}
 					}
-					else if (m_eDir == eSkillDir.Up)
+					else if (m_eDir == eDir.Up || m_eDir == eDir.UpRight)
 					{
 						pnt = m_cellPos.x;
 						startY = m_cellPos.y;
@@ -305,7 +311,7 @@ public class Skill
 							}
 						}
 					}
-					else if (m_eDir == eSkillDir.Down)
+					else if (m_eDir == eDir.Down || m_eDir == eDir.DownLeft)
 					{
 						pnt = m_cellPos.x;
 						startY = m_cellPos.y;
@@ -345,13 +351,13 @@ public class Skill
 
 	void FindDir()
 	{
-		eSkillDir dir;
+		eDir dir;
 
-		if (m_dist.x <= -1 && -1 <= m_dist.y && m_dist.y <= 1) dir = eSkillDir.Left;
-		else if (m_dist.x >= 1 && -1 <= m_dist.y && m_dist.y <= 1) dir = eSkillDir.Right;
-		else if (m_dist.y <= -1 && -1 <= m_dist.x && m_dist.x <= 1) dir = eSkillDir.Up;
-		else if (m_dist.y >= 1 && -1 <= m_dist.x && m_dist.x <= 1) dir = eSkillDir.Down;
-		else dir = eSkillDir.None;
+		if (m_dist.x <= -1 && -1 <= m_dist.y && m_dist.y <= 1) dir = eDir.Left;
+		else if (m_dist.x >= 1 && -1 <= m_dist.y && m_dist.y <= 1) dir = eDir.Right;
+		else if (m_dist.y <= -1 && -1 <= m_dist.x && m_dist.x <= 1) dir = eDir.Up;
+		else if (m_dist.y >= 1 && -1 <= m_dist.x && m_dist.x <= 1) dir = eDir.Down;
+		else dir = eDir.None;
 
 		if(dir != m_eDir)
 		{
@@ -360,36 +366,5 @@ public class Skill
 		}
 
 		//Debug.Log(m_eDir);
-	}
-
-	public void SetSkillDir(GameObject _skillAnimObj, ref CreatureController.eDir _eAfterSkillPlayerDir)
-	{
-		if(m_eDir == eSkillDir.Up)
-		{
-			_skillAnimObj.transform.position = new Vector3(0f, 0.5f);
-			_skillAnimObj.transform.rotation = new Quaternion(0, 0, -90f, 0);
-			Debug.Log("위");
-		}
-		else if(m_eDir == eSkillDir.Down)
-		{
-			_skillAnimObj.transform.position = new Vector3(1f, 0.5f);
-			_skillAnimObj.transform.rotation = new Quaternion(0, 0, 90f, 0);
-			Debug.Log("아래");
-		}
-		else
-		{
-			_skillAnimObj.transform.position = new Vector3(0.5f, 0f);
-			_skillAnimObj.transform.rotation = new Quaternion(0, 0, 0, 0);
-			Debug.Log("위 아래 아님");
-		}
-
-		if(m_eDir == eSkillDir.Left)
-		{
-			_eAfterSkillPlayerDir = CreatureController.eDir.Left;
-		}
-		else if(m_eDir == eSkillDir.Right)
-		{
-			_eAfterSkillPlayerDir = CreatureController.eDir.Right;
-		}
 	}
 }

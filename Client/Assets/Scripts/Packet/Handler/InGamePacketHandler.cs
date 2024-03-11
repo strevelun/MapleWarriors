@@ -129,6 +129,29 @@ public static class InGamePacketHandler
 		pc.CurSkill.SetSkill(skill);
 
 		pc.ChangeState(new PlayerAttackState(targets, pc.CurSkill));
+	}	
+	
+	public static void RangedAttack(PacketReader _reader)
+	{
+		byte roomSlot = _reader.GetByte();
+		ushort count = _reader.GetUShort();
+		short x = _reader.GetShort();
+		short y = _reader.GetShort();
+
+		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
+		List<MonsterController> targets = new List<MonsterController>();
+		MonsterController mc;
+		for (int i = 0; i < count; ++i)
+		{
+			mc = ObjectManager.Inst.FindMonster(_reader.GetString());
+			targets.Add(mc);
+		}
+
+		eSkill skill = (eSkill)_reader.GetByte();
+		pc.CurSkill.SetSkill(skill);
+
+		pc.ChangeState(new PlayerAttackState(targets, pc.CurSkill));
+		pc.SetRangedSkillObjPos(new Vector2Int(x, y));
 	}
 
 	public static void GameOver(PacketReader _reader)

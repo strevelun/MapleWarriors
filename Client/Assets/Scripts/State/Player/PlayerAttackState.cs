@@ -64,7 +64,12 @@ public class PlayerAttackState : ICreatureState
 	void UpdateAnimation()
 	{
 		m_stateInfo = m_player.Anim.GetCurrentAnimatorStateInfo(0);
-		m_skillStateInfo = m_player.SkillAnim.GetCurrentAnimatorStateInfo(0);
+		if(m_skill.GetSkillType() == eSkillType.Ranged)
+		{
+			m_skillStateInfo = m_player.RangedSkillAnim.GetCurrentAnimatorStateInfo(0);
+		}
+		else
+			m_skillStateInfo = m_player.SkillAnim.GetCurrentAnimatorStateInfo(0);
 
 		if (!m_animStart && m_stateInfo.IsName("Attack"))
 			m_animStart = true;
@@ -72,7 +77,7 @@ public class PlayerAttackState : ICreatureState
 		if (m_animStart && !m_stateInfo.IsName("Attack") && m_skillStateInfo.IsName("None"))
 		{
 			m_player.ChangeState(new PlayerIdleState());
-			//Debug.Log("PlayerAttackState Changed");
+			Debug.Log("PlayerAttackState Changed");
 			return;
 		}
 

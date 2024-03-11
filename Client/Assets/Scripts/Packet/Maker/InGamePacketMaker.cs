@@ -68,6 +68,25 @@ public static class InGamePacketMaker
 		pkt.Add((byte)_skill);
 
 		return pkt;
+	}	
+	
+	public static Packet RangedAttack(List<MonsterController> _targets, eSkill _skill, Vector2Int _where) // 매개변수 : Attack 번호
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eClient.RangedAttack)
+			.Add((ushort)_targets.Count)
+			.Add((short)_where.x) // 음수
+			.Add((short)_where.y); 
+
+		foreach(MonsterController mc in _targets)
+		{
+			pkt.Add(mc.name);
+		}
+
+		pkt.Add((byte)_skill);
+
+		return pkt;
 	}
 
 	public static Packet GameOver()

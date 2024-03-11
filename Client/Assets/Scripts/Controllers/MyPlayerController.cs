@@ -56,7 +56,7 @@ public class MyPlayerController : PlayerController
 		if (!IsDead)
 		{
 			InputSkillChoice();
-			CurSkill.Update(CellPos);
+			CurSkill.Update(CellPos, LastDir);
 		}
 	}
 
@@ -154,13 +154,35 @@ public class MyPlayerController : PlayerController
 
 		if (Input.GetMouseButtonDown(0))
 		{
-			List<MonsterController> targets = new List<MonsterController>();
-			bool activated = CurSkill.Activate(targets);
-			if (activated)
+
+			if (CurSkill.GetSkillType() == eSkillType.Melee)
 			{
-				ChangeState(new PlayerAttackState(targets, CurSkill));
-				Packet pkt = InGamePacketMaker.Attack(targets, m_eCurSkill); //mc ? mc.name : string.Empty);
-				NetworkManager.Inst.Send(pkt);
+				List<MonsterController> targets = new List<MonsterController>();
+				bool activated = CurSkill.Activate(targets);
+				if (activated)
+				{
+					ChangeState(new PlayerAttackState(targets, CurSkill));
+					Packet pkt = InGamePacketMaker.Attack(targets, m_eCurSkill);
+					NetworkManager.Inst.Send(pkt);
+				}
+			}
+			else
+			{
+				Vector2 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
+				mousePos.y = -mousePos.y + 1.0f;
+				Vector2Int mouseCellPos = MapManager.Inst.WorldToCell(mousePos.x, -mousePos.y);
+				int xpos = mouseCellPos.x - CellPos.x;
+				int ypos = CellPos.y - mouseCellPos.y;
+				SetRangedSkillObjPos(new Vector2Int(xpos, ypos));
+
+				List<MonsterController> targets = new List<MonsterController>();
+				bool activated = CurSkill.Activate(targets);
+				if (activated)
+				{
+					ChangeState(new PlayerAttackState(targets, CurSkill));
+					Packet pkt = InGamePacketMaker.RangedAttack(targets, m_eCurSkill, new Vector2Int(xpos, ypos));
+					NetworkManager.Inst.Send(pkt);
+				}
 			}
 		}
 	}
