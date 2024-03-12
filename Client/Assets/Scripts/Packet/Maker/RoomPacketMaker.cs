@@ -61,4 +61,13 @@ public static class RoomPacketMaker
 			.Add((byte)_mapID);
 		return packet;
 	}
+
+	public static Packet RoomCharacterChoice(int _idx)
+	{
+		Packet packet = new Packet();
+		packet
+			.Add(PacketType.eClient.RoomCharacterChoice)
+			.Add((byte)_idx);
+		return packet;
+	}
 }

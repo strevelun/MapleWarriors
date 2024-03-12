@@ -35,9 +35,10 @@ public static class InGamePacketHandler
 			int connectionID = _reader.GetUShort();
 			int idx = _reader.GetByte();
 			string nickname = _reader.GetString();
+			byte characterChoice = _reader.GetByte();
 
-			player = ResourceManager.Inst.Instantiate($"Creature/Player_1"); // 플레이어 선택
-			player.name = $"Player_1_{idx}"; // slot 넘버로
+			player = ResourceManager.Inst.Instantiate($"Creature/Player_{characterChoice}"); // 플레이어 선택
+			player.name = $"Player_{characterChoice}_{idx}"; // slot 넘버로
 
 			if (connectionID == UserData.Inst.ConnectionID)
 			{

@@ -100,10 +100,12 @@ public static class RoomPacketHandler
 		bool isOwner;
 		string nickname;
 		Define.eRoomUserState eState;
+		Define.eCharacterChoice eChoice;
 		string roomTitle = _reader.GetString();
 		int numOfUsers = _reader.GetByte();
 		GameObject obj;
 		Transform t;
+		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
 
 		for (int i=0; i<numOfUsers; ++i)
 		{
@@ -112,8 +114,8 @@ public static class RoomPacketHandler
 			isOwner = _reader.GetBool(); // 방장은 따로 표시
 			nickname = _reader.GetString();
 			eState = (Define.eRoomUserState)_reader.GetByte() - 1;
+			eChoice = (Define.eCharacterChoice)_reader.GetByte();
 
-			GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
 			GameObject slot = objRoomUsers.transform.GetChild(idx).gameObject;
 			if (connectionID == UserData.Inst.ConnectionID) // 본인
 			{
@@ -122,8 +124,18 @@ public static class RoomPacketHandler
 				UserData.Inst.MyRoomSlot = idx;
 			}
 
-			obj = Util.FindChild(slot, false, "CharacterBtn");
-			obj.SetActive(true);
+			//GameObject chAnim = objRoomUsers.transform.GetChild(1).transform.GetChild(idx).gameObject;
+			//chAnim.SetActive(true);
+			//chAnim.GetComponent<SpriteRenderer>().sprite = ResourceManager.Inst.LoadSprite($"Player/player{(byte)eChoice}");
+			//chAnim.GetComponent<Animator>().Play($"Player{(byte)eChoice}");
+
+			if (i == UserData.Inst.MyRoomSlot)
+			{
+				obj = Util.FindChild(slot, false, "CharacterBtn");
+				obj.SetActive(true);
+				obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadSprite($"Player/player{(byte)eChoice}");
+			}
+
 			obj = Util.FindChild(slot, false, "Nickname");
 			obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = nickname;
 			if (isOwner)
@@ -223,5 +235,16 @@ public static class RoomPacketHandler
 		GameObject parentObj = UIManager.Inst.FindUI(Define.eUI.UIRoom_GamePanel);
 		GameObject obj = Util.FindChild(parentObj, false, "MapChoiceBtn");
 		obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadImage($"MapProfile/map_{mapID}");
+	}
+	
+	public static void RoomCharacterChoice(PacketReader _reader)
+	{
+		byte roomUserIdx = _reader.GetByte();
+		byte characterChoice = _reader.GetByte();
+
+		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
+		GameObject slot = objRoomUsers.transform.GetChild(roomUserIdx).gameObject;
+		GameObject obj = Util.FindChild(slot, false, "CharacterBtn");
+		obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadSprite($"Player/player{characterChoice}");
 	}
 }

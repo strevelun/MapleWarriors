@@ -28,7 +28,12 @@ public class RoomScene : BaseScene
 			uichat.Init(RoomPacketMaker.SendChat, Define.eUIChat.UIRoomChat);
 		}
 
-		UIManager.Inst.AddUI(Define.eUI.UIRoom_Users);
+		{
+			GameObject parentObj = UIManager.Inst.AddUI(Define.eUI.UIRoom_Users);
+			GameObject slot = parentObj.transform.GetChild(0).gameObject;
+			UIButton btn = slot.GetComponent<UIButton>();
+			btn.Init(OnCharacterChoiceBtnClicked, slot);
+		}
 
 		{
 			GameObject parentObj = UIManager.Inst.AddUI(Define.eUI.UIRoom_GamePanel);
@@ -102,6 +107,30 @@ public class RoomScene : BaseScene
 			}
 		}
 
+		{ 
+			UIPopup popup = UIManager.Inst.AddUI(Define.eUIPopup.UICharacterChoicePopup);
+			GameObject obj = Util.FindChild(popup.gameObject, true, "CancelBtn");
+			Button btn = obj.GetComponent<Button>();
+			btn.onClick.AddListener(() =>
+			{
+				UIManager.Inst.HidePopupUI(Define.eUIPopup.UICharacterChoicePopup);
+			});
+			obj = Util.FindChild(popup.gameObject, true, "Content");
+			for(int i= 1; i <= 2; ++i)
+			{
+				GameObject popupBtn = ResourceManager.Inst.Instantiate("UI/Scene/Room/Popup/UICharacterChoicePopupButton", obj.transform);
+				popupBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"Player{i}";
+				UIButton uibtn = popupBtn.GetComponent<UIButton>();
+				int choice = i;
+				uibtn.Init(() =>
+				{
+					UIManager.Inst.HidePopupUI(Define.eUIPopup.UICharacterChoicePopup);
+					Packet pkt = RoomPacketMaker.RoomCharacterChoice(choice);
+					NetworkManager.Inst.Send(pkt);
+				});
+			}
+		}
+
 		IsLoading = false;
 		{
 			Packet pkt = RoomPacketMaker.ReqRoomUsersInfo();
@@ -129,6 +158,14 @@ public class RoomScene : BaseScene
 		if (uibtn.IsActive == false) return;
 
 		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIMapChoicePopup);
+	}
+
+	void OnCharacterChoiceBtnClicked(GameObject _obj)
+	{
+		UIButton uibtn = _obj.GetComponent<UIButton>();
+		if (uibtn.IsActive == false) return;
+
+		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UICharacterChoicePopup);
 	}
 
 	void OnStartBtnClicked(GameObject _obj)

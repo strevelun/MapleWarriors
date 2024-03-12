@@ -102,6 +102,9 @@ public static class PacketHandler
 				case PacketType.eServer.RoomMapChoice:
 					RoomPacketHandler.RoomMapChoice(_reader);
 					break;
+				case PacketType.eServer.RoomCharacterChoice:
+					RoomPacketHandler.RoomCharacterChoice(_reader);
+					break;
 			}
 		}
 		else if (eSceneType == Define.eScene.InGame)

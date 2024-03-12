@@ -46,6 +46,7 @@ public class Define
 		UICreateRoomFailPopup,
 		UIGameStartFailPopup,
 		UIMapChoicePopup,
+		UICharacterChoicePopup,
 		UIEnterRoomFullPopup,
 		UIEnterRoomInGamePopup,
 		UIEnterRoomNopePopup,
@@ -86,8 +87,15 @@ public class Define
 
 	public enum eGameMap
 	{
+		Map0,
+		Map1,
+	}
+
+	public enum eCharacterChoice
+	{
 		None,
-		Test,
+		Player1,
+		Player2
 	}
 
 	public enum eRoomState
