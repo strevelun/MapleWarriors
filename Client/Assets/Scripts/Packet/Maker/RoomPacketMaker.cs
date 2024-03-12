@@ -52,4 +52,13 @@ public static class RoomPacketMaker
 			.Add(PacketType.eClient.ReqRoomUsersInfo);
 		return packet;
 	}
+
+	public static Packet RoomMapChoice(int _mapID)
+	{
+		Packet packet = new Packet();
+		packet
+			.Add(PacketType.eClient.RoomMapChoice)
+			.Add((byte)_mapID);
+		return packet;
+	}
 }

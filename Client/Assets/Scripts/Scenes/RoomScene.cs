@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
 public class RoomScene : BaseScene
@@ -31,8 +33,10 @@ public class RoomScene : BaseScene
 		{
 			GameObject parentObj = UIManager.Inst.AddUI(Define.eUI.UIRoom_GamePanel);
 			GameObject obj = Util.FindChild(parentObj, false, "MapChoiceBtn");
-			Button btn = obj.GetComponent<Button>();
-			btn.onClick.AddListener(OnMapChoiceBtnClicked);
+			obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadImage($"MapProfile/map_0");
+			UIButton uibtn = obj.GetComponent<UIButton>();
+			uibtn.Init(OnMapChoiceBtnClicked, obj);
+			if (!UserData.Inst.IsRoomOwner) uibtn.IsActive = false;
 
 			obj = UIManager.Inst.AddUI(Define.eUI.UIRoom_StartBtn);
 			obj.transform.SetParent(parentObj.transform);
@@ -40,7 +44,7 @@ public class RoomScene : BaseScene
 			rectTransform.offsetMin = Vector2.zero;
 			rectTransform.offsetMax = Vector2.zero;
 			if (!UserData.Inst.IsRoomOwner) obj.SetActive(false);
-			UIButton uibtn = obj.GetComponent<UIButton>();
+			uibtn = obj.GetComponent<UIButton>();
 			uibtn.Init(OnStartBtnClicked, obj);
 
 			obj = UIManager.Inst.AddUI(Define.eUI.UIRoom_ReadyBtn);
@@ -82,12 +86,27 @@ public class RoomScene : BaseScene
 			{
 				UIManager.Inst.HidePopupUI(Define.eUIPopup.UIMapChoicePopup);
 			});
+			obj = Util.FindChild(popup.gameObject, true, "Content");
+			List<MapData> data = DataManager.Inst.GetAllMapData();
+			foreach(MapData d in data)
+			{
+				GameObject popupBtn = ResourceManager.Inst.Instantiate("UI/Scene/Room/Popup/UIMapChoicePopupButton", obj.transform);
+				popupBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"Map_{d.name}";
+				UIButton uibtn = popupBtn.GetComponent<UIButton>();
+				uibtn.Init(() =>
+				{
+					UIManager.Inst.HidePopupUI(Define.eUIPopup.UIMapChoicePopup);
+					Packet pkt = RoomPacketMaker.RoomMapChoice(int.Parse(d.name));
+					NetworkManager.Inst.Send(pkt);
+				});
+			}
 		}
 
 		IsLoading = false;
-		Packet pkt = RoomPacketMaker.ReqRoomUsersInfo();
-		NetworkManager.Inst.Send(pkt);
-
+		{
+			Packet pkt = RoomPacketMaker.ReqRoomUsersInfo();
+			NetworkManager.Inst.Send(pkt);
+		}
 
 		InputManager.Inst.SetInputEnabled(false);
 		StartFadeCoroutine();
@@ -104,8 +123,11 @@ public class RoomScene : BaseScene
 		NetworkManager.Inst.Send(pkt);
 	}
 
-	void OnMapChoiceBtnClicked()
+	void OnMapChoiceBtnClicked(GameObject _obj)
 	{
+		UIButton uibtn = _obj.GetComponent<UIButton>();
+		if (uibtn.IsActive == false) return;
+
 		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIMapChoicePopup);
 	}
 

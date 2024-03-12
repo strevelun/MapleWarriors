@@ -200,11 +200,18 @@ public class Skill
 
 	bool CheckAttackRange(int _distX, int _distY)
 	{
-		if ((m_eDir == eDir.Left || m_eDir == eDir.UpLeft)&& -m_skillData.attackCellRange <= _distX && _distX <= 0) return true;
-		if ((m_eDir == eDir.Right || m_eDir == eDir.DownRight) && 0 <= _distX && _distX <= m_skillData.attackCellRange) return true;
-		if ((m_eDir == eDir.Up || m_eDir == eDir.UpRight) && -m_skillData.attackCellRange <= _distY && _distY <= 0) return true;
-		if((m_eDir == eDir.Down || m_eDir == eDir.DownLeft) && 0 <= _distY && _distY <= m_skillData.attackCellRange) return true;
-
+		if (GetSkillType() == eSkillType.Melee)
+		{
+			if ((m_eDir == eDir.Left || m_eDir == eDir.UpLeft) && -m_skillData.attackCellRange <= _distX && _distX <= 0) return true;
+			if ((m_eDir == eDir.Right || m_eDir == eDir.DownRight) && 0 <= _distX && _distX <= m_skillData.attackCellRange) return true;
+			if ((m_eDir == eDir.Up || m_eDir == eDir.UpRight) && -m_skillData.attackCellRange <= _distY && _distY <= 0) return true;
+			if ((m_eDir == eDir.Down || m_eDir == eDir.DownLeft) && 0 <= _distY && _distY <= m_skillData.attackCellRange) return true;
+		}
+		else if (GetSkillType() == eSkillType.Ranged)
+		{
+			if ((-m_skillData.attackCellRange <= _distX && _distX <= m_skillData.attackCellRange)
+				&& (-m_skillData.attackCellRange <= _distY && _distY <= m_skillData.attackCellRange)) return true;
+		}
 		return false;
 	}
 

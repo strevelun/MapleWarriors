@@ -1,7 +1,13 @@
 {
   "maps": [
     {
-      "name": "Map_1",
+      "name": "0",
+      "mapList": [
+        "Map_0_0"
+      ]
+    },
+    {
+      "name": "1",
       "mapList": [
         "Map_1_0",
         "Map_1_1",

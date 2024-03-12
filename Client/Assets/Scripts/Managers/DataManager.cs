@@ -13,7 +13,7 @@ public class DataManager : MonoBehaviour
 
 	Dictionary<string, MonsterData> m_monsterData = new Dictionary<string, MonsterData>();
 	Dictionary<string, SkillData> m_skillData = new Dictionary<string, SkillData>();
-	Dictionary<string, MapData> m_mapData = new Dictionary<string, MapData>();
+	Dictionary<byte, MapData> m_mapData = new Dictionary<byte, MapData>();
 
 	private void Awake()
 	{
@@ -39,12 +39,20 @@ public class DataManager : MonoBehaviour
 		return skill;
 	}
 
-	public MapData FindMapData(string _name)
+	public MapData FindMapData(byte _id)
 	{
 		MapData map = null;
-		m_mapData.TryGetValue(_name, out map);
+		m_mapData.TryGetValue(_id, out map);
 
 		return map;
+	}
+
+	public List<MapData> GetAllMapData()
+	{
+		List<MapData> list = new List<MapData>();
+		foreach (MapData d in m_mapData.Values)
+			list.Add(d);
+		return list;
 	}
 
 	void LoadAllData()
@@ -86,7 +94,7 @@ public class DataManager : MonoBehaviour
 
 		foreach (MapData map in loadedData.maps)
 		{
-			m_mapData.Add(map.name, map);
+			m_mapData.Add(byte.Parse(map.name), map);
 		}
 	}
 }

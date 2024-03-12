@@ -35,8 +35,8 @@
       "name": "Skill2",
       "MP": 0,
       "hitCount": 10,
-      "attack": 10,
-      "attackCellRange": 2,
+      "attack": 15,
+      "attackCellRange": 3,
       "attackRadius": 2,
       "hitTime": 0.9
     },

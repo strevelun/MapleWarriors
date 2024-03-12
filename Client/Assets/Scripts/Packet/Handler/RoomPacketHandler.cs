@@ -39,8 +39,8 @@ public static class RoomPacketHandler
 		obj.transform.GetChild(0).gameObject.SetActive(false); // ready
 		obj.transform.GetChild(1).gameObject.SetActive(false); // standby
 
-
-		if (prevOwnerIdx != nextOwnerIdx)
+		// 방장이 바뀌었다면
+		if (prevOwnerIdx != nextOwnerIdx) 
 		{
 			GameObject badge;
 			if (prevOwnerIdx < Define.RoomUserSlot)
@@ -64,6 +64,16 @@ public static class RoomPacketHandler
 			obj.SetActive(false);
 			obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_StartBtn);
 			obj.SetActive(true);
+		}
+
+		if(UserData.Inst.MyRoomSlot == nextOwnerIdx)
+		{
+			UserData.Inst.IsRoomOwner = true;
+			GameObject parentObj = UIManager.Inst.FindUI(Define.eUI.UIRoom_GamePanel);
+			obj = Util.FindChild(parentObj, false, "MapChoiceBtn");
+			UIButton uibtn = obj.GetComponent<UIButton>();
+			uibtn.IsActive = true;
+			Debug.Log("내가 이제 방장이다");
 		}
 	}	
 	
@@ -128,6 +138,12 @@ public static class RoomPacketHandler
 				t.gameObject.SetActive(true);
 			}
 		}
+
+		byte mapID = _reader.GetByte();
+
+		GameObject parentObj = UIManager.Inst.FindUI(Define.eUI.UIRoom_GamePanel);
+		obj = Util.FindChild(parentObj, false, "MapChoiceBtn");
+		obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadImage($"MapProfile/map_{mapID}");
 	}
 
 	public static void StartGame_Success(PacketReader _reader)
@@ -198,5 +214,14 @@ public static class RoomPacketHandler
 		GameObject obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_StandbyBtn);
 		UIButton btn = obj.GetComponent<UIButton>();
 		btn.IsActive = true;
+	}
+	
+	public static void RoomMapChoice(PacketReader _reader)
+	{
+		byte mapID = _reader.GetByte();
+
+		GameObject parentObj = UIManager.Inst.FindUI(Define.eUI.UIRoom_GamePanel);
+		GameObject obj = Util.FindChild(parentObj, false, "MapChoiceBtn");
+		obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadImage($"MapProfile/map_{mapID}");
 	}
 }

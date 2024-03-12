@@ -9,19 +9,26 @@ public static class InGamePacketHandler
 	public static void ResInitInfo(PacketReader _reader)
 	{
 		// 몬스터 컨트롤러에서 타일맵 데이터에 접근할 수 있어야 함. (충돌 감지 및 경로 생성)
-		long seed = _reader.GetInt64();
+		//long seed = _reader.GetInt64();
 		int mapID = _reader.GetByte();
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
 		GameObject camObj = GameObject.Find("CM vcam1");
 		CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
 
-		GameObject mapObj = MapManager.Inst.Load(1, camObj); // TestMap : 1
+		GameObject mapObj = MapManager.Inst.Load(mapID, camObj); // TestMap : 1
 		GameManager.Inst.SetPlayerCnt(numOfUsers);
 
 		GameObject monsters = Util.FindChild(mapObj, false, "Monsters");
-		int monsterCnt = monsters.transform.childCount;
-		GameManager.Inst.SetMonsterCnt(monsterCnt);
+		int activeCnt = 0;
+		for (int i = 0; i < monsters.transform.childCount; i++)
+		{
+			if (monsters.transform.GetChild(i).gameObject.activeSelf)
+			{
+				++activeCnt;
+			}
+		}
+		GameManager.Inst.SetMonsterCnt(activeCnt);
 
 		for (int i = 0; i < numOfUsers; ++i)
 		{

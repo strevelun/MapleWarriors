@@ -45,7 +45,18 @@ public class ResourceManager
         return sprite;
     }
 
-    public void Destroy(GameObject _go)
+	public Sprite LoadImage(string _path)
+	{
+		Sprite sprite = Load<Sprite>($"Image/{_path}");
+		if (sprite == null)
+		{
+			Debug.Log($"이미지 로드 실패 : {_path}");
+			return null;
+		}
+		return sprite;
+	}
+
+	public void Destroy(GameObject _go)
     {
         if (!_go) return;
 

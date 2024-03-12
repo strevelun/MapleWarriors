@@ -130,6 +130,7 @@ public class MonsterController : CreatureController
 		m_hpbarText = Util.FindChild(m_hpbarObj, true, "HPText").GetComponent<TextMeshProUGUI>();
 
 		MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, true);
+		//GameManager.Inst.AddMonsterCnt();
 
 		StartCoroutine(ReadyForAttack());
 	}

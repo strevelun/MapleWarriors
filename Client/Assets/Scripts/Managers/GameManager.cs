@@ -38,6 +38,8 @@ public class GameManager
 	public void SetPlayerCnt(int _cnt) { PlayerCnt = _cnt; }
 	public void SetMonsterCnt(int _cnt) { MonsterCnt = _cnt; }
 
+	//public void AddMonsterCnt() { ++MonsterCnt; }
+
 	public void SubPlayerCnt() 
 	{
 		if (PlayerCnt <= 0) return; 

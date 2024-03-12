@@ -99,6 +99,9 @@ public static class PacketHandler
 				case PacketType.eServer.RoomStandby_Fail:
 					RoomPacketHandler.RoomStandby_Fail(_reader);
 					break;
+				case PacketType.eServer.RoomMapChoice:
+					RoomPacketHandler.RoomMapChoice(_reader);
+					break;
 			}
 		}
 		else if (eSceneType == Define.eScene.InGame)

@@ -72,6 +72,7 @@ public class InGameScene : BaseScene
 		{
 			Packet pkt = InGamePacketMaker.GameOver();
 			NetworkManager.Inst.Send(pkt);
+			GameManager.Inst.GameStart = false;
 		}
 	}
 

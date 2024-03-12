@@ -48,7 +48,7 @@ public class MapManager
 		m_camObj = _camObj;
 
 		string name = "Map_" + m_mapID;
-		m_mapData = DataManager.Inst.FindMapData(name);
+		m_mapData = DataManager.Inst.FindMapData((byte)m_mapID);
 		name = m_mapData.mapList[CurStage];
 		m_map = ResourceManager.Inst.Instantiate($"Map/{name}");
 		//go.name = "Map";
@@ -71,6 +71,8 @@ public class MapManager
 		MaxY = m_tmBase.cellBounds.yMax;
 		YSize = MaxY - MinY;
 		XSize = MaxX - MinX;
+
+		Debug.Log($"MinX : {MinX}, MaxX : {MaxX}, MinY : {MinY}, MaxY : {MaxY}, XSize : {XSize}, YSize : {YSize}");
 
 		CreateMapBound();
 		CreateCollisionMap(m_map);
@@ -135,16 +137,23 @@ public class MapManager
 	{
 		if (m_map == null) return;
 
-		Object.Destroy(m_map);
+		ResourceManager.Inst.Destroy(m_map);
 
 		string name = m_mapData.mapList[CurStage];
 		m_map = ResourceManager.Inst.Instantiate($"Map/{name}");
 		++CurStage;
-
+		/*
 		GameObject monsters = Util.FindChild(m_map, false, "Monsters");
-		int monsterCnt = monsters.transform.childCount;
+		int activeChildCount = 0;
+		for (int i = 0; i < monsters.transform.childCount; i++)
+		{
+			if (monsters.transform.GetChild(i).gameObject.activeSelf)
+			{
+				activeChildCount++;
+			}
+		}
 		GameManager.Inst.SetMonsterCnt(monsterCnt);
-
+		*/
 		//m_hitboxTile.
 
 		TileInit();
@@ -214,7 +223,8 @@ public class MapManager
 		{
 			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
 			{
-				m_monsterMap[y, x].Dequeue();
+				if (m_monsterMap[y,x].Count > 0)
+					m_monsterMap[y, x].Dequeue();
 			}
 		}
 	}
