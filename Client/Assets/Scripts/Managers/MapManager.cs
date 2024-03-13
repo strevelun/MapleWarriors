@@ -276,14 +276,42 @@ public class MapManager
 		}
 	}
 
-	public void SetMonsterCollision(int _cellXPos, int _cellYPos, bool _flag)
+	public void SetMonsterCollision(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight, bool _flag)
 	{
-		m_monsterCollision[_cellYPos, _cellXPos] = _flag;
+		int hitboxWidth = _hitboxWidth - 1;
+		int hitboxHeight = _hitboxHeight - 1;
+
+		for (int y = _cellYPos; y >= _cellYPos - hitboxHeight; --y)
+		{
+			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
+			{
+				m_monsterCollision[y, x] = _flag;
+				m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), _flag ? m_hitboxTile : null);
+			}
+		}
 	}
 
-	public bool IsMonsterCollision(int _cellXPos, int _cellYPos)
+	public bool IsMonsterCollision(int _cellXPos, int _cellYPos, int _cellDestXPos, int _cellDestYPos, int _hitboxWidth, int _hitboxHeight)
 	{
-		return m_monsterCollision[_cellYPos, _cellXPos];
+		int hitboxWidth = _hitboxWidth - 1;
+		int hitboxHeight = _hitboxHeight - 1;
+
+		int dirX = _cellDestXPos - _cellXPos;
+		int dirY = _cellDestYPos - _cellYPos; // dest : 10, start : 11일때는 위로 가는 것
+
+		for (int y = _cellDestYPos; y >= _cellDestYPos - hitboxHeight; --y)
+		{
+			for (int x = _cellDestXPos; x <= _cellDestXPos + hitboxWidth; ++x)
+			{
+				if (m_monsterCollision[y, x] 
+					&& ((dirX == 0 || !(_cellXPos <= x && x <= _cellXPos + hitboxWidth))
+					|| (dirY == 0 || !(_cellYPos - hitboxHeight <= y && y <= _cellYPos)))) // 9 <= 
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public void Destroy()

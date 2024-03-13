@@ -13,7 +13,7 @@ public class CreatureController : MonoBehaviour
 
 
 
-	const float m_cellSize = 0.5f;
+	const float CellSize = 0.5f;
 
 	public Animator Anim { get; private set; }
 	protected GameObject m_spriteObject;
@@ -135,8 +135,8 @@ public class CreatureController : MonoBehaviour
 			{
 				LastCellPos = CellPos;
 				CellPos = tempCellPos;
-				MapManager.Inst.RemoveHitboxTile(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
-				MapManager.Inst.SetHitboxTile(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight);
+				//MapManager.Inst.RemoveHitboxTile(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
+				//MapManager.Inst.SetHitboxTile(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight);
 			}
 
 			if (LastDir != Dir) LastDir = Dir;
@@ -496,7 +496,7 @@ public class CreatureController : MonoBehaviour
 	// 아래에서 올라올때 y=0이 되는 기준이 -0.5임. 그래서 몬스터가 -0.5에서 더이상 안올라가고 만족함
 	public Vector2Int ConvertToCellPos(float _xpos, float _ypos)
 	{
-		return new Vector2Int((int)(_xpos + m_cellSize), (int)(-_ypos + m_cellSize));
+		return new Vector2Int((int)(_xpos + CellSize), (int)(-_ypos + CellSize));
 	}
 
 	public virtual void Flip()

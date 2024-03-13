@@ -80,8 +80,8 @@ public class PlayerController : CreatureController
 		base.Init(_cellXPos, _cellYPos);
 
 		MaxSpeed = 4f;
-		MaxHP = 100;
-		HP = 100;
+		MaxHP = 10000;
+		HP = 10000;
 		AttackDamage = 5;
 		AttackRange = 2;
 

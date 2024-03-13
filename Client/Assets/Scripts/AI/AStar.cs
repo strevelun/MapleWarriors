@@ -80,7 +80,7 @@ public class AStar
 			{
 				Vector2Int nextPos = node.CurPos + m_dir[i];
 				if (MapManager.Inst.IsBlocked(nextPos.x, nextPos.y, _hitboxWidth, _hitboxHeight)) continue;
-				if (MapManager.Inst.IsMonsterCollision(nextPos.x, nextPos.y)) continue;
+				if (MapManager.Inst.IsMonsterCollision(node.CurPos.x, node.CurPos.y, nextPos.x, nextPos.y, _hitboxWidth, _hitboxHeight)) continue;
 				if (m_visited[nextPos.y, nextPos.x]) continue;
 				
 				if (i == 1) // UpRight
