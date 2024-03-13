@@ -23,11 +23,11 @@ public class MonsterDeadState : ICreatureState
 
 	public void Update()
 	{
-		UpdateAnimation();
 	}
 
 	public void FixedUpdate()
 	{
+		UpdateAnimation();
 	}
 
 	public void Exit()

@@ -123,12 +123,14 @@ public class CreatureController : MonoBehaviour
 		}
 
 		//Debug.Log(Dir);
-
 		if (Dir != eDir.None)
 		{
-			AdjustXPosition(ref newX, ref newY);
-			AdjustYPosition(ref newX, ref newY);
-			AdjustXYPosition(ref newX, ref newY);
+			if (tag == "Player")
+			{
+				AdjustXPosition(ref newX, ref newY);
+				AdjustYPosition(ref newX, ref newY);
+				AdjustXYPosition(ref newX, ref newY);
+			}
 
 			Vector2Int tempCellPos = ConvertToCellPos(newX, newY);
 			if (tempCellPos != CellPos)

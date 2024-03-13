@@ -62,6 +62,12 @@ public class MonsterController : CreatureController
 	// 2칸이면 1
 	[SerializeField]
 	Vector2 m_hpBarUIOffset;
+	[SerializeField]
+	Vector2 m_locationInfoUIOffset = new Vector2(0.5f, -0.6f);
+
+	GameObject m_locationInfoObj;
+	RectTransform m_locationInfoRect;
+	TextMeshProUGUI m_locationInfoText;
 
 
 	void Start()
@@ -72,21 +78,17 @@ public class MonsterController : CreatureController
 
 		ObjectManager.Inst.AddMonster(gameObject);
 		MapManager.Inst.AddMonster(this);
+
+
 	}
 
 	protected override void Update()
 	{
 		base.Update();
 
-		PeekTarget();
-
-		if (UserData.Inst.IsRoomOwner)
-		{
-			CheckTargetPosChanged();
-			BeginSearch();
-		}
 
 		m_sliderRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_hpBarUIOffset);
+		m_locationInfoRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_locationInfoUIOffset);
 
 		//if(m_dest.Count != 0)
 		//	Debug.Log($"{CellPos} -> {m_dest.Peek()}");
@@ -96,6 +98,8 @@ public class MonsterController : CreatureController
 	protected override void FixedUpdate()
 	{
 		base.FixedUpdate();
+
+		
 
 		UpdateChase();
 
@@ -127,12 +131,17 @@ public class MonsterController : CreatureController
 
 		m_hpbarText = Util.FindChild(m_hpbarObj, true, "HPText").GetComponent<TextMeshProUGUI>();
 
+		m_locationInfoObj = Util.FindChild(monsterUI, true, "LocationInfo");
+		m_locationInfoRect = m_locationInfoObj.transform.GetChild(0).gameObject.GetComponent<RectTransform>();
+		m_locationInfoText = m_locationInfoObj.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+
 		MonsterData monsterData = DataManager.Inst.FindMonsterData(gameObject.name);
 		SetMonsterData(monsterData);
 
 		MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, HitboxWidth, HitboxHeight, true);
 
 		StartCoroutine(ReadyForAttack());
+		StartCoroutine(RoomOwnerLogic());
 	}
 
 	public void SetMonsterData(MonsterData _data)
@@ -255,10 +264,10 @@ public class MonsterController : CreatureController
 		m_targetMoved = false;
 		//Debug.Log($"BeginSearch : {m_path}");
 	}
-	
+
 	void UpdateChase()
 	{
-		if (CellArrived) return;
+		if (m_dest.Count == 0 && CellArrived) return;
 		//if (Dir == eDir.None) return;
 		//if (ByteDir == 0) return;
 		//if (m_eState == eState.None) return;
@@ -269,32 +278,36 @@ public class MonsterController : CreatureController
 
 		float dist = Vector2.Distance(transform.position, dest);
 
+		m_locationInfoText.text = $"{Dir}, {dist}";
+
 		//Debug.Log($"{dist} -> {transform.position} : {Dir}, 목적지 : {dest}");
-		
-		if(CanGo(CellPos, m_dest.Peek()) == false)
+		/*
+		if (CanGo(CellPos, m_dest.Peek()) == false)
 		{
 			ByteDir = 0;
 			transform.position = new Vector3(CellPos.x, -CellPos.y);
 			m_dest.Clear();
 			CellArrived = true;
+			Debug.Log($"{CellPos.x}, {CellPos.y}에서 {dest.x}, {-dest.y}로 이동 불가!!!!!");
+
 			return;
 		}
-
+		*/
 		if (dist > 0.1f) return;
 
 		//if (dist > MaxSpeed * Time.fixedDeltaTime * 2) return;
-		
+
 
 		MapManager.Inst.RemoveMonster(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
 		MapManager.Inst.AddMonster(this);
 		transform.position = dest;
 		m_dest.Dequeue();
-
+		/*
 		if(m_target == null)
 		{
 			m_dest.Clear();
 		}
-
+		*/
 		ByteDir = 0;
 
 		if (m_dest.Count > 0)
@@ -318,17 +331,29 @@ public class MonsterController : CreatureController
 
 			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
 			MapManager.Inst.SetMonsterCollision(vecDest.x, vecDest.y, HitboxWidth, HitboxHeight, true);
-			Debug.Log($"{CellPos.x}, {CellPos.y} -> {vecDest.x}, {vecDest.y}");
+			//Debug.Log($"{CellPos.x}, {CellPos.y} -> {vecDest.x}, {vecDest.y}");
 			//Debug.Log("UpdateChase에서 방향전환");
 		}
 		else
 		{
 			//m_eState = eState.None;
-			Debug.Log($"{CellPos.x}, {CellPos.y} 도착");
+			//Debug.Log($"{CellPos.x}, {CellPos.y} 도착");
 		}
-			
-		CellArrived = true;
 
+		// m_dest.Count가 현재 1인데 CellArrived가 true이면
+		CellArrived = true;
+		/*
+		if (PathIdx+1 < m_path.Count - 1)
+		{ 
+			if (MapManager.Inst.IsMonsterCollision(CellPos.x, CellPos.y, m_path[PathIdx + 1].x, m_path[PathIdx + 1].y, HitboxWidth, HitboxHeight))
+			{
+				// 경로 다시 생성해야
+				m_targetMoved = true;
+				m_dest.Clear();
+				return;
+			}
+		}
+		*/
 		if (UserData.Inst.IsRoomOwner)
 		{
 			if (m_targetMoved) return;
@@ -344,13 +369,7 @@ public class MonsterController : CreatureController
 				
 			if (PathIdx < m_path.Count-1)
 			{
-				if (MapManager.Inst.IsMonsterCollision(CellPos.x, CellPos.y, m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight))
-				{
-					// 경로 다시 생성해야
-					m_targetMoved = true;
-					m_dest.Clear();
-					return;
-				}
+			
 
 				//MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
 
@@ -379,12 +398,14 @@ public class MonsterController : CreatureController
 		{
 			// 만약 갈 수 없는 dest가 나오면 현재 m_Dest에 있는 경로 전부 삭제 후 경로 재설정해야
 			m_targetMoved = true;
-			if (m_dest.Count > 0)
+			if (m_dest.Count > 0) // 일단 이동하라
 			{
 				Vector2Int curDest = m_dest.Peek();
 				m_dest.Clear();
 				m_dest.Enqueue(curDest);
 			}
+			else
+				ByteDir = 0;
 			Debug.Log($"{start}에서 {dest}로 갈 수 없음");
 			return;
 		}
@@ -404,6 +425,8 @@ public class MonsterController : CreatureController
 				return;
 			}
 			Vector2 dir = CellPos - dest;
+
+			ByteDir = 0;
 
 			if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
 			if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
@@ -426,6 +449,7 @@ public class MonsterController : CreatureController
 
 	bool CanGo(Vector2Int _from, Vector2Int _to)
 	{
+		if (_from.x == _to.x && _from.y == _to.y) return false;
 		if (Math.Abs(_from.x - _to.x) <= 1 && Math.Abs(_from.y - _to.y) <= 1) return true;
 		return false;
 	}
@@ -483,6 +507,7 @@ public class MonsterController : CreatureController
 
 	public void Attack()
 	{
+		return;
 		if (!AttackReady) return;
 		if (m_targets.Count == 0) return;
 
@@ -539,6 +564,21 @@ public class MonsterController : CreatureController
 			{
 				yield return null;
 			}
+		}
+	}
+
+	IEnumerator RoomOwnerLogic()
+	{
+		while (true)
+		{
+			PeekTarget();
+
+			if (UserData.Inst.IsRoomOwner)
+			{
+				CheckTargetPosChanged();
+				BeginSearch();
+			}
+			yield return null;
 		}
 	}
 

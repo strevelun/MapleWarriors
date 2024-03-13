@@ -32,17 +32,17 @@ public class MonsterHitState : ICreatureState
 
 	public void Update()
 	{
+	
+	}
+
+	public void FixedUpdate()
+	{
 		UpdateAnimation();
 		if (!m_knockback && m_animStart)
 		{
 			m_mc.Knockback(m_stateInfo.length);
 			m_knockback = true;
 		}
-	}
-
-	public void FixedUpdate()
-	{
-
 	}
 
 	public void Exit()
