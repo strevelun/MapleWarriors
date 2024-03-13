@@ -43,17 +43,17 @@ public static class InGamePacketHandler
 			if (connectionID == UserData.Inst.ConnectionID)
 			{
 				MyPlayerController mpc = player.AddComponent<MyPlayerController>();
-				mpc.Init(i, 1);
+				mpc.Init(i, 1, idx);
 				mpc.SetNickname(nickname);
-				ObjectManager.Inst.AddPlayer(player.name, player);
+				ObjectManager.Inst.AddPlayer(idx, player);
 				vcam1.Follow = player.transform;
 			}
 			else
 			{
 				PlayerController pc = player.AddComponent<PlayerController>();
-				pc.Init(i, 1);
+				pc.Init(i, 1, idx);
 				pc.SetNickname(nickname);
-				ObjectManager.Inst.AddPlayer(player.name, player);
+				ObjectManager.Inst.AddPlayer(idx, player);
 			}
 		}
 
@@ -71,7 +71,7 @@ public static class InGamePacketHandler
 		float ypos = _reader.GetInt32() / 1000000.0f;
 		byte dir = _reader.GetByte();
 
-		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
+		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		pc.SetDir(dir);
 		pc.EndMovePosition(xpos, ypos);
 	}
@@ -82,19 +82,20 @@ public static class InGamePacketHandler
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
 
-		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
+		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		pc.SetDir(0);
 		pc.EndMovePosition(xpos, ypos);
 	}
 
 	public static void BeginMoveMonster(PacketReader _reader)
 	{
-		string name = _reader.GetString();
+		byte monsterIdx = _reader.GetByte();
+		byte monsterNum = _reader.GetByte();
 		int pathIdx = _reader.GetUShort();
 		int destCellXPos = _reader.GetUShort();
 		int destCellYPos = _reader.GetUShort();
 
-		MonsterController mc = ObjectManager.Inst.FindMonster(name);
+		MonsterController mc = ObjectManager.Inst.FindMonster(monsterIdx, monsterNum);
 		if (!mc)
 		{
 			Debug.Log("몬스터 이름 찾을 수 없음");
@@ -102,6 +103,21 @@ public static class InGamePacketHandler
 		}
 
 		mc.BeginMove(pathIdx, destCellXPos, destCellYPos);
+	}
+
+	public static void MonsterAttack(PacketReader _reader)
+	{
+		int targetCnt = _reader.GetByte();
+
+		List<PlayerController> targets = new List<PlayerController>();
+		for(int i=0; i<targetCnt; ++i)
+		{
+			PlayerController pc = ObjectManager.Inst.FindPlayer(_reader.GetByte());
+			targets.Add(pc);
+		}
+
+		MonsterController mc = ObjectManager.Inst.FindMonster(_reader.GetByte(), _reader.GetByte());
+		mc.ChangeState(new MonsterAttackState(targets));
 	}
 
 	public static void InGameExit(PacketReader _reader)
@@ -113,8 +129,8 @@ public static class InGamePacketHandler
 			UserData.Inst.IsRoomOwner = true;
 
 		GameManager.Inst.SubPlayerCnt();
-		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{leftUserIdx}");
-		ObjectManager.Inst.RemovePlayer($"Player_1_{leftUserIdx}");
+		PlayerController pc = ObjectManager.Inst.FindPlayer(leftUserIdx);
+		ObjectManager.Inst.RemovePlayer(leftUserIdx);
 		MapManager.Inst.RemoveAimTile(pc.CellPos.x, pc.CellPos.y);
 		ResourceManager.Inst.Destroy(pc.gameObject);
 	}
@@ -124,12 +140,12 @@ public static class InGamePacketHandler
 		byte roomSlot = _reader.GetByte();
 		ushort count = _reader.GetUShort();
 
-		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
+		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		List<MonsterController> targets = new List<MonsterController>();
 		MonsterController mc;
 		for (int i = 0; i < count; ++i)
 		{
-			mc = ObjectManager.Inst.FindMonster(_reader.GetString());
+			mc = ObjectManager.Inst.FindMonster(_reader.GetByte(), _reader.GetByte());
 			targets.Add(mc);
 		}
 
@@ -146,12 +162,12 @@ public static class InGamePacketHandler
 		short x = _reader.GetShort();
 		short y = _reader.GetShort();
 
-		PlayerController pc = ObjectManager.Inst.FindPlayer($"Player_1_{roomSlot}");
+		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		List<MonsterController> targets = new List<MonsterController>();
 		MonsterController mc;
 		for (int i = 0; i < count; ++i)
 		{
-			mc = ObjectManager.Inst.FindMonster(_reader.GetString());
+			mc = ObjectManager.Inst.FindMonster(_reader.GetByte(), _reader.GetByte());
 			targets.Add(mc);
 		}
 

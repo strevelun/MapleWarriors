@@ -1,6 +1,7 @@
 {
   "monsters": [
     {
+      "idx": 1,
       "name": "Slime",
       "HP": 15,
       "attack": 5,
@@ -12,6 +13,7 @@
       "hitboxHeight": 1
     },
     {
+      "idx": 2,
       "name": "Blue_Mushroom",
       "HP": 10,
       "attack": 2,
@@ -23,6 +25,7 @@
       "hitboxHeight": 1
     },
     {
+      "idx": 3,
       "name": "Dark_Stone_Golem",
       "HP": 20,
       "attack": 7,
@@ -34,6 +37,7 @@
       "hitboxHeight": 2
     },
     {
+      "idx": 4,
       "name": "Boss1",
       "HP": 20,
       "attack": 1,
@@ -45,6 +49,7 @@
       "hitboxHeight": 2
     },
     {
+      "idx": 5,
       "name": "Boss2",
       "HP": 30,
       "attack": 5,

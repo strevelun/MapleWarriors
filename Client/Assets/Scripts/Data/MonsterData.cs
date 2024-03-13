@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class MonsterData 
 {
+	public int			idx;
 	public string		name;
 	public int			HP;
 	public int			attack;

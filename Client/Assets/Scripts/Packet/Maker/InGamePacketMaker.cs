@@ -40,13 +40,31 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	// TODO : remove _pathIDx
-	public static Packet BeginMoveMonster(string _name, int _cellXPos, int _cellYPos, int _pathIdx)
+	// 패킷을 받은 후에 몬스터 AttackState로 전환
+	public static Packet MonsterAttack(List<PlayerController> _finalTargets, int _monsterIdx, int _monsterNum)
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eClient.MonsterAttack)
+			.Add((byte)_finalTargets.Count);
+
+		foreach(PlayerController pc in _finalTargets)
+		{
+			pkt.Add((byte)pc.Idx);
+		}
+		pkt
+			.Add((byte)_monsterIdx)
+			.Add((byte)_monsterNum);
+		return pkt;
+	}
+
+	public static Packet BeginMoveMonster(int _monsterIdx, int _monsterNum, int _cellXPos, int _cellYPos, int _pathIdx)
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eClient.BeginMoveMonster)
-			.Add(_name)
+			.Add((byte)_monsterIdx)
+			.Add((byte)_monsterNum)
 			.Add((ushort)_pathIdx)
 			.Add((ushort)_cellXPos)
 			.Add((ushort)_cellYPos);
@@ -62,7 +80,9 @@ public static class InGamePacketMaker
 
 		foreach(MonsterController mc in _targets)
 		{
-			pkt.Add(mc.name);
+			pkt
+				.Add((byte)mc.Idx)
+				.Add((byte)mc.Num);
 		}
 
 		pkt.Add((byte)_skill);
@@ -81,7 +101,9 @@ public static class InGamePacketMaker
 
 		foreach(MonsterController mc in _targets)
 		{
-			pkt.Add(mc.name);
+			pkt
+				.Add((byte)mc.Idx)
+				.Add((byte)mc.Num);
 		}
 
 		pkt.Add((byte)_skill);

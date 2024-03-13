@@ -15,49 +15,49 @@ public class ObjectManager
 		}
 	}
 
-	Dictionary<string, PlayerController> m_dicPlayerObj = new Dictionary<string, PlayerController>();
+	Dictionary<int, PlayerController> m_dicPlayerObj = new Dictionary<int, PlayerController>();
 	Dictionary<string, MonsterController> m_dicMonsterObj = new Dictionary<string, MonsterController>();
 
-	int m_monsterIdx = 0;
+	int m_monsterNum = 0;
 
-	public void AddPlayer(string _key, GameObject _obj)
+	public void AddPlayer(int _keyIdx, GameObject _obj)
 	{
 		PlayerController pc = _obj.GetComponent<PlayerController>();
 		//if (!pc) pc = _obj.AddComponent<PlayerController>();
 
-		m_dicPlayerObj.Add(_key, pc);
+		m_dicPlayerObj.Add(_keyIdx, pc);
 	}
 
-	public void AddMonster(GameObject _obj)
+	public void AddMonster(GameObject _obj, int _idx)
 	{
-		_obj.name = $"{_obj.name}_{m_monsterIdx++}";
-		MonsterController pc = _obj.GetComponent<MonsterController>();
-		//if (!pc) pc = _obj.AddComponent<MonsterController>();
+		_obj.name = $"{_idx}_{++m_monsterNum}";
+		MonsterController mc = _obj.GetComponent<MonsterController>();
+		mc.Num = m_monsterNum;
 
-		m_dicMonsterObj.Add(_obj.name, pc);
+		m_dicMonsterObj.Add(_obj.name, mc);
 	}
 
-	public PlayerController FindPlayer(string _key)
+	public PlayerController FindPlayer(int _idx)
 	{
 		PlayerController pc = null;
-		m_dicPlayerObj.TryGetValue(_key, out pc);
+		m_dicPlayerObj.TryGetValue(_idx, out pc);
 
 		return pc;
 	}
 
-	public MonsterController FindMonster(string _key)
+	public MonsterController FindMonster(int _idx, int _num)
 	{
 		MonsterController mc = null;
-		m_dicMonsterObj.TryGetValue(_key, out mc);
+		m_dicMonsterObj.TryGetValue($"{_idx}_{_num}", out mc);
 
 		return mc;
 	}
 
-	public void RemovePlayer(string _key)
+	public void RemovePlayer(int _idx)
 	{
 		if (m_dicPlayerObj.Count == 0) return;
 
-		m_dicPlayerObj.Remove(_key);
+		m_dicPlayerObj.Remove(_idx);
 	}
 
 	public void ClearPlayers()

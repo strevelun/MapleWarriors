@@ -29,9 +29,9 @@ public class MonsterIdleState : ICreatureState
 
 	public void FixedUpdate()
 	{
+		m_mc.Attack();
 		m_mc.UpdateMove();
 		m_mc.CheckMoveState();
-		m_mc.Attack();
 	}
 
 	public void Exit()

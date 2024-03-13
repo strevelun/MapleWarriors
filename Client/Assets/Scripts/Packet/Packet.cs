@@ -17,6 +17,8 @@ public class Packet
 		private set { Buffer.BlockCopy(BitConverter.GetBytes(value), 0, m_buffer, 0, sizeof(ushort)); }
 		get { return m_addPos; }
 	}
+
+
 	//public Packet Add(bool _type) { return Add(GetBytes(_type)); }
 	public Packet Add(byte _type) { return Add(new byte[1] { _type }); }
 	//public Packet Add(char _type) { return Add(GetBytes(_type)); }

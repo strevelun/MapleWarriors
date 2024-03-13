@@ -23,6 +23,8 @@ public class MonsterController : CreatureController
 		Attack
 	}
 
+	public int Num { get; set; }
+
 	public bool AttackReady { get; set; } = true;
 	public int VisionCellRange { get; set; }
 
@@ -72,11 +74,14 @@ public class MonsterController : CreatureController
 
 	void Start()
 	{
-		Init((int)transform.position.x, (int)transform.position.y);
+		MonsterData monsterData = DataManager.Inst.FindMonsterData(gameObject.name);
+
+		Init((int)transform.position.x, (int)transform.position.y, monsterData.idx);
+		SetMonsterData(monsterData);
 
 		DestPos = CellPos;
 
-		ObjectManager.Inst.AddMonster(gameObject);
+		ObjectManager.Inst.AddMonster(gameObject, monsterData.idx);
 		MapManager.Inst.AddMonster(this);
 
 
@@ -106,11 +111,11 @@ public class MonsterController : CreatureController
 
 	}
 
-	public override void Init(int _cellXPos, int _cellYPos)
+	public override void Init(int _cellXPos, int _cellYPos, int _idx)
 	{
 		if (_cellYPos < 0) _cellYPos = -_cellYPos;
 
-		base.Init(_cellXPos, _cellYPos);
+		base.Init(_cellXPos, _cellYPos, _idx);
 
 		ChangeState(new MonsterIdleState());
 
@@ -135,8 +140,6 @@ public class MonsterController : CreatureController
 		m_locationInfoRect = m_locationInfoObj.transform.GetChild(0).gameObject.GetComponent<RectTransform>();
 		m_locationInfoText = m_locationInfoObj.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
 
-		MonsterData monsterData = DataManager.Inst.FindMonsterData(gameObject.name);
-		SetMonsterData(monsterData);
 
 		MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, HitboxWidth, HitboxHeight, true);
 
@@ -146,6 +149,7 @@ public class MonsterController : CreatureController
 
 	public void SetMonsterData(MonsterData _data)
 	{
+		Idx = _data.idx;
 		MaxSpeed = _data.speed;
 		MaxHP = _data.HP;
 		HP = _data.HP;
@@ -258,7 +262,7 @@ public class MonsterController : CreatureController
 
 		//MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
 
-		Packet pkt = InGamePacketMaker.BeginMoveMonster(name, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
+		Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
 		NetworkManager.Inst.Send(pkt);
 
 		m_targetMoved = false;
@@ -373,7 +377,7 @@ public class MonsterController : CreatureController
 
 				//MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
 
-				Packet pkt = InGamePacketMaker.BeginMoveMonster(name, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
+				Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
 				NetworkManager.Inst.Send(pkt);
 			}
 		}
@@ -507,7 +511,7 @@ public class MonsterController : CreatureController
 
 	public void Attack()
 	{
-		return;
+		if (!UserData.Inst.IsRoomOwner) return;
 		if (!AttackReady) return;
 		if (m_targets.Count == 0) return;
 
@@ -532,8 +536,10 @@ public class MonsterController : CreatureController
 
 		if (finalTargets.Count == 0) return;
 
-		ChangeState(new MonsterAttackState(finalTargets));
+		//ChangeState(new MonsterAttackState(finalTargets));
 
+		Packet pkt = InGamePacketMaker.MonsterAttack(finalTargets, Idx, Num);
+		NetworkManager.Inst.Send(pkt);
 	}
 
 	public override void Die()
@@ -555,9 +561,15 @@ public class MonsterController : CreatureController
 	{
 		while (true)
 		{
+			if (!UserData.Inst.IsRoomOwner)
+			{
+				yield return null;
+				continue;
+			}
+
 			if (!AttackReady)
 			{
-				yield return new WaitForSeconds(3); 
+				yield return new WaitForSeconds(3);
 				AttackReady = true;
 			}
 			else
