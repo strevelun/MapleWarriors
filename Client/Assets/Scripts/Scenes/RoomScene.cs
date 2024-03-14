@@ -30,9 +30,12 @@ public class RoomScene : BaseScene
 
 		{
 			GameObject parentObj = UIManager.Inst.AddUI(Define.eUI.UIRoom_Users);
-			GameObject slot = parentObj.transform.GetChild(0).gameObject;
-			UIButton btn = slot.GetComponent<UIButton>();
-			btn.Init(OnCharacterChoiceBtnClicked, slot);
+			for (int i = 0; i < 4; ++i)
+			{
+				GameObject slot = parentObj.transform.GetChild(i).gameObject;
+				UIButton btn = slot.GetComponent<UIButton>();
+				btn.Init(OnCharacterChoiceBtnClicked, slot);
+			}
 		}
 
 		{

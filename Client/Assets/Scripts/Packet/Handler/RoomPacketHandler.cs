@@ -31,6 +31,8 @@ public static class RoomPacketHandler
 
 		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
 		GameObject slot = objRoomUsers.transform.GetChild(idx).gameObject;
+		slot.GetComponent<UIButton>().IsActive = false;
+
 		GameObject obj = Util.FindChild(slot, false, "CharacterBtn");
 		obj.SetActive(false);
 		obj = Util.FindChild(slot, false, "Nickname");
@@ -86,6 +88,7 @@ public static class RoomPacketHandler
 		GameObject slot = obj.transform.GetChild(idx).gameObject;
 		obj = Util.FindChild(slot, false, "CharacterBtn"); // 기본 캐릭터
 		obj.SetActive(true);
+		obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadSprite($"Player/player1");
 		obj = Util.FindChild(slot, false, "Nickname");
 		obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = nickname;
 		obj = Util.FindChild(slot, false, "UserState");
@@ -107,6 +110,7 @@ public static class RoomPacketHandler
 		Transform t;
 		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
 
+
 		for (int i=0; i<numOfUsers; ++i)
 		{
 			connectionID = _reader.GetUShort();
@@ -122,19 +126,14 @@ public static class RoomPacketHandler
 				obj = Util.FindChild(slot, false, "Frame");
 				obj.SetActive(true);
 				UserData.Inst.MyRoomSlot = idx;
-			}
 
-			//GameObject chAnim = objRoomUsers.transform.GetChild(1).transform.GetChild(idx).gameObject;
-			//chAnim.SetActive(true);
-			//chAnim.GetComponent<SpriteRenderer>().sprite = ResourceManager.Inst.LoadSprite($"Player/player{(byte)eChoice}");
-			//chAnim.GetComponent<Animator>().Play($"Player{(byte)eChoice}");
-
-			if (i == UserData.Inst.MyRoomSlot)
-			{
-				obj = Util.FindChild(slot, false, "CharacterBtn");
-				obj.SetActive(true);
-				obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadSprite($"Player/player{(byte)eChoice}");
 			}
+			else
+				slot.GetComponent<UIButton>().IsActive = false;
+
+			obj = Util.FindChild(slot, false, "CharacterBtn");
+			obj.SetActive(true);
+			obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadSprite($"Player/player{(byte)eChoice}");
 
 			obj = Util.FindChild(slot, false, "Nickname");
 			obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = nickname;
