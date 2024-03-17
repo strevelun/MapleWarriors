@@ -88,6 +88,9 @@ public class PlayerController : CreatureController
 		HitboxWidth = 1;
 		HitboxHeight = 1;
 
+		m_convertCellXPosOffset = MaxSpeed * Time.fixedDeltaTime;
+		m_convertCellYPosOffset = MaxSpeed * Time.fixedDeltaTime;
+
 		//m_eCurSkill = eSkill.Slash;
 		m_eCurSkill = eSkill.Slash;
 		m_eBeforeSkill = eSkill.Slash;

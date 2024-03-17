@@ -38,7 +38,7 @@ public class MapManager
 
 	bool[,] m_collisionMap;
 	bool[,] m_monsterCollision;
-	Queue<MonsterController>[,] m_monsterMap;
+	MonsterController[,] m_monsterMap;
 
 	public GameObject Load(int _mapID, GameObject _camObj)
 	{
@@ -94,12 +94,12 @@ public class MapManager
 
 		m_collisionMap = new bool[YSize, XSize];
 		m_monsterCollision = new bool[YSize, XSize];
-		m_monsterMap = new Queue<MonsterController>[YSize, XSize];
+		m_monsterMap = new MonsterController[YSize, XSize];
 		for (int i = 0; i < YSize; ++i)
 		{
 			for (int j = 0; j < XSize; ++j)
 			{
-				m_monsterMap[i, j] = new Queue<MonsterController>();
+				m_monsterMap[i, j] = new MonsterController();
 			}
 		}
 
@@ -185,12 +185,12 @@ public class MapManager
 		return new Vector2Int(v.x, v.y);
 	}
 
-	public Queue<MonsterController> GetMonsters(int _cellXPos, int _cellYPos)
+	public MonsterController GetMonsters(int _cellXPos, int _cellYPos)
 	{
 		if (IsBlocked(_cellXPos, _cellYPos, 1, 1)) return null;
-		if (m_monsterMap[_cellYPos, _cellXPos].Count == 0) return null;
+		if (m_monsterMap[_cellYPos, _cellXPos] == null) return null;
 
-		return new Queue<MonsterController>(m_monsterMap[_cellYPos, _cellXPos]);
+		return m_monsterMap[_cellYPos, _cellXPos];
 	}
 
 	public void AddMonster(MonsterController _mc)
@@ -204,7 +204,9 @@ public class MapManager
 		{
 			for (int x = _mc.CellPos.x; x <= _mc.CellPos.x + hitboxWidth; ++x)
 			{
-				m_monsterMap[y, x].Enqueue(_mc);
+				m_monsterMap[y, x] = _mc;
+				m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), m_hitboxTile);
+				Debug.Log($"AddMonster : {_mc.transform.position}, {x}, {y}");
 			}
 		}
 
@@ -213,7 +215,7 @@ public class MapManager
 	public void RemoveMonster(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight)
 	{
 		if (IsBlocked(_cellXPos, _cellYPos, 1, 1)) return;
-		if (m_monsterMap[_cellYPos, _cellXPos].Count == 0) return;
+		if (m_monsterMap[_cellYPos, _cellXPos] == null) return;
 
 		int hitboxWidth = _hitboxWidth - 1;
 		int hitboxHeight = _hitboxHeight - 1;
@@ -223,8 +225,13 @@ public class MapManager
 		{
 			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
 			{
-				if (m_monsterMap[y,x].Count > 0)
-					m_monsterMap[y, x].Dequeue();
+				if (m_monsterMap[y, x] != null)
+				{
+					MonsterController mc = m_monsterMap[y, x];
+					m_monsterMap[y, x] = null;
+					m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), null);
+					//Debug.Log($"RemoveMonster : {mc.transform.position}, {x}, {y}, Remains : {m_monsterMap[y,x].Count}");
+				}
 			}
 		}
 	}
@@ -286,7 +293,7 @@ public class MapManager
 			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
 			{
 				m_monsterCollision[y, x] = _flag;
-				m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), _flag ? m_hitboxTile : null);
+				//m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), _flag ? m_hitboxTile : null);
 			}
 		}
 	}

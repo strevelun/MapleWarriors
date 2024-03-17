@@ -35,6 +35,9 @@ public class CreatureController : MonoBehaviour
 	public Vector2Int CellPos { get; protected set; }
 	public Vector2Int LastCellPos { get; protected set; }
 
+	protected float m_convertCellXPosOffset = 0.02f;
+	protected float m_convertCellYPosOffset = 0.02f;
+
 	public int HP { get; set; }
 	public int MaxHP { get; set; }
 	public int AttackDamage { get; protected set; }
@@ -94,33 +97,54 @@ public class CreatureController : MonoBehaviour
 		{
 			case eDir.Up:
 				newY = transform.position.y + (MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellXPosOffset = 0;
+				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.Down:
 				newY = transform.position.y - (MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellXPosOffset = 0;
+				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.Left:
 				newX = transform.position.x - (MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellXPosOffset =0;
+				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.Right:
 				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellXPosOffset = 0;
+				m_convertCellYPosOffset = 0;
 				break;
-			case eDir.UpLeft:
+			case eDir.UpLeft: //
 				newX = transform.position.x - (MaxSpeed * Time.fixedDeltaTime);
 				newY = transform.position.y + (MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellXPosOffset = 0;
+				m_convertCellYPosOffset = -(MaxSpeed * Time.fixedDeltaTime);
 				break;
 			case eDir.UpRight:
 				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
 				newY = transform.position.y + (MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellXPosOffset = 0;
+				m_convertCellYPosOffset = 0;
 				break;
-			case eDir.DownLeft:
+			case eDir.DownLeft: //
 				newX = transform.position.x - (MaxSpeed * Time.fixedDeltaTime);
 				newY = transform.position.y - (MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellXPosOffset = -(MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.DownRight:
 				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
 				newY = transform.position.y - (MaxSpeed * Time.fixedDeltaTime);
+			//	m_convertCellXPosOffset = MaxSpeed * Time.fixedDeltaTime;
+			//	m_convertCellYPosOffset = -(MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellXPosOffset = 0;
+				m_convertCellYPosOffset = -(MaxSpeed * Time.fixedDeltaTime);
 				break;
 		}
+
+		newY = (float)Math.Round(newY, 3);
+		newX = (float)Math.Round(newX, 3);
 
 		//Debug.Log(Dir);
 		if (Dir != eDir.None)
@@ -131,10 +155,13 @@ public class CreatureController : MonoBehaviour
 				AdjustYPosition(ref newX, ref newY);
 				AdjustXYPosition(ref newX, ref newY);
 			}
+			else
+				Debug.Log($"{newX}, {newY}");
 
-			Vector2Int tempCellPos = ConvertToCellPos(newX, newY);
-			if (tempCellPos != CellPos)
+			Vector2Int tempCellPos = ConvertToCellPos(newX, newY); // 1.5, -8.49999 : 1,8
+			if (tempCellPos != CellPos) // CellPos 0,7 -> LastCellPos 1,7
 			{
+				Debug.Log($"셀변경 : {newX + m_convertCellXPosOffset}, {newY + m_convertCellYPosOffset}, {tempCellPos}, {CellPos}");
 				LastCellPos = CellPos;
 				CellPos = tempCellPos;
 				//MapManager.Inst.RemoveHitboxTile(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
@@ -148,6 +175,7 @@ public class CreatureController : MonoBehaviour
 			//Debug.Log($"{CellPos.x}, {CellPos.y}");
 			CenterPos = new Vector2(m_spriteObject.transform.position.x, m_spriteObject.transform.position.y - 0.5f);
 		}
+
 	}
 
 	void AdjustXYPosition(ref float _newX, ref float _newY)
@@ -499,13 +527,17 @@ public class CreatureController : MonoBehaviour
 	// 아래에서 올라올때 y=0이 되는 기준이 -0.5임. 그래서 몬스터가 -0.5에서 더이상 안올라가고 만족함
 	public Vector2Int ConvertToCellPos(float _xpos, float _ypos)
 	{
-		return new Vector2Int((int)(_xpos + CellSize), (int)(-_ypos + CellSize));
+		float fxpos = _xpos + m_convertCellXPosOffset + 0.5f;
+		float fypos = _ypos + m_convertCellYPosOffset + 0.5f; 
+		int xpos = (int)Math.Floor(fxpos);
+		int ypos = (int)Math.Floor(fypos);
+		return new Vector2Int(xpos, -ypos);
 	}
 
 	public virtual void Flip()
 	{
 		if (((Dir == eDir.Right || Dir == eDir.UpRight || Dir == eDir.DownRight) && m_bIsFacingLeft)
-			|| ((Dir == eDir.Left || Dir == eDir.UpLeft || Dir == eDir.DownLeft)&& !m_bIsFacingLeft))
+			|| ((Dir == eDir.Left || Dir == eDir.UpLeft || Dir == eDir.DownLeft) && !m_bIsFacingLeft))
 		{
 			m_spriteRenderer.flipX = m_bIsFacingLeft;
 			m_bIsFacingLeft = !m_bIsFacingLeft;

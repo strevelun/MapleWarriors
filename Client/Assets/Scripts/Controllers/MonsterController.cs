@@ -160,6 +160,9 @@ public class MonsterController : CreatureController
 		HitboxHeight = _data.hitboxHeight;
 		MaxHitPlayer = _data.maxHitPlayer;
 
+		m_convertCellXPosOffset = MaxSpeed * Time.fixedDeltaTime;
+		m_convertCellYPosOffset = MaxSpeed * Time.fixedDeltaTime * 2;
+
 		CircleCollider2D collider = GetComponent<CircleCollider2D>();
 		if(collider == null) collider = gameObject.AddComponent<CircleCollider2D>();
 
@@ -282,7 +285,8 @@ public class MonsterController : CreatureController
 
 		float dist = Vector2.Distance(transform.position, dest);
 
-		m_locationInfoText.text = $"{Dir}, {dist}";
+		m_locationInfoText.text = $"{CellPos}, {LastCellPos}";
+		//Debug.Log($"Dist : {dist}");
 
 		//Debug.Log($"{dist} -> {transform.position} : {Dir}, 목적지 : {dest}");
 		/*
@@ -297,14 +301,20 @@ public class MonsterController : CreatureController
 			return;
 		}
 		*/
-		if (dist > 0.1f) return;
+		//if (dist > 0.1f) return;
 
-		//if (dist > MaxSpeed * Time.fixedDeltaTime * 2) return;
 
 
 		MapManager.Inst.RemoveMonster(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
 		MapManager.Inst.AddMonster(this);
-		transform.position = dest;
+
+		if (dist > MaxSpeed * Time.fixedDeltaTime) return;
+
+		transform.position = dest; // 몬스터는 이거 한 다음 ConverToCellPos하고 RemoveMonster
+
+
+
+		//Debug.Log($"DEST : {dest}");
 		m_dest.Dequeue();
 		/*
 		if(m_target == null)
@@ -392,6 +402,7 @@ public class MonsterController : CreatureController
 			Vector2Int curDest = m_dest.Peek();
 			m_dest.Clear();
 			m_dest.Enqueue(curDest);
+			//transform.position = new Vector3(curDest.x, -curDest.y);
 		}
 
 		//Debug.Log($"BeginMove : {ByteDir}");
@@ -424,7 +435,7 @@ public class MonsterController : CreatureController
 			if (MapManager.Inst.IsMonsterCollision(CellPos.x, CellPos.y, dest.x, dest.y, HitboxWidth, HitboxHeight))
 			{
 				m_targetMoved = true; 
-				Debug.Log($"{CellPos.x}, {CellPos.y}에서 {dest.x}, {dest.y}로 이동 불가");
+				//Debug.Log($"{CellPos.x}, {CellPos.y}에서 {dest.x}, {dest.y}로 이동 불가");
 
 				return;
 			}
@@ -441,7 +452,7 @@ public class MonsterController : CreatureController
 			CellArrived = false;
 			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
 			MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, HitboxWidth, HitboxHeight, true);
-			Debug.Log($"{CellPos.x}, {CellPos.y} -> {_cellXPos}, {_cellYPos}");
+			//Debug.Log($"{CellPos.x}, {CellPos.y} -> {_cellXPos}, {_cellYPos}");
 		}
 		
 

@@ -43,7 +43,7 @@ public static class InGamePacketHandler
 			if (connectionID == UserData.Inst.ConnectionID)
 			{
 				MyPlayerController mpc = player.AddComponent<MyPlayerController>();
-				mpc.Init(i, 1, idx);
+				mpc.Init(i+1, 1, idx);
 				mpc.SetNickname(nickname);
 				ObjectManager.Inst.AddPlayer(idx, player);
 				vcam1.Follow = player.transform;
@@ -51,7 +51,7 @@ public static class InGamePacketHandler
 			else
 			{
 				PlayerController pc = player.AddComponent<PlayerController>();
-				pc.Init(i, 1, idx);
+				pc.Init(i+1, 1, idx);
 				pc.SetNickname(nickname);
 				ObjectManager.Inst.AddPlayer(idx, player);
 			}

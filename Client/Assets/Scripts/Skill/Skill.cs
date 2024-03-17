@@ -66,7 +66,7 @@ public class Skill
 	void FindHitTargets(List<MonsterController> _targets)
 	{
 		int cnt = 0;
-		Queue<MonsterController> mcs = null;
+		MonsterController mc = null;
 		int r = m_skillData.attackRadius - 1;
 		HashSet<MonsterController> hsMonsters = new HashSet<MonsterController>();
 
@@ -116,22 +116,16 @@ public class Skill
 					{
 						for (int j = startY; j <= endY; ++j)
 						{
-							mcs = MapManager.Inst.GetMonsters(i, j);
-							if (mcs == null) continue;
+							mc = MapManager.Inst.GetMonsters(i, j);
+							if (mc == null) continue;
 
-							while (mcs.Count > 0)
+							if (!hsMonsters.Contains(mc))
 							{
-								MonsterController mc = mcs.Peek();
+								_targets.Add(mc);
+								hsMonsters.Add(mc);
+								++cnt;
 
-								if (!hsMonsters.Contains(mc))
-								{
-									_targets.Add(mc);
-									hsMonsters.Add(mc);
-									++cnt;
-
-									if (cnt >= m_skillData.hitCount) return;
-								}
-								mcs.Dequeue();
+								if (cnt >= m_skillData.hitCount) return;
 							}
 						}
 					}
@@ -143,22 +137,16 @@ public class Skill
 					{
 						for (int j = m_mouseCellPos.x - r; j <= m_mouseCellPos.x + r; ++j)
 						{
-							mcs = MapManager.Inst.GetMonsters(j, i);
-							if (mcs == null) continue;
+							mc = MapManager.Inst.GetMonsters(j, i);
+							if (mc == null) continue;
 
-							while (mcs.Count > 0)
+							if (!hsMonsters.Contains(mc))
 							{
-								MonsterController mc = mcs.Peek();
+								_targets.Add(mc);
+								hsMonsters.Add(mc);
+								++cnt;
 
-								if (!hsMonsters.Contains(mc))
-								{
-									_targets.Add(mc);
-									hsMonsters.Add(mc);
-									++cnt;
-
-									if (cnt >= m_skillData.hitCount) return;
-								}
-								mcs.Dequeue();
+								if (cnt >= m_skillData.hitCount) return;
 							}
 						}
 					}
