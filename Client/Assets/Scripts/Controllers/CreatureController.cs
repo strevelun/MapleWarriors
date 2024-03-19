@@ -11,7 +11,7 @@ public class CreatureController : MonoBehaviour
 	public ICreatureState CurState { get; private set; } = null;
 	//ICreatureState m_nextState = null;
 
-	public int Idx { get; protected set; }
+	public int Idx { get; set; }
 
 	const float CellSize = 0.5f;
 
@@ -494,9 +494,8 @@ public class CreatureController : MonoBehaviour
 		}
 	}
 
-	public virtual void Init(int _cellXPos, int _cellYPos, int _idx)
+	public virtual void Init(int _cellXPos, int _cellYPos)
 	{
-		Idx = _idx;
 		m_spriteObject = transform.GetChild(0).gameObject;
 		Anim = m_spriteObject.GetComponent<Animator>();
 		m_spriteRenderer = m_spriteObject.GetComponent<SpriteRenderer>();

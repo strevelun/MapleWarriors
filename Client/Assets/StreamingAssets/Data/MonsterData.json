@@ -31,7 +31,7 @@
       "attack": 7,
       "attackCellRange": 4,
       "speed": 1,
-      "visionCellRange": 8,
+      "visionCellRange": 6,
       "maxHitPlayer": 1,
       "hitboxWidth": 2,
       "hitboxHeight": 2
@@ -43,7 +43,7 @@
       "attack": 1,
       "attackCellRange": 3,
       "speed": 1,
-      "visionCellRange": 5,
+      "visionCellRange": 6,
       "maxHitPlayer": 2,
       "hitboxWidth": 1,
       "hitboxHeight": 2
@@ -55,7 +55,7 @@
       "attack": 5,
       "attackCellRange": 5,
       "speed": 1,
-      "visionCellRange": 10,
+      "visionCellRange": 7,
       "maxHitPlayer": 3,
       "hitboxWidth": 3,
       "hitboxHeight": 3

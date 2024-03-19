@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -74,15 +75,11 @@ public class MonsterController : CreatureController
 
 	void Start()
 	{
-		MonsterData monsterData = DataManager.Inst.FindMonsterData(gameObject.name);
-
-		Init((int)transform.position.x, (int)transform.position.y, monsterData.idx);
-		SetMonsterData(monsterData);
+		
+		Init((int)transform.position.x, (int)transform.position.y);
 
 		DestPos = CellPos;
 
-		ObjectManager.Inst.AddMonster(gameObject, monsterData.idx);
-		MapManager.Inst.AddMonster(this);
 
 
 	}
@@ -91,6 +88,15 @@ public class MonsterController : CreatureController
 	{
 		base.Update();
 
+	
+		PeekTarget();
+
+		if (UserData.Inst.IsRoomOwner)
+		{
+			CheckTargetPosChanged();
+			BeginSearch();
+		}
+		
 
 		m_sliderRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_hpBarUIOffset);
 		m_locationInfoRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_locationInfoUIOffset);
@@ -111,11 +117,19 @@ public class MonsterController : CreatureController
 
 	}
 
-	public override void Init(int _cellXPos, int _cellYPos, int _idx)
+	public override void Init(int _cellXPos, int _cellYPos)
 	{
 		if (_cellYPos < 0) _cellYPos = -_cellYPos;
 
-		base.Init(_cellXPos, _cellYPos, _idx);
+		base.Init(_cellXPos, _cellYPos);
+
+		MonsterData monsterData = DataManager.Inst.FindMonsterData(gameObject.name);
+		SetMonsterData(monsterData);
+
+		ObjectManager.Inst.AddMonster(gameObject, monsterData.idx);
+		MapManager.Inst.AddMonster(this);
+
+		Idx = monsterData.idx;
 
 		ChangeState(new MonsterIdleState());
 
@@ -143,8 +157,20 @@ public class MonsterController : CreatureController
 
 		MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, HitboxWidth, HitboxHeight, true);
 
+		CircleCollider2D collider = GetComponent<CircleCollider2D>();
+		if (collider == null) collider = gameObject.AddComponent<CircleCollider2D>();
+
+		collider.offset = new Vector2(0.5f, 0.5f);
+		collider.radius = VisionCellRange;
+
+		m_hpBarSlider.maxValue = MaxHP;
+		m_hpBarSlider.value = MaxHP;
+		m_hpbarText.text = MaxHP.ToString();
+
+		m_hpBarUIOffset = new Vector2(HitboxWidth / 2f, -0.3f);
+
 		StartCoroutine(ReadyForAttack());
-		StartCoroutine(RoomOwnerLogic());
+		//StartCoroutine(RoomOwnerLogic());
 	}
 
 	public void SetMonsterData(MonsterData _data)
@@ -159,21 +185,6 @@ public class MonsterController : CreatureController
 		HitboxWidth = _data.hitboxWidth;
 		HitboxHeight = _data.hitboxHeight;
 		MaxHitPlayer = _data.maxHitPlayer;
-
-		m_convertCellXPosOffset = MaxSpeed * Time.fixedDeltaTime;
-		m_convertCellYPosOffset = MaxSpeed * Time.fixedDeltaTime * 2;
-
-		CircleCollider2D collider = GetComponent<CircleCollider2D>();
-		if(collider == null) collider = gameObject.AddComponent<CircleCollider2D>();
-
-		collider.offset = new Vector2(0.5f, 0.5f);
-		collider.radius = _data.visionCellRange;
-
-		m_hpBarSlider.maxValue = MaxHP;
-		m_hpBarSlider.value = MaxHP;
-		m_hpbarText.text = MaxHP.ToString();
-
-		m_hpBarUIOffset = new Vector2(HitboxWidth / 2f, -0.3f);
 	}
 
 	public void CheckMoveState()
@@ -236,7 +247,7 @@ public class MonsterController : CreatureController
 				
 		if (Math.Abs(CellPos.x - m_target.CellPos.x) <= 1 && Math.Abs(CellPos.y - m_target.CellPos.y) <= 1) return;
 
-		m_path = m_astar.Search(CellPos, m_target.CellPos, HitboxWidth, HitboxHeight);
+		m_path = m_astar.Search(CellPos, m_target.CellPos, HitboxWidth, HitboxHeight, AttackRange);
 		if (m_path == null)
 		{
 			ByteDir = 0;
@@ -244,25 +255,33 @@ public class MonsterController : CreatureController
 			return;
 		}
 		
-		if(m_path.Count > VisionCellRange)
+		if(m_path.Count > VisionCellRange * 2)
 		{
 			m_path = null;
 			ByteDir = 0;
 			return;
 		}
-		
 
-		if (m_path.Count <= 1) //+ AttackRange)
+		int closeDistLimit = HitboxWidth < HitboxHeight ? HitboxHeight : HitboxWidth;
+		if (m_path.Count <= closeDistLimit) //+ AttackRange)
 		{
 			ByteDir = 0;
+			m_path = null;
 			//m_eState = eState.None;
 			return;
 		}
 
 		PathIdx = 1;
 
-		if (MapManager.Inst.IsMonsterCollision(CellPos.x, CellPos.y, m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight)) return;
+		MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
 
+		if (MapManager.Inst.IsMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight))
+		{
+			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, true);
+			return;
+		}
+
+		MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, true);
 		//MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
 
 		Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
@@ -327,24 +346,28 @@ public class MonsterController : CreatureController
 		if (m_dest.Count > 0)
 		{
 			Vector2Int vecDest = m_dest.Peek();
-			if (MapManager.Inst.IsMonsterCollision(CellPos.x, CellPos.y, vecDest.x, vecDest.y, HitboxWidth, HitboxHeight))
+
+			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
+
+			if (MapManager.Inst.IsMonsterCollision(vecDest.x, vecDest.y, HitboxWidth, HitboxHeight))
 			{
 				// 경로 다시 생성해야
 				m_targetMoved = true;
 				m_dest.Clear();
+				MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, true);
 				return;
 			}
+			MapManager.Inst.SetMonsterCollision(vecDest.x, vecDest.y, HitboxWidth, HitboxHeight, true);
 
 			Vector2 dir = CellPos - new Vector2(vecDest.x, vecDest.y);
 
+			DestPos = vecDest;
 
 			if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
 			if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
 			if (dir.y <= -1) ByteDir |= (byte)eDir.Down;
 			if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
 
-			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
-			MapManager.Inst.SetMonsterCollision(vecDest.x, vecDest.y, HitboxWidth, HitboxHeight, true);
 			//Debug.Log($"{CellPos.x}, {CellPos.y} -> {vecDest.x}, {vecDest.y}");
 			//Debug.Log("UpdateChase에서 방향전환");
 		}
@@ -432,13 +455,18 @@ public class MonsterController : CreatureController
 		{
 			transform.position = new Vector3(CellPos.x, -CellPos.y);
 			// 보낼 때 체크, 여기서도 한 번 더 체크
-			if (MapManager.Inst.IsMonsterCollision(CellPos.x, CellPos.y, dest.x, dest.y, HitboxWidth, HitboxHeight))
+			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
+
+			if (MapManager.Inst.IsMonsterCollision(dest.x, dest.y, HitboxWidth, HitboxHeight))
 			{
-				m_targetMoved = true; 
+				m_targetMoved = true;
+				MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, true);
 				//Debug.Log($"{CellPos.x}, {CellPos.y}에서 {dest.x}, {dest.y}로 이동 불가");
 
 				return;
 			}
+			MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, HitboxWidth, HitboxHeight, true);
+
 			Vector2 dir = CellPos - dest;
 
 			ByteDir = 0;
@@ -450,9 +478,8 @@ public class MonsterController : CreatureController
 
 
 			CellArrived = false;
-			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
-			MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, HitboxWidth, HitboxHeight, true);
 			//Debug.Log($"{CellPos.x}, {CellPos.y} -> {_cellXPos}, {_cellYPos}");
+			DestPos = dest;
 		}
 		
 
@@ -559,6 +586,11 @@ public class MonsterController : CreatureController
 
 		gameObject.SetActive(false);
 		GameManager.Inst.SubMonsterCnt();
+
+		if(Dir == eDir.None)
+			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
+		else
+			MapManager.Inst.SetMonsterCollision(DestPos.x, DestPos.y, HitboxWidth, HitboxHeight, false);
 	}
 
 	public void RemoveTarget(PlayerController _target)
@@ -625,13 +657,10 @@ public class MonsterController : CreatureController
 			if(pc.name == _other.gameObject.name)
 			{
 				m_targets.Remove(pc);
+				m_path = null;
+				m_target = null;
 				break;
 			}
-		}
-		if (m_targets.Count == 0)
-		{
-			//m_path = null;
-			//m_target = null;
 		}
 	}
 }

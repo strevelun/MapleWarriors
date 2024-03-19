@@ -75,9 +75,9 @@ public class PlayerController : CreatureController
 		//m_positionTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_positionTagOffset);
 	}
 
-	public override void Init(int _cellXPos, int _cellYPos, int _idx)
+	public override void Init(int _cellXPos, int _cellYPos)
 	{
-		base.Init(_cellXPos, _cellYPos, _idx);
+		base.Init(_cellXPos, _cellYPos);
 
 		MaxSpeed = 4f;
 		MaxHP = 10000;
@@ -87,9 +87,6 @@ public class PlayerController : CreatureController
 
 		HitboxWidth = 1;
 		HitboxHeight = 1;
-
-		m_convertCellXPosOffset = MaxSpeed * Time.fixedDeltaTime;
-		m_convertCellYPosOffset = MaxSpeed * Time.fixedDeltaTime;
 
 		//m_eCurSkill = eSkill.Slash;
 		m_eCurSkill = eSkill.Slash;

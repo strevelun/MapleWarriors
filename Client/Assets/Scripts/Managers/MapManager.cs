@@ -205,7 +205,7 @@ public class MapManager
 			for (int x = _mc.CellPos.x; x <= _mc.CellPos.x + hitboxWidth; ++x)
 			{
 				m_monsterMap[y, x] = _mc;
-				m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), m_hitboxTile);
+				//m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), m_hitboxTile);
 				Debug.Log($"AddMonster : {_mc.transform.position}, {x}, {y}");
 			}
 		}
@@ -229,7 +229,7 @@ public class MapManager
 				{
 					MonsterController mc = m_monsterMap[y, x];
 					m_monsterMap[y, x] = null;
-					m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), null);
+					//m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), null);
 					//Debug.Log($"RemoveMonster : {mc.transform.position}, {x}, {y}, Remains : {m_monsterMap[y,x].Count}");
 				}
 			}
@@ -293,26 +293,21 @@ public class MapManager
 			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
 			{
 				m_monsterCollision[y, x] = _flag;
-				//m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), _flag ? m_hitboxTile : null);
+				m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), _flag ? m_hitboxTile : null);
 			}
 		}
 	}
 
-	public bool IsMonsterCollision(int _cellXPos, int _cellYPos, int _cellDestXPos, int _cellDestYPos, int _hitboxWidth, int _hitboxHeight)
+	public bool IsMonsterCollision(int _cellDestXPos, int _cellDestYPos, int _hitboxWidth, int _hitboxHeight)
 	{
 		int hitboxWidth = _hitboxWidth - 1;
 		int hitboxHeight = _hitboxHeight - 1;
-
-		int dirX = _cellDestXPos - _cellXPos;
-		int dirY = _cellDestYPos - _cellYPos; // dest : 10, start : 11일때는 위로 가는 것
 
 		for (int y = _cellDestYPos; y >= _cellDestYPos - hitboxHeight; --y)
 		{
 			for (int x = _cellDestXPos; x <= _cellDestXPos + hitboxWidth; ++x)
 			{
-				if (m_monsterCollision[y, x] 
-					&& ((dirX == 0 || !(_cellXPos <= x && x <= _cellXPos + hitboxWidth))
-					|| (dirY == 0 || !(_cellYPos - hitboxHeight <= y && y <= _cellYPos)))) // 9 <= 
+				if (m_monsterCollision[y, x])
 				{
 					return true;
 				}

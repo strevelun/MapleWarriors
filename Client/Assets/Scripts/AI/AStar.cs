@@ -32,7 +32,7 @@ public class AStar
 	}
 
 	// 시작점부터 목적지까지 path 만들기 (중간에 없던 장애물이 갑자기 생기면 다시 호출할 것)
-	public List<Vector2Int> Search(Vector2Int _startCellPos, Vector2Int _destCellPos, int _hitboxWidth, int _hitboxHeight)
+	public List<Vector2Int> Search(Vector2Int _startCellPos, Vector2Int _destCellPos, int _hitboxWidth, int _hitboxHeight, int _attackCellRange)
 	{
 		int XSize = MapManager.Inst.XSize;
 		int YSize = MapManager.Inst.YSize;
@@ -44,6 +44,8 @@ public class AStar
 
 
 		if (XSize <= 0 || YSize <= 0) return null;
+
+		MapManager.Inst.SetMonsterCollision(_startCellPos.x, _startCellPos.y, _hitboxWidth, _hitboxHeight, false);
 
 		m_best = new int[YSize, XSize];
 
@@ -80,7 +82,7 @@ public class AStar
 			{
 				Vector2Int nextPos = node.CurPos + m_dir[i];
 				if (MapManager.Inst.IsBlocked(nextPos.x, nextPos.y, _hitboxWidth, _hitboxHeight)) continue;
-				if (MapManager.Inst.IsMonsterCollision(node.CurPos.x, node.CurPos.y, nextPos.x, nextPos.y, _hitboxWidth, _hitboxHeight)) continue;
+				if (MapManager.Inst.IsMonsterCollision(nextPos.x, nextPos.y, _hitboxWidth, _hitboxHeight)) continue;
 				if (m_visited[nextPos.y, nextPos.x]) continue;
 				
 				if (i == 1) // UpRight
@@ -120,18 +122,28 @@ public class AStar
 
 		//Debug.Log($"크기 : {m_dicParent.Count}");
 
+		Vector2Int finalPosDist = finalNode.CurPos - _destCellPos;
+		if (Math.Abs(finalPosDist.x) >= _attackCellRange && Math.Abs(finalPosDist.y) >= _attackCellRange) return null;
+
+		int closeDistLimit = _hitboxWidth < _hitboxHeight ? _hitboxHeight -1: _hitboxWidth-1;
+		int k = 0;
+
 		if (finalNode != null)
 		{
 			Vector2Int pos = finalNode.CurPos;
 
 			while (pos != _startCellPos) 
 			{
-				path.Add(pos);
+				if (k++ >= closeDistLimit)
+					path.Add(pos);
+
 				pos = m_dicParent[pos];
 			}
 			path.Add(_startCellPos); 
 			path.Reverse();
 		}
+
+		MapManager.Inst.SetMonsterCollision(_startCellPos.x, _startCellPos.y, _hitboxWidth, _hitboxHeight, true);
 
 		return path;
 	}
