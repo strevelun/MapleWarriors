@@ -58,14 +58,13 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet BeginMoveMonster(int _monsterIdx, int _monsterNum, int _cellXPos, int _cellYPos, int _pathIdx)
+	public static Packet BeginMoveMonster(int _monsterIdx, int _monsterNum, int _cellXPos, int _cellYPos)
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eClient.BeginMoveMonster)
 			.Add((byte)_monsterIdx)
 			.Add((byte)_monsterNum)
-			.Add((ushort)_pathIdx)
 			.Add((ushort)_cellXPos)
 			.Add((ushort)_cellYPos);
 		return pkt;

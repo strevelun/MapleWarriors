@@ -155,13 +155,13 @@ public class CreatureController : MonoBehaviour
 				AdjustYPosition(ref newX, ref newY);
 				AdjustXYPosition(ref newX, ref newY);
 			}
-			else
-				Debug.Log($"{newX}, {newY}");
+			//else
+			//	Debug.Log($"{newX}, {newY}");
 
 			Vector2Int tempCellPos = ConvertToCellPos(newX, newY); // 1.5, -8.49999 : 1,8
 			if (tempCellPos != CellPos) // CellPos 0,7 -> LastCellPos 1,7
 			{
-				Debug.Log($"셀변경 : {newX + m_convertCellXPosOffset}, {newY + m_convertCellYPosOffset}, {tempCellPos}, {CellPos}");
+				//Debug.Log($"셀변경 : {newX + m_convertCellXPosOffset}, {newY + m_convertCellYPosOffset}, {tempCellPos}, {CellPos}");
 				LastCellPos = CellPos;
 				CellPos = tempCellPos;
 				//MapManager.Inst.RemoveHitboxTile(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);

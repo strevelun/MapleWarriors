@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using System.Linq;
 
 public class AStar 
 {
@@ -120,6 +121,8 @@ public class AStar
 			}
 		}
 
+		MapManager.Inst.SetMonsterCollision(_startCellPos.x, _startCellPos.y, _hitboxWidth, _hitboxHeight, true);
+
 		//Debug.Log($"크기 : {m_dicParent.Count}");
 
 		Vector2Int finalPosDist = finalNode.CurPos - _destCellPos;
@@ -134,16 +137,20 @@ public class AStar
 
 			while (pos != _startCellPos) 
 			{
-				if (k++ >= closeDistLimit)
-					path.Add(pos);
-
+				if (k >= closeDistLimit)
+				{
+					if (path.Count == 0 || path.Last() != pos)
+						path.Add(pos);
+					else
+						Debug.Log($"ASTAR : {path.Last()}와 {pos}가 같다");
+				}
+				++k;
 				pos = m_dicParent[pos];
 			}
 			path.Add(_startCellPos); 
 			path.Reverse();
 		}
 
-		MapManager.Inst.SetMonsterCollision(_startCellPos.x, _startCellPos.y, _hitboxWidth, _hitboxHeight, true);
 
 		return path;
 	}

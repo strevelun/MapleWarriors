@@ -5,10 +5,10 @@ using UnityEngine;
 public class Portal : MonoBehaviour
 {
 	Vector3[] m_positions = new Vector3[] {
-	new Vector3(1, -1), 
-    new Vector3(1, -3), 
-    new Vector3(3, -1), 
-    new Vector3(3, -3)  
+	new Vector3(2, -1), 
+    new Vector3(2, -3), 
+    new Vector3(4, -1), 
+    new Vector3(4, -3)  
 };
 
 	int m_cntPlayer = 0;

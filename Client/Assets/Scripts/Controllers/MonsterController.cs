@@ -35,7 +35,6 @@ public class MonsterController : CreatureController
 	List<PlayerController> m_targets = new List<PlayerController>();
 	PlayerController m_target = null;
 
-	Queue<Vector2Int> m_dest = new Queue<Vector2Int>();
 	Vector2Int m_prevTargetPos = new Vector2Int(-1,-1);
 	bool m_targetMoved = false;
 	//eState m_eState = eState.None;
@@ -43,7 +42,6 @@ public class MonsterController : CreatureController
 	public Vector2Int DestPos { get; set; } = new Vector2Int(0, 0);
 	public bool CellArrived { get; private set; } = true;
 	public int MaxHitPlayer { get; private set; }
-
 
 	Coroutine m_damamgeCoroutine = null;
 
@@ -78,7 +76,6 @@ public class MonsterController : CreatureController
 		
 		Init((int)transform.position.x, (int)transform.position.y);
 
-		DestPos = CellPos;
 
 
 
@@ -89,10 +86,10 @@ public class MonsterController : CreatureController
 		base.Update();
 
 	
-		PeekTarget();
 
 		if (UserData.Inst.IsRoomOwner)
 		{
+			PeekTarget();
 			CheckTargetPosChanged();
 			BeginSearch();
 		}
@@ -112,7 +109,7 @@ public class MonsterController : CreatureController
 
 		
 
-		UpdateChase();
+		UpdateMonsterMove();
 
 
 	}
@@ -154,8 +151,9 @@ public class MonsterController : CreatureController
 		m_locationInfoRect = m_locationInfoObj.transform.GetChild(0).gameObject.GetComponent<RectTransform>();
 		m_locationInfoText = m_locationInfoObj.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
 
-
 		MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, HitboxWidth, HitboxHeight, true);
+
+		DestPos = CellPos;
 
 		CircleCollider2D collider = GetComponent<CircleCollider2D>();
 		if (collider == null) collider = gameObject.AddComponent<CircleCollider2D>();
@@ -170,7 +168,6 @@ public class MonsterController : CreatureController
 		m_hpBarUIOffset = new Vector2(HitboxWidth / 2f, -0.3f);
 
 		StartCoroutine(ReadyForAttack());
-		//StartCoroutine(RoomOwnerLogic());
 	}
 
 	public void SetMonsterData(MonsterData _data)
@@ -251,7 +248,6 @@ public class MonsterController : CreatureController
 		if (m_path == null)
 		{
 			ByteDir = 0;
-			//m_eState = eState.None;
 			return;
 		}
 		
@@ -263,11 +259,10 @@ public class MonsterController : CreatureController
 		}
 
 		int closeDistLimit = HitboxWidth < HitboxHeight ? HitboxHeight : HitboxWidth;
-		if (m_path.Count <= closeDistLimit) //+ AttackRange)
+		if (m_path.Count <= closeDistLimit)
 		{
 			ByteDir = 0;
 			m_path = null;
-			//m_eState = eState.None;
 			return;
 		}
 
@@ -281,120 +276,47 @@ public class MonsterController : CreatureController
 			return;
 		}
 
-		MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, true);
-		//MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
+		MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
 
-		Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
+		Debug.Log($"SetMonsterCollision : {m_path[PathIdx].x}, {m_path[PathIdx].y}에 찜!");
+
+		Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y);
 		NetworkManager.Inst.Send(pkt);
 
 		m_targetMoved = false;
-		//Debug.Log($"BeginSearch : {m_path}");
 	}
 
-	void UpdateChase()
+	void UpdateMonsterMove()
 	{
-		if (m_dest.Count == 0 && CellArrived) return;
-		//if (Dir == eDir.None) return;
-		//if (ByteDir == 0) return;
-		//if (m_eState == eState.None) return;
+		if (CellArrived) return;
 
-		//Debug.Log($"{Dir}, {ByteDir}");
+		float dist = Vector2.Distance(transform.position, new Vector3(DestPos.x, -DestPos.y));
 
-		Vector2 dest = new Vector2(m_dest.Peek().x, -m_dest.Peek().y);
-
-		float dist = Vector2.Distance(transform.position, dest);
-
-		m_locationInfoText.text = $"{CellPos}, {LastCellPos}";
-		//Debug.Log($"Dist : {dist}");
-
-		//Debug.Log($"{dist} -> {transform.position} : {Dir}, 목적지 : {dest}");
-		/*
-		if (CanGo(CellPos, m_dest.Peek()) == false)
-		{
-			ByteDir = 0;
-			transform.position = new Vector3(CellPos.x, -CellPos.y);
-			m_dest.Clear();
-			CellArrived = true;
-			Debug.Log($"{CellPos.x}, {CellPos.y}에서 {dest.x}, {-dest.y}로 이동 불가!!!!!");
-
-			return;
-		}
-		*/
-		//if (dist > 0.1f) return;
-
-
+		m_locationInfoText.text = $"{CellPos}, {DestPos}, dist : {dist}";
 
 		MapManager.Inst.RemoveMonster(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
 		MapManager.Inst.AddMonster(this);
 
-		if (dist > MaxSpeed * Time.fixedDeltaTime) return;
-
-		transform.position = dest; // 몬스터는 이거 한 다음 ConverToCellPos하고 RemoveMonster
-
-
-
-		//Debug.Log($"DEST : {dest}");
-		m_dest.Dequeue();
-		/*
-		if(m_target == null)
+		if (dist > MaxSpeed * Time.fixedDeltaTime)
 		{
-			m_dest.Clear();
+			if(dist > 1.5f)
+				Debug.Log($"dist : {dist}, DestPos : {DestPos}");
+			return;
 		}
-		*/
+
+		transform.position = new Vector3(DestPos.x, -DestPos.y);
 		ByteDir = 0;
-
-		if (m_dest.Count > 0)
-		{
-			Vector2Int vecDest = m_dest.Peek();
-
-			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
-
-			if (MapManager.Inst.IsMonsterCollision(vecDest.x, vecDest.y, HitboxWidth, HitboxHeight))
-			{
-				// 경로 다시 생성해야
-				m_targetMoved = true;
-				m_dest.Clear();
-				MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, true);
-				return;
-			}
-			MapManager.Inst.SetMonsterCollision(vecDest.x, vecDest.y, HitboxWidth, HitboxHeight, true);
-
-			Vector2 dir = CellPos - new Vector2(vecDest.x, vecDest.y);
-
-			DestPos = vecDest;
-
-			if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
-			if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
-			if (dir.y <= -1) ByteDir |= (byte)eDir.Down;
-			if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
-
-			//Debug.Log($"{CellPos.x}, {CellPos.y} -> {vecDest.x}, {vecDest.y}");
-			//Debug.Log("UpdateChase에서 방향전환");
-		}
-		else
-		{
-			//m_eState = eState.None;
-			//Debug.Log($"{CellPos.x}, {CellPos.y} 도착");
-		}
-
-		// m_dest.Count가 현재 1인데 CellArrived가 true이면
 		CellArrived = true;
-		/*
-		if (PathIdx+1 < m_path.Count - 1)
-		{ 
-			if (MapManager.Inst.IsMonsterCollision(CellPos.x, CellPos.y, m_path[PathIdx + 1].x, m_path[PathIdx + 1].y, HitboxWidth, HitboxHeight))
-			{
-				// 경로 다시 생성해야
-				m_targetMoved = true;
-				m_dest.Clear();
-				return;
-			}
-		}
-		*/
+
+		Vector2 dir = CellPos - new Vector2(DestPos.x, DestPos.y);
+
+		if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
+		if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
+		if (dir.y <= -1) ByteDir |= (byte)eDir.Down;
+		if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
+
 		if (UserData.Inst.IsRoomOwner)
 		{
-			if (m_targetMoved) return;
-
 			if (m_path == null) return;
 			if (PathIdx >= m_path.Count)
 			{
@@ -406,96 +328,50 @@ public class MonsterController : CreatureController
 				
 			if (PathIdx < m_path.Count-1)
 			{
-			
+				MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
 
-				//MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
+				if (MapManager.Inst.IsMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight))
+				{
+					m_targetMoved = true;
+					MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, true);
+					return;
+				}
+				MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
 
-				Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y, PathIdx);
+				Debug.Log($"update SetMonsterCollision : {m_path[PathIdx].x}, {m_path[PathIdx].y}에 찜!");
+
+				Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y);
 				NetworkManager.Inst.Send(pkt);
 			}
 		}
 	}
-	
 
-	public void BeginMove(int _pathIdx, int _cellXPos, int _cellYPos)
+	public void BeginMove(int _cellXPos, int _cellYPos)
 	{
-		// 셀에서 셀로 이동 도중 새로운 경로의 첫번째 Idx가 온 경우, 일단 현재 목적지로 이동할 것
-		if(_pathIdx == 1 && m_dest.Count > 0)
-		{
-			Vector2Int curDest = m_dest.Peek();
-			m_dest.Clear();
-			m_dest.Enqueue(curDest);
-			//transform.position = new Vector3(curDest.x, -curDest.y);
-		}
-
-		//Debug.Log($"BeginMove : {ByteDir}");
 		Vector2Int dest = new Vector2Int(_cellXPos, _cellYPos);
+		//Debug.Log($"BeginMove : {_cellXPos}, {_cellYPos}, {dest}, {DestPos}");
+		transform.position = new Vector3(DestPos.x, -DestPos.y); // 희박한 확률로 DestPos가 _cellXPos, _cellYPos와 같음
 		
-		Vector2Int start = m_dest.Count == 0 ? CellPos : m_dest.Peek();
-		if (!CanGo(start, dest))
-		{
-			// 만약 갈 수 없는 dest가 나오면 현재 m_Dest에 있는 경로 전부 삭제 후 경로 재설정해야
-			m_targetMoved = true;
-			if (m_dest.Count > 0) // 일단 이동하라
-			{
-				Vector2Int curDest = m_dest.Peek();
-				m_dest.Clear();
-				m_dest.Enqueue(curDest);
-			}
-			else
-				ByteDir = 0;
-			Debug.Log($"{start}에서 {dest}로 갈 수 없음");
-			return;
-		}
-		
+		Vector2 dir = CellPos - dest;
+		ByteDir = 0;
 
-		// 현재 셀에 도착하지 않을 수 있는 상태에서 방향 전환을 할 가능성이 있기 때문에 방향전환은 UpdateChase에서만
-		
-		if (m_dest.Count == 0)
-		{
-			transform.position = new Vector3(CellPos.x, -CellPos.y);
-			// 보낼 때 체크, 여기서도 한 번 더 체크
-			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
+		if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
+		if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
+		if (dir.y <= -1) ByteDir |= (byte)eDir.Down;
+		if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
 
-			if (MapManager.Inst.IsMonsterCollision(dest.x, dest.y, HitboxWidth, HitboxHeight))
-			{
-				m_targetMoved = true;
-				MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, true);
-				//Debug.Log($"{CellPos.x}, {CellPos.y}에서 {dest.x}, {dest.y}로 이동 불가");
-
-				return;
-			}
-			MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, HitboxWidth, HitboxHeight, true);
-
-			Vector2 dir = CellPos - dest;
-
-			ByteDir = 0;
-
-			if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
-			if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
-			if (dir.y <= -1) ByteDir |= (byte)eDir.Down;
-			if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
-
-
-			CellArrived = false;
-			//Debug.Log($"{CellPos.x}, {CellPos.y} -> {_cellXPos}, {_cellYPos}");
-			DestPos = dest;
-		}
-		
-
-		m_dest.Enqueue(dest);
-
-		//m_eState = eState.Chase;
+		CellArrived = false;
+		DestPos = dest;
 	}
 
-
+	/*
 	bool CanGo(Vector2Int _from, Vector2Int _to)
 	{
 		if (_from.x == _to.x && _from.y == _to.y) return false;
 		if (Math.Abs(_from.x - _to.x) <= 1 && Math.Abs(_from.y - _to.y) <= 1) return true;
 		return false;
 	}
-
+	*/
 	public void Hit(Skill _skill)
 	{
 		if (HP <= 0) return;
@@ -574,8 +450,6 @@ public class MonsterController : CreatureController
 
 		if (finalTargets.Count == 0) return;
 
-		//ChangeState(new MonsterAttackState(finalTargets));
-
 		Packet pkt = InGamePacketMaker.MonsterAttack(finalTargets, Idx, Num);
 		NetworkManager.Inst.Send(pkt);
 	}
@@ -619,21 +493,6 @@ public class MonsterController : CreatureController
 			{
 				yield return null;
 			}
-		}
-	}
-
-	IEnumerator RoomOwnerLogic()
-	{
-		while (true)
-		{
-			PeekTarget();
-
-			if (UserData.Inst.IsRoomOwner)
-			{
-				CheckTargetPosChanged();
-				BeginSearch();
-			}
-			yield return null;
 		}
 	}
 

@@ -206,7 +206,7 @@ public class MapManager
 			{
 				m_monsterMap[y, x] = _mc;
 				//m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), m_hitboxTile);
-				Debug.Log($"AddMonster : {_mc.transform.position}, {x}, {y}");
+				//Debug.Log($"AddMonster : {_mc.transform.position}, {x}, {y}");
 			}
 		}
 

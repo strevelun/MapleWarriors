@@ -53,6 +53,7 @@ public static class InGamePacketHandler
 			{
 				PlayerController pc = player.AddComponent<PlayerController>();
 				pc.Init(i+1, 1);
+				pc.Idx = idx;
 				pc.SetNickname(nickname);
 				ObjectManager.Inst.AddPlayer(idx, player);
 			}
@@ -92,7 +93,6 @@ public static class InGamePacketHandler
 	{
 		byte monsterIdx = _reader.GetByte();
 		byte monsterNum = _reader.GetByte();
-		int pathIdx = _reader.GetUShort();
 		int destCellXPos = _reader.GetUShort();
 		int destCellYPos = _reader.GetUShort();
 
@@ -103,7 +103,7 @@ public static class InGamePacketHandler
 			return;
 		}
 
-		mc.BeginMove(pathIdx, destCellXPos, destCellYPos);
+		mc.BeginMove(destCellXPos, destCellYPos);
 	}
 
 	public static void MonsterAttack(PacketReader _reader)

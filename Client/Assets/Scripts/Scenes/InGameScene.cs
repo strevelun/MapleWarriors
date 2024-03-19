@@ -46,12 +46,8 @@ public class InGameScene : BaseScene
 		{
 			if(GameManager.Inst.CheckMapClear())
 			{
-				if (UserData.Inst.IsRoomOwner)
-				{
-					Packet pkt = InGamePacketMaker.GameOver();
-					NetworkManager.Inst.Send(pkt);
-					GameManager.Inst.GameStart = false;
-				}
+				StartCoroutine(GameAllClearCoroutine());
+				
 			}
 		}
 
@@ -68,6 +64,18 @@ public class InGameScene : BaseScene
 	IEnumerator GameOverCoroutine()
 	{
 		m_wasted.SetActive(true);
+		yield return new WaitForSeconds(3f);
+		if (UserData.Inst.IsRoomOwner)
+		{
+			Packet pkt = InGamePacketMaker.GameOver();
+			NetworkManager.Inst.Send(pkt);
+			GameManager.Inst.GameStart = false;
+		}
+	}
+
+	IEnumerator GameAllClearCoroutine()
+	{
+		m_clear.SetActive(true);
 		yield return new WaitForSeconds(3f);
 		if (UserData.Inst.IsRoomOwner)
 		{

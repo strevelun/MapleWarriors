@@ -147,7 +147,7 @@ public class MyPlayerController : PlayerController
 	// SkillData의 정보를 토대로 
 	public void InputAttack()
 	{
-
+		if (GameManager.Inst.GameStart == false) return;
 
 		// 스킬을 활성화한 상태에서만 마우스 포지션 추적
 
@@ -189,6 +189,10 @@ public class MyPlayerController : PlayerController
 
 	void InputSkillChoice()
 	{
+		if (GameManager.Inst.GameStart == false) return;
+		
+		// 스킬이펙트 재생 중 스킬 바꾸면 움직이는 버그
+
 		eSkill curSkill = eSkill.None;
 
 
