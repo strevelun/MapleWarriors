@@ -71,6 +71,10 @@ public class Define
 		UIRoom_ReadyBtn,
 		UIRoom_StandbyBtn,
 		#endregion
+
+		#region UIIngame
+		UIInGame_SkillPanel,
+		#endregion
 	}
 
 	public enum eUIBtn
@@ -112,7 +116,6 @@ public class Define
 		Blast,
 		Skill1,
 		Skill2,
-		Skill3,
 	}
 
 	public enum eSkillType

@@ -179,7 +179,7 @@ public class UIManager
 		if (m_dicUI.TryGetValue(_eUI, out obj)) return null;
 
 		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
-		obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/" + _eUI.ToString(), UIManager.Inst.SceneUI.gameObject.transform);
+		obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/" + _eUI.ToString(), SceneUI.gameObject.transform);
 
 		m_dicUI.Add(_eUI, obj);
 		return obj;

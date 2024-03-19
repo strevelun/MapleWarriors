@@ -15,6 +15,7 @@ public class InGameScene : BaseScene
 		SceneType = Define.eScene.InGame;
 
 		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.eScene.InGame);
+		uiScene.AddUI("SkillPanel"); // room에서도 똑같이
 
 		Packet pkt = InGamePacketMaker.ReqInitInfo();
 		NetworkManager.Inst.Send(pkt);

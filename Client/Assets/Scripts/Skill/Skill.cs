@@ -11,7 +11,7 @@ public class Skill
 	Vector2Int m_mouseCellPos;
 	Vector2Int m_cellPos, m_lastCellPos;
 	eDir m_eDir;
-	eSkill m_eSkill;
+	public eSkill eCurSkill { get; private set; } = eSkill.Slash;
 
 	Queue<Vector2Int> m_aims = new Queue<Vector2Int>();
 
@@ -22,10 +22,10 @@ public class Skill
 
 	public void SetSkill(eSkill _skill)
 	{
-		m_eSkill = _skill;
+		eCurSkill = _skill;
 		RemoveAimTiles();
 
-		m_skillData = DataManager.Inst.FindSkillData(m_eSkill.ToString());
+		m_skillData = DataManager.Inst.FindSkillData(eCurSkill.ToString());
 		if (m_skillData.type == eSkillType.Melee && m_skillData.attackRadius >= 2) 
 			m_skillData.attackRadius = 2;
 	}

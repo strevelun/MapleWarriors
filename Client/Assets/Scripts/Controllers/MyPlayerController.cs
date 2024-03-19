@@ -191,7 +191,8 @@ public class MyPlayerController : PlayerController
 	{
 		eSkill curSkill = eSkill.None;
 
-		if(Input.GetKeyDown(KeyCode.Alpha1))
+
+		if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
 			curSkill = eSkill.Slash;
 		}
@@ -207,13 +208,20 @@ public class MyPlayerController : PlayerController
 		{
 			curSkill = eSkill.Skill2;
 		}
+		/*
 		else if (Input.GetKeyDown(KeyCode.Alpha5))
 		{
 			curSkill = eSkill.Skill3;
 		}
-
+		*/
 		if (curSkill != eSkill.None && curSkill != m_eCurSkill)
 		{
+			GameObject objSkillPanel = UIManager.Inst.SceneUI.FindUI("SkillPanel");
+			GameObject chosen = Util.FindChild(objSkillPanel.transform.GetChild(((int)curSkill) - 1).gameObject, false, "Chosen");
+			chosen.SetActive(true);
+			chosen = Util.FindChild(objSkillPanel.transform.GetChild(((int)CurSkill.eCurSkill) - 1).gameObject, false, "Chosen");
+			chosen.SetActive(false);
+
 			m_eCurSkill = curSkill;
 			CurSkill.RemoveAimTiles();
 			CurSkill.SetSkill(curSkill);
