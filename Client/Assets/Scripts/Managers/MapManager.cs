@@ -293,7 +293,7 @@ public class MapManager
 			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
 			{
 				m_monsterCollision[y, x] = _flag;
-				m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), _flag ? m_hitboxTile : null);
+				//m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), _flag ? m_hitboxTile : null);
 			}
 		}
 	}

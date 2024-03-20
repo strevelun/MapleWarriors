@@ -137,14 +137,8 @@ public class AStar
 
 			while (pos != _startCellPos) 
 			{
-				if (k >= closeDistLimit)
-				{
-					if (path.Count == 0 || path.Last() != pos)
-						path.Add(pos);
-					else
-						Debug.Log($"ASTAR : {path.Last()}와 {pos}가 같다");
-				}
-				++k;
+				if (k++ >= closeDistLimit)
+					path.Add(pos);
 				pos = m_dicParent[pos];
 			}
 			path.Add(_startCellPos); 

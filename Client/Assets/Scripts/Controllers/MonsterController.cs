@@ -70,6 +70,8 @@ public class MonsterController : CreatureController
 	RectTransform m_locationInfoRect;
 	TextMeshProUGUI m_locationInfoText;
 
+	bool m_beginMove = false;
+	Vector2Int m_destReserved = new Vector2Int(0, 0);
 
 	void Start()
 	{
@@ -107,8 +109,8 @@ public class MonsterController : CreatureController
 	{
 		base.FixedUpdate();
 
-		
 
+		BeginMove();
 		UpdateMonsterMove();
 
 
@@ -240,7 +242,8 @@ public class MonsterController : CreatureController
 	{
 		if (m_targets.Count == 0) return;
 		if (!m_targetMoved) return;
-		if (!CellArrived) return; 
+		if (!CellArrived) return;
+		if (m_beginMove) return; // 이동 예약된 상태에선 경로 생성 금지
 				
 		if (Math.Abs(CellPos.x - m_target.CellPos.x) <= 1 && Math.Abs(CellPos.y - m_target.CellPos.y) <= 1) return;
 
@@ -278,7 +281,8 @@ public class MonsterController : CreatureController
 
 		MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
 
-		Debug.Log($"SetMonsterCollision : {m_path[PathIdx].x}, {m_path[PathIdx].y}에 찜!");
+		//Debug.Log($"SetMonsterCollision : {m_path[PathIdx].x}, {m_path[PathIdx].y}에 찜!");
+		//Debug.Log($"Search : {m_path[PathIdx]}");
 
 		Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y);
 		NetworkManager.Inst.Send(pkt);
@@ -299,11 +303,12 @@ public class MonsterController : CreatureController
 
 		if (dist > MaxSpeed * Time.fixedDeltaTime)
 		{
-			if(dist > 1.5f)
-				Debug.Log($"dist : {dist}, DestPos : {DestPos}");
+			//if(dist > 1.5f)
+				//Debug.Log($"dist : {dist}, DestPos : {DestPos}");
 			return;
 		}
 
+		Debug.Log($"{DestPos}로 바뀜");
 		transform.position = new Vector3(DestPos.x, -DestPos.y);
 		ByteDir = 0;
 		CellArrived = true;
@@ -338,7 +343,7 @@ public class MonsterController : CreatureController
 				}
 				MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
 
-				Debug.Log($"update SetMonsterCollision : {m_path[PathIdx].x}, {m_path[PathIdx].y}에 찜!");
+				//Debug.Log($"update SetMonsterCollision : {m_path[PathIdx].x}, {m_path[PathIdx].y}에 찜!");
 
 				Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y);
 				NetworkManager.Inst.Send(pkt);
@@ -346,14 +351,23 @@ public class MonsterController : CreatureController
 		}
 	}
 
-	public void BeginMove(int _cellXPos, int _cellYPos)
+	public void ReserveBeginMove(int _cellXPos, int _cellYPos)
 	{
-		Vector2Int dest = new Vector2Int(_cellXPos, _cellYPos);
-		//Debug.Log($"BeginMove : {_cellXPos}, {_cellYPos}, {dest}, {DestPos}");
-		transform.position = new Vector3(DestPos.x, -DestPos.y); // 희박한 확률로 DestPos가 _cellXPos, _cellYPos와 같음
-		
-		Vector2 dir = CellPos - dest;
+		m_destReserved = new Vector2Int(_cellXPos, _cellYPos);
+		transform.position = new Vector3(DestPos.x, -DestPos.y);
 		ByteDir = 0;
+		CellArrived = true;
+		Debug.Log($"ReserveBeginMove : {DestPos}. {m_destReserved}");
+		m_beginMove = true;
+	}
+
+	void BeginMove()
+	{
+		if (!m_beginMove) return;
+
+		Debug.Log($"BeginMove : {CellPos}, {m_destReserved}, {DestPos}");
+		
+		Vector2 dir = CellPos - m_destReserved;
 
 		if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
 		if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
@@ -361,7 +375,8 @@ public class MonsterController : CreatureController
 		if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
 
 		CellArrived = false;
-		DestPos = dest;
+		DestPos = m_destReserved;
+		m_beginMove = false;
 	}
 
 	/*

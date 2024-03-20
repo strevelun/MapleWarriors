@@ -103,7 +103,7 @@ public static class InGamePacketHandler
 			return;
 		}
 
-		mc.BeginMove(destCellXPos, destCellYPos);
+		mc.ReserveBeginMove(destCellXPos, destCellYPos);
 	}
 
 	public static void MonsterAttack(PacketReader _reader)
@@ -118,7 +118,7 @@ public static class InGamePacketHandler
 		}
 
 		MonsterController mc = ObjectManager.Inst.FindMonster(_reader.GetByte(), _reader.GetByte());
-		mc.ChangeState(new MonsterAttackState(targets));
+		if(mc) mc.ChangeState(new MonsterAttackState(targets));
 	}
 
 	public static void InGameExit(PacketReader _reader)
