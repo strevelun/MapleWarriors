@@ -17,7 +17,6 @@ public class PlayerDeadState : ICreatureState
 	{
 		m_player = _cs as PlayerController;
 		m_player.Anim.SetBool("Dead", true);
-	
 	}
 
 	public void Update()

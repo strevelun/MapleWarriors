@@ -9,10 +9,8 @@ public class InputManager : MonoBehaviour
 	private static InputManager s_inst = null;
 	public static InputManager Inst { get { return s_inst; } }
 
-	public Action KeyAction = null;
-
 	EventSystem m_eventSystem;
-	bool m_inputEnabled = false;
+	public bool InputEnabled { get; private set; } = true;
 
 	private void Awake()
 	{
@@ -28,15 +26,12 @@ public class InputManager : MonoBehaviour
 
 	private void Update()
 	{
-		if (!m_inputEnabled || !m_eventSystem.enabled) return;
-
-		if (m_eventSystem.IsPointerOverGameObject()) return;
-		if (Input.anyKey && KeyAction != null) KeyAction.Invoke();
 	}
 
 	public void SetInputEnabled(bool _enabled)
 	{
-		m_inputEnabled = _enabled;
+		//Debug.Log($"SetInputEnabled : {_enabled}");
+		InputEnabled = _enabled;
 		m_eventSystem.enabled = _enabled;
 	}
 }

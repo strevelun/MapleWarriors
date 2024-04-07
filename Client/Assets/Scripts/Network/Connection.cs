@@ -1,12 +1,14 @@
 using System;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Connection 
 {
     Socket m_socket;
-    System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+	System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
     SocketAsyncEventArgs m_recvArgs = new SocketAsyncEventArgs();
 
@@ -23,7 +25,7 @@ public class Connection
         m_socket.Send(_packet.GetBuffer(), _packet.Size, SocketFlags.None);
 	}
 
-    public void RegisterRecv()
+	public void RegisterRecv()
     {
         ArraySegment<byte> seg;
         if(!RingBuffer.Inst.SetWriteSegment(out seg))
@@ -62,7 +64,8 @@ public class Connection
 		RegisterRecv();
     }
 
-    public void Disconnect()
+
+	public void Disconnect()
     {
         try
 		{

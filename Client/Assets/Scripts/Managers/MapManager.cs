@@ -142,21 +142,23 @@ public class MapManager
 		string name = m_mapData.mapList[CurStage];
 		m_map = ResourceManager.Inst.Instantiate($"Map/{name}");
 		++CurStage;
-		/*
+	
 		GameObject monsters = Util.FindChild(m_map, false, "Monsters");
-		int activeChildCount = 0;
+		int activeCnt = 0;
 		for (int i = 0; i < monsters.transform.childCount; i++)
 		{
 			if (monsters.transform.GetChild(i).gameObject.activeSelf)
 			{
-				activeChildCount++;
+				activeCnt++;
 			}
 		}
-		GameManager.Inst.SetMonsterCnt(monsterCnt);
-		*/
-		//m_hitboxTile.
-
+		GameManager.Inst.SetMonsterCnt(activeCnt);
+		
 		TileInit();
+
+		Debug.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
+		Debug.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
+		Debug.Log($"현재 스테이지 : {MapManager.Inst.CurStage}");
 	}
 
 	public bool IsBlocked(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight)

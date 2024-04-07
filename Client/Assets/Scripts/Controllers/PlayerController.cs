@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,7 +25,6 @@ public class PlayerController : CreatureController
 	public Animator RangedSkillAnim { get; private set; }
 
 	protected eSkill m_eCurSkill = eSkill.None;
-	protected eSkill m_eBeforeSkill = eSkill.None;
 
 	TextMeshProUGUI m_nicknameTMP;
 	//TextMeshProUGUI m_positionTMP;
@@ -37,9 +37,6 @@ public class PlayerController : CreatureController
 	//Vector2 m_positionTagOffset = new Vector2(0.5f, 2.5f);
 	//RectTransform m_positionTagUI;
 
-	public eState State { get; private set; } = eState.None;
-	public eDir SecondDir { get; protected set; } = eDir.None;
-
 	GameObject m_hpbarObj;
 	Slider m_hpBarSlider;
 	RectTransform m_sliderRect;
@@ -50,6 +47,9 @@ public class PlayerController : CreatureController
 	// 2칸이면 1
 	[SerializeField]
 	Vector2 m_hpBarUIOffset;
+
+	int m_moveCnt = 0;
+	Coroutine m_movingCoroutine = null;
 
 	void Start()
 	{
@@ -80,8 +80,8 @@ public class PlayerController : CreatureController
 		base.Init(_cellXPos, _cellYPos);
 
 		MaxSpeed = 4f;
-		MaxHP = 10000;
-		HP = 10000;
+		MaxHP = 5000;
+		HP = MaxHP;
 		AttackDamage = 5;
 		AttackRange = 2;
 
@@ -90,7 +90,6 @@ public class PlayerController : CreatureController
 
 		//m_eCurSkill = eSkill.Slash;
 		m_eCurSkill = eSkill.Slash;
-		m_eBeforeSkill = eSkill.Slash;
 		CurSkill = new Skill(m_eCurSkill);
 
 		m_skillAnimObj = Util.FindChild(gameObject, true, "Skill");
@@ -126,6 +125,7 @@ public class PlayerController : CreatureController
 		m_hpBarUIOffset = new Vector2(HitboxWidth / 2f, -0.3f);
 
 		ChangeState(new PlayerIdleState());
+
 	}
 
 	/*
@@ -156,6 +156,48 @@ public void UpdateSecondMove()
 	
 }
 	*/
+
+	IEnumerator MovingCheckCoroutine()
+	{
+		while (true)
+		{
+			if (ByteDir == 0)
+			{
+				Debug.Log($"ByteDir = 0이라서 break : {m_moveCnt}");
+				m_moveCnt = 0;
+				break;
+			}
+
+			yield return new WaitForSeconds(0.2f);
+
+			if(m_moveCnt == 0)
+			{
+				// 스탑!
+				Debug.Log("MoveCnt is 0");
+				ByteDir = 0;
+				break;
+			}
+
+			--m_moveCnt;
+			Debug.Log($"moveCnt 다운 : {m_moveCnt}");
+		}
+		m_movingCoroutine = null;
+	}
+
+	public void Moving(float _xpos, float _ypos, byte _byteDir)
+	{
+		++m_moveCnt;
+
+		Debug.Log($"Moving : {m_moveCnt}");
+
+		if (Dir == eDir.None)
+		{
+			transform.position = new Vector3(_xpos, _ypos);
+			SetDir(_byteDir);
+			if(m_movingCoroutine == null) m_movingCoroutine = StartCoroutine(MovingCheckCoroutine());
+		}
+	}
+
 // 매 프레임마다 new
 public void CheckMoveState()
 	{
@@ -179,10 +221,20 @@ public void CheckMoveState()
 		m_nicknameTMP.text = m_strNickname;
 	}
 
+	public void BeginMovePosition(float _startXPos, float _startYPos, byte _byteDir)
+	{
+		m_moveCnt = 1;
+		Debug.Log($"BeginMove : {m_moveCnt}");
+		transform.position = new Vector3(_startXPos, _startYPos);
+		SetDir(_byteDir);
+		if (m_movingCoroutine == null) m_movingCoroutine = StartCoroutine(MovingCheckCoroutine());
+	}
+
 	// _destXPos가 0이 나오는 경우
 	public void EndMovePosition(float _destXPos, float _destYPos)
 	{
 		// CellPos갱신은 CreatureController에서 
+		SetDir(0);
 		transform.position = new Vector3(_destXPos, _destYPos);
 	}
 
@@ -252,5 +304,16 @@ public void CheckMoveState()
 	public void SetRangedSkillObjPos(Vector2Int _pos)
 	{
 		m_rangedSkillAnimObj.transform.localPosition = new Vector3(_pos.x, _pos.y);
+	}
+
+	public virtual void OnChangeStage()
+	{
+		ChangeState(new PlayerIdleState());
+
+		m_tombstoneAnimObj.SetActive(false);
+
+		HP = MaxHP;
+		m_hpbarText.text = HP.ToString();
+		ByteDir = 0;
 	}
 }

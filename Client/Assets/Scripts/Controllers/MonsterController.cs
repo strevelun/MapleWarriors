@@ -285,7 +285,8 @@ public class MonsterController : CreatureController
 		//Debug.Log($"Search : {m_path[PathIdx]}");
 
 		Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y);
-		NetworkManager.Inst.Send(pkt);
+		UDPCommunicator.Inst.SendAll(pkt);
+		ReserveBeginMove(m_path[PathIdx].x, m_path[PathIdx].y);
 
 		m_targetMoved = false;
 	}
@@ -308,7 +309,7 @@ public class MonsterController : CreatureController
 			return;
 		}
 
-		Debug.Log($"{DestPos}로 바뀜");
+		//Debug.Log($"{DestPos}로 바뀜");
 		transform.position = new Vector3(DestPos.x, -DestPos.y);
 		ByteDir = 0;
 		CellArrived = true;
@@ -346,7 +347,8 @@ public class MonsterController : CreatureController
 				//Debug.Log($"update SetMonsterCollision : {m_path[PathIdx].x}, {m_path[PathIdx].y}에 찜!");
 
 				Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y);
-				NetworkManager.Inst.Send(pkt);
+				UDPCommunicator.Inst.SendAll(pkt);
+				ReserveBeginMove(m_path[PathIdx].x, m_path[PathIdx].y);
 			}
 		}
 	}
@@ -357,7 +359,7 @@ public class MonsterController : CreatureController
 		transform.position = new Vector3(DestPos.x, -DestPos.y);
 		ByteDir = 0;
 		CellArrived = true;
-		Debug.Log($"ReserveBeginMove : {DestPos}. {m_destReserved}");
+		//Debug.Log($"ReserveBeginMove : {DestPos}. {m_destReserved}");
 		m_beginMove = true;
 	}
 
@@ -365,7 +367,7 @@ public class MonsterController : CreatureController
 	{
 		if (!m_beginMove) return;
 
-		Debug.Log($"BeginMove : {CellPos}, {m_destReserved}, {DestPos}");
+		//Debug.Log($"BeginMove : {CellPos}, {m_destReserved}, {DestPos}");
 		
 		Vector2 dir = CellPos - m_destReserved;
 
@@ -466,7 +468,10 @@ public class MonsterController : CreatureController
 		if (finalTargets.Count == 0) return;
 
 		Packet pkt = InGamePacketMaker.MonsterAttack(finalTargets, Idx, Num);
-		NetworkManager.Inst.Send(pkt);
+		UDPCommunicator.Inst.SendAll(pkt);
+
+		MonsterController mc = ObjectManager.Inst.FindMonster(Idx, Num);
+		if (mc) mc.ChangeState(new MonsterAttackState(finalTargets));
 	}
 
 	public override void Die()

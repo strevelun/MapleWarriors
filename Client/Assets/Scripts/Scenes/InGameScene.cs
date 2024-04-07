@@ -5,7 +5,7 @@ using UnityEngine;
 public class InGameScene : BaseScene
 {
 	[SerializeField]
-	GameObject m_clear, m_wasted;
+	GameObject m_allClear, m_clear, m_wasted;
 
 	protected override void Init()
 	{
@@ -29,6 +29,7 @@ public class InGameScene : BaseScene
 	{
 		base.Clear();
 		//MapManager.Inst.Destroy();
+		SetAllClearImageVisible(false);
 		SetClearImageVisible(false);
 		SetWastedImageVisible(false);
 	}
@@ -47,18 +48,19 @@ public class InGameScene : BaseScene
 			if(GameManager.Inst.CheckMapClear())
 			{
 				StartCoroutine(GameAllClearCoroutine());
-				
+				GameManager.Inst.GameStart = false;
 			}
-		}
-
-		if(!m_wasted.activeSelf && !m_clear.activeSelf && GameManager.Inst.CheckGameOver())
-		{
-			StartCoroutine(GameOverCoroutine());
 		}
 		else if (!m_clear.activeSelf && !m_wasted.activeSelf && GameManager.Inst.CheckMapClear())
 		{
-			m_clear.SetActive(true);
+			SetClearImageVisible(true);
 		}
+		else if (!m_wasted.activeSelf && !m_clear.activeSelf && GameManager.Inst.CheckGameOver())
+		{
+			StartCoroutine(GameOverCoroutine());
+			GameManager.Inst.GameStart = false;
+		}
+		
 	}
 
 	IEnumerator GameOverCoroutine()
@@ -69,25 +71,29 @@ public class InGameScene : BaseScene
 		{
 			Packet pkt = InGamePacketMaker.GameOver();
 			NetworkManager.Inst.Send(pkt);
-			GameManager.Inst.GameStart = false;
 		}
 	}
 
 	IEnumerator GameAllClearCoroutine()
 	{
-		m_clear.SetActive(true);
+		m_allClear.SetActive(true);
 		yield return new WaitForSeconds(3f);
 		if (UserData.Inst.IsRoomOwner)
 		{
 			Packet pkt = InGamePacketMaker.GameOver();
 			NetworkManager.Inst.Send(pkt);
-			GameManager.Inst.GameStart = false;
 		}
+	}
+
+	public void SetAllClearImageVisible(bool _visible)
+	{
+		m_allClear.SetActive(_visible);
 	}
 
 	public void SetClearImageVisible(bool _visible)
 	{
 		m_clear.SetActive(_visible);
+		Debug.Log($"m_clear : {_visible}");
 	}
 
 	public void SetWastedImageVisible(bool _visible)

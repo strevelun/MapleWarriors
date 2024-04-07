@@ -116,7 +116,10 @@ public static class PacketHandler
 					break;
 				case PacketType.eServer.BeginMove:
 					InGamePacketHandler.BeginMove(_reader);
-					break;	
+					break;
+				case PacketType.eServer.Moving:
+					InGamePacketHandler.Moving(_reader);
+					break;
 				case PacketType.eServer.EndMove:
 					InGamePacketHandler.EndMove(_reader);
 					break;

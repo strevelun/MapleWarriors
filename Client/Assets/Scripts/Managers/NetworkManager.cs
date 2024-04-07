@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Windows;
 
@@ -21,7 +22,14 @@ public class NetworkManager
 
 	Connection m_connection = null;
 
-	public void Connect(string _serverIp, int _port)
+	public bool Init(string _serverIp, int _port)
+	{
+		if (Connect(_serverIp, _port) == false) return false;
+
+		return true;
+	}
+
+	bool Connect(string _serverIp, int _port)
 	{
 		IPAddress ip = IPAddress.Parse(_serverIp);
 		IPEndPoint endPoint = new IPEndPoint(ip, _port);
@@ -32,19 +40,22 @@ public class NetworkManager
 		{
 			socket.Connect(endPoint);
 			m_connection = new Connection(socket);
-		} catch(SocketException e)
+		} 
+		catch (SocketException e)
 		{
 			UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIConnectFailPopup, "서버와 연결할 수 없습니다.\n(오류코드 : " + e.SocketErrorCode + ")");
+			return false;
 		}
+		return true;
 	}
 
 	public void Send(Packet _packet)
 	{
-		long before = DateTime.Now.Ticks;
 		m_connection?.Send(_packet);
+
 		//Debug.Log($"send : {(DateTime.Now.Ticks - before) / 10000000.0}초");
 	}
-	
+
 	public void Disconnect()
 	{
 		m_connection.Disconnect();

@@ -23,7 +23,20 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.BeginMove)
+			.Add(PacketType.eServer.BeginMove) // Client로 바로 보냄
+			.Add((byte)UserData.Inst.MyRoomSlot)
+			.Add((int)(_vecStartPos.x * 1000000))
+			.Add((int)(_vecStartPos.y * 1000000))
+			.Add(_byteDir);
+		return pkt;
+	}
+
+	public static Packet Moving(Vector3 _vecStartPos, byte _byteDir)
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.Moving)
+			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecStartPos.x * 1000000))
 			.Add((int)(_vecStartPos.y * 1000000))
 			.Add(_byteDir);
@@ -34,7 +47,8 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.EndMove)
+			.Add(PacketType.eServer.EndMove)
+			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecEndPos.x * 1000000)) // 소수점 6자리 정밀도
 			.Add((int)(_vecEndPos.y * 1000000));
 		return pkt;
@@ -45,7 +59,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.MonsterAttack)
+			.Add(PacketType.eServer.MonsterAttack)
 			.Add((byte)_finalTargets.Count);
 
 		foreach(PlayerController pc in _finalTargets)
@@ -62,7 +76,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.BeginMoveMonster)
+			.Add(PacketType.eServer.BeginMoveMonster)
 			.Add((byte)_monsterIdx)
 			.Add((byte)_monsterNum)
 			.Add((ushort)_cellXPos)
@@ -74,7 +88,8 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.Attack)
+			.Add(PacketType.eServer.Attack)
+			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((ushort)_targets.Count);
 
 		foreach(MonsterController mc in _targets)
@@ -93,7 +108,8 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.RangedAttack)
+			.Add(PacketType.eServer.RangedAttack)
+			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((ushort)_targets.Count)
 			.Add((short)_where.x) // 음수
 			.Add((short)_where.y); 

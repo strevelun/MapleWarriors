@@ -36,6 +36,7 @@ public static class InGamePacketHandler
 			int idx = _reader.GetByte();
 			string nickname = _reader.GetString();
 			byte characterChoice = _reader.GetByte();
+			ushort port = _reader.GetUShort();
 
 			player = ResourceManager.Inst.Instantiate($"Creature/Player_{characterChoice}"); // 플레이어 선택
 			player.name = $"Player_{characterChoice}_{idx}"; // slot 넘버로
@@ -46,8 +47,8 @@ public static class InGamePacketHandler
 				mpc.Init(i+1, 1);
 				mpc.Idx = idx;
 				mpc.SetNickname(nickname);
-				ObjectManager.Inst.AddPlayer(idx, player);
 				vcam1.Follow = player.transform;
+				UDPCommunicator.Inst.Init(port);
 			}
 			else
 			{
@@ -55,8 +56,17 @@ public static class InGamePacketHandler
 				pc.Init(i+1, 1);
 				pc.Idx = idx;
 				pc.SetNickname(nickname);
-				ObjectManager.Inst.AddPlayer(idx, player);
+
+				string ip = "";
+				for (int j = 0; j < 4; ++j)
+				{
+					ip += _reader.GetByte();
+					if(j < 3) ip += ".";
+				}
+				UDPCommunicator.Inst.AddSendInfo(idx, ip, port);
+				Debug.Log($"socket : {port}, ip : {ip}");
 			}
+			ObjectManager.Inst.AddPlayer(idx, player);
 		}
 
 		Debug.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
@@ -74,8 +84,18 @@ public static class InGamePacketHandler
 		byte dir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc.SetDir(dir);
-		pc.EndMovePosition(xpos, ypos);
+		pc.BeginMovePosition(xpos, ypos, dir);
+	}
+
+	public static void Moving(PacketReader _reader)
+	{
+		byte roomSlot = _reader.GetByte();
+		float xpos = _reader.GetInt32() / 1000000.0f;
+		float ypos = _reader.GetInt32() / 1000000.0f;
+		byte dir = _reader.GetByte();
+
+		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
+		pc.Moving(xpos, ypos, dir);
 	}
 
 	public static void EndMove(PacketReader _reader)
@@ -85,7 +105,6 @@ public static class InGamePacketHandler
 		float ypos = _reader.GetInt32() / 1000000.0f;
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc.SetDir(0);
 		pc.EndMovePosition(xpos, ypos);
 	}
 

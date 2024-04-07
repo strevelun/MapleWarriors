@@ -80,13 +80,11 @@ public class RingBuffer : MonoBehaviour
 
 	private void Update()
 	{
-		int n = 0;
 		while (IsBufferReadable())
 		{
 			m_reader.SetBuffer(this, m_readPos);
 			PacketHandler.Handle(m_reader);
 			MoveReadPos(m_reader.Size);
-			++n;
 		}
 	}
 

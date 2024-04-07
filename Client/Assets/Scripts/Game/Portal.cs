@@ -28,13 +28,17 @@ public class Portal : MonoBehaviour
         {
             if(m_cntPlayer == GameManager.Inst.PlayerCnt)
 			{
-                (SceneManagerEx.Inst.CurScene as InGameScene).SetClearImageVisible(false);
+                InGameScene ingame = SceneManagerEx.Inst.CurScene as InGameScene;
+
+				ingame.SetClearImageVisible(false);
 				int i = 0;
                 foreach(GameObject obj in m_playerObj.Values)
                 {
                     obj.transform.position = m_positions[i++];
-                }
+                    obj.GetComponent<PlayerController>().OnChangeStage();
+				}
                 MapManager.Inst.LoadNextStage();
+                ingame.StartFadeInOutCoroutine();
             }
         }
     }

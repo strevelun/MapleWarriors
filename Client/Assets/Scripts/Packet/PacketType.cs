@@ -35,6 +35,7 @@ public class PacketType
 		RoomCharacterChoice,
 		ResInitInfo,
 		BeginMove,
+		Moving,
 		EndMove,
 		MonsterAttack,
 		BeginMoveMonster,

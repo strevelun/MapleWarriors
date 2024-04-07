@@ -57,5 +57,6 @@ public class GameManager
 	{
 		PlayerCnt = 0;
 		MonsterCnt = 0;
+		GameStart = false;
 	}
 }

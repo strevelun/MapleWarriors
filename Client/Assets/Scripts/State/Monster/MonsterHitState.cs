@@ -64,7 +64,7 @@ public class MonsterHitState : ICreatureState
 			if(m_mc.IsDead)		m_mc.ChangeState(new MonsterDeadState());
 			else				m_mc.ChangeState(new MonsterIdleState());
 
-			Debug.Log($"MonsterHitState HP : {m_mc.HP}");
+			//Debug.Log($"MonsterHitState HP : {m_mc.HP}");
 		}
 	}
 }

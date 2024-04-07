@@ -73,6 +73,37 @@ public abstract class BaseScene : MonoBehaviour
 		StartCoroutine(FadeInCoroutine());
 	}
 
+	public void StartFadeInOutCoroutine()
+	{
+		StartCoroutine(FadeInOutCoroutine());
+	}
+
+	protected IEnumerator FadeInOutCoroutine()
+	{
+		InputManager.Inst.SetInputEnabled(false);
+		float fadeCnt = 0f;
+		while (fadeCnt < m_fadeOutSecond)
+		{
+			fadeCnt += Time.deltaTime;
+			m_fadeInOut.color = new Color(0, 0, 0, fadeCnt / m_fadeOutSecond);
+			yield return null;
+		}
+		m_fadeInOut.color = new Color(0, 0, 0, 1);
+
+		yield return new WaitForSeconds(1f);
+
+		fadeCnt = 0f;
+		while (fadeCnt < m_fadeInSecond)
+		{
+			fadeCnt += Time.deltaTime;
+			m_fadeInOut.color = new Color(0, 0, 0, 1 - (fadeCnt / m_fadeInSecond));
+			yield return null;
+		}
+		m_fadeInOut.color = new Color(0, 0, 0, 0);
+		//Debug.Log("FadeInOut");
+		InputManager.Inst.SetInputEnabled(true);
+	}
+
 	public void StartFadeOutCoroutine(Define.eScene _type)
 	{
 		InputManager.Inst.SetInputEnabled(false);

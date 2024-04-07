@@ -11,7 +11,7 @@ public static class LobbyPacketHandler
 	{
 		long ticks = _reader.GetInt64();
 
-		Debug.Log($"패킷 시간차 : {(UserData.Inst.ticks - ticks)}ms");
+		Debug.Log($"패킷 시간차 : {UserData.Inst.ticks} - {ticks} = {(UserData.Inst.ticks - ticks)}ms");
 	}
 
 	public static void LobbyChat(PacketReader _reader)

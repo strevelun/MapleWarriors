@@ -19,32 +19,12 @@ public class MyPlayerController : PlayerController
 		RightDown
 	}
 
-
-	KeyCode m_curKeyCode = KeyCode.None;
-	KeyCode m_curSecondKeyCode = KeyCode.None;
 	bool m_bIsKeyDown = false;
 	bool m_bIsKeyUp = false;
 
-	Dictionary<KeyCode, bool> m_keyPressed = new Dictionary<KeyCode, bool>();
-	Dictionary<KeyCode, eDir> m_keyCodeDir = new Dictionary<KeyCode, eDir>()
-	{
-		{ KeyCode.W, eDir.Up },
-		{ KeyCode.S, eDir.Down },
-		{ KeyCode.A, eDir.Left },
-		{ KeyCode.D, eDir.Right }
-	};
-
-
-	//int m_keyPressedCnt = 0;
-
-	//eDir m_eDirInput = eDir.None;
-
     void Start()
 	{
-	}
-
-	private void OnEnable()
-	{
+		StartCoroutine(MovingCoroutine());
 	}
 
 	protected override void Update()
@@ -58,15 +38,39 @@ public class MyPlayerController : PlayerController
 			InputSkillChoice();
 			CurSkill.Update(CellPos, LastDir);
 		}
+
+		HandleInputMovement();
 	}
 
 	protected override void FixedUpdate()
 	{
 		base.FixedUpdate();
 	}
-	
+
+
+	IEnumerator MovingCoroutine()
+	{
+		while (true)
+		{
+			if (Dir == eDir.None)
+			{
+				yield return null;
+				continue;
+			}
+
+			yield return new WaitForSeconds(0.2f);
+
+			Packet pkt = InGamePacketMaker.Moving(transform.position, ByteDir);
+			UDPCommunicator.Inst.SendAll(pkt);
+		}
+	}
+
 	public void InputMovement()
 	{
+		if (!GameManager.Inst.GameStart) return;
+		if (!InputManager.Inst.InputEnabled) return;
+
+		//Debug.Log("InputDownMovement");
 		if (Input.GetKeyDown(KeyCode.W))
 		{
 			m_bIsKeyDown = true;
@@ -113,6 +117,24 @@ public class MyPlayerController : PlayerController
 			temp = (byte)eDir.Right;
 			ByteDir &= (byte)~temp;
 		}
+	}
+
+	void HandleInputMovement()
+	{
+		if (m_bIsKeyUp && ByteDir == (byte)eDir.None)
+		{
+			Packet pkt = InGamePacketMaker.EndMove(transform.position);
+			UDPCommunicator.Inst.SendAll(pkt);
+			m_bIsKeyUp = false;
+		}
+
+		if (m_bIsKeyDown || m_bIsKeyUp) // ByteDir가 0이 아니면서 m_bIsKeyUp이면 방향이 바뀐 것.
+		{
+			Packet pkt = InGamePacketMaker.BeginMove(transform.position, ByteDir);
+			UDPCommunicator.Inst.SendAll(pkt);
+			m_bIsKeyDown = false;
+			m_bIsKeyUp = false;
+		}
 
 		if (ByteDir != 0)
 		{
@@ -122,39 +144,16 @@ public class MyPlayerController : PlayerController
 				m_bIsKeyUp = true;
 			}
 		}
-
-		HandleInputMovement();
-	}
-
-	void HandleInputMovement()
-	{
-		if (m_bIsKeyUp && ByteDir == (byte)eDir.None)
-		{
-			Packet pkt = InGamePacketMaker.EndMove(transform.position);
-			NetworkManager.Inst.Send(pkt);
-			m_bIsKeyUp = false;
-		}
-
-		if (m_bIsKeyDown || m_bIsKeyUp)
-		{
-			Packet pkt = InGamePacketMaker.BeginMove(transform.position, ByteDir);
-			NetworkManager.Inst.Send(pkt);
-			m_bIsKeyDown = false;
-			m_bIsKeyUp = false;
-		}
 	}
 
 	// SkillData의 정보를 토대로 
 	public void InputAttack()
 	{
-		if (GameManager.Inst.GameStart == false) return;
-
-		// 스킬을 활성화한 상태에서만 마우스 포지션 추적
-
+		if (!GameManager.Inst.GameStart) return;
+		if (!InputManager.Inst.InputEnabled) return;
 
 		if (Input.GetMouseButtonDown(0))
 		{
-
 			if (CurSkill.GetSkillType() == eSkillType.Melee)
 			{
 				List<MonsterController> targets = new List<MonsterController>();
@@ -163,7 +162,7 @@ public class MyPlayerController : PlayerController
 				{
 					ChangeState(new PlayerAttackState(targets, CurSkill));
 					Packet pkt = InGamePacketMaker.Attack(targets, m_eCurSkill);
-					NetworkManager.Inst.Send(pkt);
+					UDPCommunicator.Inst.SendAll(pkt);
 				}
 			}
 			else
@@ -181,7 +180,7 @@ public class MyPlayerController : PlayerController
 				{
 					ChangeState(new PlayerAttackState(targets, CurSkill));
 					Packet pkt = InGamePacketMaker.RangedAttack(targets, m_eCurSkill, new Vector2Int(xpos, ypos));
-					NetworkManager.Inst.Send(pkt);
+					UDPCommunicator.Inst.SendAll(pkt);
 				}
 			}
 		}
@@ -189,12 +188,12 @@ public class MyPlayerController : PlayerController
 
 	void InputSkillChoice()
 	{
-		if (GameManager.Inst.GameStart == false) return;
-		
+		if (!GameManager.Inst.GameStart) return;
+		if (!InputManager.Inst.InputEnabled) return;
+
 		// 스킬이펙트 재생 중 스킬 바꾸면 움직이는 버그
 
 		eSkill curSkill = eSkill.None;
-
 
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
@@ -237,5 +236,13 @@ public class MyPlayerController : PlayerController
 		base.Die();
 
 		CurSkill.RemoveAimTiles();
+	}
+
+	public override void OnChangeStage()
+	{
+		base.OnChangeStage();
+
+		m_bIsKeyUp = false;
+		m_bIsKeyDown = false;
 	}
 }
