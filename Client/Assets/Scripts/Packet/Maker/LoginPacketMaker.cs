@@ -17,6 +17,7 @@ public static class LoginPacketMaker
 		packet
 			.Add(PacketType.eClient.LoginReq)
 			.Add(UserData.Inst.Nickname);
+
 		return packet;
 	}
 }

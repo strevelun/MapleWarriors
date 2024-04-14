@@ -22,9 +22,17 @@ public class MyPlayerController : PlayerController
 	bool m_bIsKeyDown = false;
 	bool m_bIsKeyUp = false;
 
+	int m_endMovePlayerCnt = 0;
+	bool m_bEndMove = false;
+	bool[] m_endMoveCheck = new bool[4];
+	List<int> m_otherPlayersSlot = null;
+
+	int m_testMovingCnt = 0;
+
     void Start()
 	{
 		StartCoroutine(MovingCoroutine());
+		StartCoroutine(MoveEndCheckCoroutine());
 	}
 
 	protected override void Update()
@@ -47,7 +55,6 @@ public class MyPlayerController : PlayerController
 		base.FixedUpdate();
 	}
 
-
 	IEnumerator MovingCoroutine()
 	{
 		while (true)
@@ -60,8 +67,58 @@ public class MyPlayerController : PlayerController
 
 			yield return new WaitForSeconds(0.2f);
 
+			++m_testMovingCnt;
+
+			if (2 <= m_testMovingCnt && m_testMovingCnt <= 8) continue;
+
 			Packet pkt = InGamePacketMaker.Moving(transform.position, ByteDir);
 			UDPCommunicator.Inst.SendAll(pkt);
+		}
+	}
+
+	IEnumerator MoveEndCheckCoroutine()
+	{
+		while(true)
+		{
+			if (!m_bEndMove)
+			{
+				yield return null;
+				continue;
+			}
+
+			yield return new WaitForSeconds(0.2f);
+
+			foreach(int slot in m_otherPlayersSlot)
+			{
+				if(m_endMoveCheck[slot] == false)
+				{
+					Packet pkt = InGamePacketMaker.EndMove(transform.position);
+					UDPCommunicator.Inst.Send(pkt, slot);
+				}
+			}
+
+			Debug.Log("EndMove 체크 중");
+			
+		}
+	}
+
+	public void SetEndCheck(int _slot)
+	{
+		if (!m_bEndMove) return;
+
+		++m_endMovePlayerCnt;
+		m_endMoveCheck[_slot] = true;
+
+		Debug.Log($"{_slot}이 endMove 체크 완료");
+
+		if (m_endMovePlayerCnt >= m_otherPlayersSlot.Count)
+		{
+			m_bEndMove = false;
+			m_endMovePlayerCnt = 0;
+			foreach (int slot in m_otherPlayersSlot)
+			{
+				m_endMoveCheck[slot] = false;
+			}
 		}
 	}
 
@@ -123,9 +180,13 @@ public class MyPlayerController : PlayerController
 	{
 		if (m_bIsKeyUp && ByteDir == (byte)eDir.None)
 		{
-			Packet pkt = InGamePacketMaker.EndMove(transform.position);
-			UDPCommunicator.Inst.SendAll(pkt);
 			m_bIsKeyUp = false;
+			if (GameManager.Inst.PlayerCnt > 1)
+			{
+				Packet pkt = InGamePacketMaker.EndMove(transform.position);
+				UDPCommunicator.Inst.SendAll(pkt);
+				m_bEndMove = true;
+			}
 		}
 
 		if (m_bIsKeyDown || m_bIsKeyUp) // ByteDir가 0이 아니면서 m_bIsKeyUp이면 방향이 바뀐 것.
@@ -134,6 +195,9 @@ public class MyPlayerController : PlayerController
 			UDPCommunicator.Inst.SendAll(pkt);
 			m_bIsKeyDown = false;
 			m_bIsKeyUp = false;
+			m_bEndMove = false;
+
+
 		}
 
 		if (ByteDir != 0)
@@ -236,6 +300,11 @@ public class MyPlayerController : PlayerController
 		base.Die();
 
 		CurSkill.RemoveAimTiles();
+	}
+
+	public void SetOtherPlayerSlot(List<int> _slotList)
+	{
+		m_otherPlayersSlot = _slotList;
 	}
 
 	public override void OnChangeStage()

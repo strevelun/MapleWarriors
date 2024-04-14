@@ -233,6 +233,7 @@ public void CheckMoveState()
 	// _destXPos가 0이 나오는 경우
 	public void EndMovePosition(float _destXPos, float _destYPos)
 	{
+		Debug.Log($"EndMove : {m_moveCnt}");
 		// CellPos갱신은 CreatureController에서 
 		SetDir(0);
 		transform.position = new Vector3(_destXPos, _destYPos);

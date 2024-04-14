@@ -16,12 +16,13 @@ public class UDPCommunicator : MonoBehaviour
 	UdpClient m_udpClient;
 	PacketReader m_reader = new PacketReader();
 
-	struct tSendInfo
+	public struct tSendInfo
 	{
 		public string ip;
 		public int port;
 	}
-	Dictionary<int, tSendInfo> m_dicSendInfo = new Dictionary<int, tSendInfo>();
+
+	public Dictionary<int, tSendInfo> DicSendInfo { get; } = new Dictionary<int, tSendInfo>();
 
 	private void Awake()
 	{
@@ -51,12 +52,13 @@ public class UDPCommunicator : MonoBehaviour
 	private void OnDestroy()
 	{
 		m_udpClient?.Close();
+		s_inst = null;
 	}
 
 	public void Send(Packet _pkt, int _slot)
 	{
 		tSendInfo info;
-		if (!m_dicSendInfo.TryGetValue(_slot, out info)) return;
+		if (!DicSendInfo.TryGetValue(_slot, out info)) return;
 
 		int sendbyte = m_udpClient.Send(_pkt.GetBuffer(), _pkt.Size, info.ip, info.port);
 		Debug.Log($"{info.ip}, {info.port}로 보냄 : {sendbyte}");
@@ -64,7 +66,7 @@ public class UDPCommunicator : MonoBehaviour
 
 	public void SendAll(Packet _pkt)
 	{
-		foreach (tSendInfo info in m_dicSendInfo.Values)
+		foreach (tSendInfo info in DicSendInfo.Values)
 		{
 			int sendbyte = m_udpClient.Send(_pkt.GetBuffer(), _pkt.Size, info.ip, info.port);
 			Debug.Log($"{info.ip}, {info.port}로 보냄 : {sendbyte}");
@@ -95,11 +97,11 @@ public class UDPCommunicator : MonoBehaviour
 		tSendInfo info = new tSendInfo();
 		info.ip = _ip;
 		info.port = _port;
-		m_dicSendInfo.Add(_slot, info);
+		DicSendInfo.Add(_slot, info);
 	}
 
 	public void RemoveSendInfo(int _slot)
 	{
-		m_dicSendInfo.Remove(_slot);
+		DicSendInfo.Remove(_slot);
 	}
 }

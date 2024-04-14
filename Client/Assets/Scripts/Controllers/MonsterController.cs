@@ -24,6 +24,8 @@ public class MonsterController : CreatureController
 		Attack
 	}
 
+	bool[] m_playerEnter = new bool[4];
+
 	public int Num { get; set; }
 
 	public bool AttackReady { get; set; } = true;
@@ -518,17 +520,33 @@ public class MonsterController : CreatureController
 
 	void OnTriggerEnter2D(Collider2D _other)
 	{
+		if (!UserData.Inst.IsRoomOwner) return;
 		if (_other.gameObject.tag != "Player") return;
 
 		PlayerController pc = _other.gameObject.GetComponent<PlayerController>();
 		if (pc.IsDead) return;
 
+		m_playerEnter[pc.Idx] = true;
+		m_targets.Add(pc);
+	}
+
+	void OnTriggerStay2D(Collider2D _other)
+	{
+		if (!UserData.Inst.IsRoomOwner) return;
+		if (_other.gameObject.tag != "Player") return;
+		
+		PlayerController pc = _other.gameObject.GetComponent<PlayerController>();
+		if (m_playerEnter[pc.Idx] == true) return;
+		if (pc.IsDead) return;
+
+		m_playerEnter[pc.Idx] = true;
 		m_targets.Add(pc);
 	}
 
 	// 몬스터가 셀과 셀 사이에 있을 때 플레이어가 exit하면 거기서 멈추게 하지 말것
 	void OnTriggerExit2D(Collider2D _other)
 	{
+		if (!UserData.Inst.IsRoomOwner) return;
 		if (_other.gameObject.tag != "Player") return;
 
 		foreach(PlayerController pc in m_targets)
@@ -538,6 +556,7 @@ public class MonsterController : CreatureController
 				m_targets.Remove(pc);
 				m_path = null;
 				m_target = null;
+				m_playerEnter[pc.Idx] = false;
 				break;
 			}
 		}

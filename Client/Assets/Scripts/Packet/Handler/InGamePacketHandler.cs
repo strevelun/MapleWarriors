@@ -30,6 +30,9 @@ public static class InGamePacketHandler
 		}
 		GameManager.Inst.SetMonsterCnt(activeCnt);
 
+		List<int> idxList = new List<int>();
+		MyPlayerController mpc = null;
+
 		for (int i = 0; i < numOfUsers; ++i)
 		{
 			int connectionID = _reader.GetUShort();
@@ -43,7 +46,7 @@ public static class InGamePacketHandler
 
 			if (connectionID == UserData.Inst.ConnectionID)
 			{
-				MyPlayerController mpc = player.AddComponent<MyPlayerController>();
+				mpc = player.AddComponent<MyPlayerController>();
 				mpc.Init(i+1, 1);
 				mpc.Idx = idx;
 				mpc.SetNickname(nickname);
@@ -55,6 +58,7 @@ public static class InGamePacketHandler
 				PlayerController pc = player.AddComponent<PlayerController>();
 				pc.Init(i+1, 1);
 				pc.Idx = idx;
+				idxList.Add(idx);
 				pc.SetNickname(nickname);
 
 				string ip = "";
@@ -73,6 +77,7 @@ public static class InGamePacketHandler
 		Debug.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
 		Debug.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
 
+		mpc.SetOtherPlayerSlot(idxList);
 		GameManager.Inst.GameStart = true;
 	}
 
@@ -106,6 +111,17 @@ public static class InGamePacketHandler
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		pc.EndMovePosition(xpos, ypos);
+
+		Packet pkt = InGamePacketMaker.EndMoveOK();
+		UDPCommunicator.Inst.Send(pkt, roomSlot);
+	}
+
+	public static void EndMoveOK(PacketReader _reader)
+	{
+		byte roomSlot = _reader.GetByte();
+
+		MyPlayerController mpc = ObjectManager.Inst.FindPlayer(UserData.Inst.MyRoomSlot) as MyPlayerController;
+		mpc.SetEndCheck(roomSlot);
 	}
 
 	public static void BeginMoveMonster(PacketReader _reader)
