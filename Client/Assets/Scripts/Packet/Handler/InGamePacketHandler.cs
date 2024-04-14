@@ -164,6 +164,7 @@ public static class InGamePacketHandler
 		if (UserData.Inst.MyRoomSlot == nextRoomOwnerIdx)
 			UserData.Inst.IsRoomOwner = true;
 
+		UserData.Inst.RoomOwnerSlot = nextRoomOwnerIdx;
 		GameManager.Inst.SubPlayerCnt();
 		PlayerController pc = ObjectManager.Inst.FindPlayer(leftUserIdx);
 		ObjectManager.Inst.RemovePlayer(leftUserIdx);
@@ -175,20 +176,37 @@ public static class InGamePacketHandler
 	{
 		byte roomSlot = _reader.GetByte();
 		ushort count = _reader.GetUShort();
+		eSkill skill = (eSkill)_reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
+		pc.CurSkill.SetSkill(skill);
+
 		List<MonsterController> targets = new List<MonsterController>();
 		MonsterController mc;
 		for (int i = 0; i < count; ++i)
 		{
 			mc = ObjectManager.Inst.FindMonster(_reader.GetByte(), _reader.GetByte());
 			targets.Add(mc);
+			ushort hp = _reader.GetUShort();
+			mc.Hit(hp);
 		}
 
-		eSkill skill = (eSkill)_reader.GetByte();
-		pc.CurSkill.SetSkill(skill);
+		if(roomSlot != UserData.Inst.MyRoomSlot)
+			pc.ChangeState(new PlayerAttackState(pc.CurSkill));
+	}	
 
-		pc.ChangeState(new PlayerAttackState(targets, pc.CurSkill));
+	public static void AttackReq(PacketReader _reader) // 방장이 받는다.
+	{
+		byte roomSlot = _reader.GetByte();
+		short mouseCellPosX = _reader.GetShort();
+		short mouseCellPosY = _reader.GetShort();
+		eSkill skill = (eSkill)_reader.GetByte();
+
+		Debug.Log($"{roomSlot}이 공격함");
+		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
+		pc.CurSkill.SetSkill(skill);
+		pc.CurSkill.SetDist(new Vector2Int(mouseCellPosX, mouseCellPosY), pc.CellPos, pc.LastDir);
+		pc.Attack(roomSlot, 0,0);
 	}	
 	
 	public static void RangedAttack(PacketReader _reader)
@@ -197,21 +215,42 @@ public static class InGamePacketHandler
 		ushort count = _reader.GetUShort();
 		short x = _reader.GetShort();
 		short y = _reader.GetShort();
+		eSkill skill = (eSkill)_reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
+		pc.CurSkill.SetSkill(skill);
+
 		List<MonsterController> targets = new List<MonsterController>();
 		MonsterController mc;
 		for (int i = 0; i < count; ++i)
 		{
 			mc = ObjectManager.Inst.FindMonster(_reader.GetByte(), _reader.GetByte());
 			targets.Add(mc);
+			ushort hp = _reader.GetUShort();
+			mc.Hit(hp);
 		}
+
+		if (roomSlot != UserData.Inst.MyRoomSlot)
+		{
+			pc.ChangeState(new PlayerAttackState(pc.CurSkill));
+			pc.SetRangedSkillObjPos(new Vector2Int(x, y));
+		}
+	}
+	
+	public static void RangedAttackReq(PacketReader _reader)  // 방장이 받는다.
+	{
+		byte roomSlot = _reader.GetByte();
+		short mouseCellPosX = _reader.GetShort();
+		short mouseCellPosY = _reader.GetShort();
+		short x = _reader.GetShort();
+		short y = _reader.GetShort();
+
+		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 
 		eSkill skill = (eSkill)_reader.GetByte();
 		pc.CurSkill.SetSkill(skill);
-
-		pc.ChangeState(new PlayerAttackState(targets, pc.CurSkill));
-		pc.SetRangedSkillObjPos(new Vector2Int(x, y));
+		pc.CurSkill.SetDist(new Vector2Int(mouseCellPosX, mouseCellPosY), pc.CellPos, pc.LastDir);
+		pc.Attack(roomSlot, x, y);
 	}
 
 	public static void GameOver(PacketReader _reader)

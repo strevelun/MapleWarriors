@@ -38,6 +38,8 @@ public class MonsterHitState : ICreatureState
 	public void FixedUpdate()
 	{
 		UpdateAnimation();
+		CheckState();
+
 		if (!m_knockback && m_animStart)
 		{
 			m_mc.Knockback(m_stateInfo.length);
@@ -58,11 +60,14 @@ public class MonsterHitState : ICreatureState
 			m_animStart = true;
 
 		//Debug.Log(m_stateInfo.IsName("Hit"));
+	}
 
+	void CheckState()
+	{
 		if (m_animStart && !m_stateInfo.IsName("Hit"))
 		{
-			if(m_mc.IsDead)		m_mc.ChangeState(new MonsterDeadState());
-			else				m_mc.ChangeState(new MonsterIdleState());
+			if (m_mc.IsDead) m_mc.ChangeState(new MonsterDeadState());
+			else m_mc.ChangeState(new MonsterIdleState());
 
 			//Debug.Log($"MonsterHitState HP : {m_mc.HP}");
 		}

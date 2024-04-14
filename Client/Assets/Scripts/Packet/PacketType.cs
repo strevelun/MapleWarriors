@@ -42,7 +42,9 @@ public class PacketType
 		BeginMoveMonster,
 		InGameExit,
 		Attack,
+		AttackReq,
 		RangedAttack,
+		RangedAttackReq,
 		GameOver,
 		Max,
 	}

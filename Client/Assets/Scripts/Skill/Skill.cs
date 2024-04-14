@@ -157,15 +157,22 @@ public class Skill
 		}
 	}
 
-	public void Update(Vector2Int _cellPos, Define.eDir _eDir)
-    {
+	public void SetDist(Vector2Int _mouseCellPos, Vector2Int _cellPos, Define.eDir _eDir)
+	{
 		m_eDir = _eDir;
+		m_cellPos = _cellPos;
+		m_dist = _mouseCellPos - _cellPos;
+		m_mouseCellPos = _mouseCellPos;
+	}
 
+
+	public void Update(Vector2Int _cellPos, Define.eDir _eDir)
+	{
 		Vector2 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
 		mousePos.y = -mousePos.y + 1.0f;
 		m_mouseCellPos = MapManager.Inst.WorldToCell(mousePos.x, -mousePos.y);
 
-		m_dist = m_mouseCellPos - _cellPos;
+		SetDist(m_mouseCellPos, _cellPos, _eDir);
 
 		if (m_cellPos != _cellPos)
 		{

@@ -92,44 +92,72 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet Attack(List<MonsterController> _targets, eSkill _skill) // 매개변수 : Attack 번호
+	public static Packet Attack(byte _who, List<MonsterController> _targets, eSkill _skill) // 매개변수 : Attack 번호
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eServer.Attack)
-			.Add((byte)UserData.Inst.MyRoomSlot)
-			.Add((ushort)_targets.Count);
+			.Add((byte)_who)
+			.Add((ushort)_targets.Count)
+			.Add((byte)_skill);
 
-		foreach(MonsterController mc in _targets)
+		foreach (MonsterController mc in _targets)
 		{
 			pkt
 				.Add((byte)mc.Idx)
-				.Add((byte)mc.Num);
+				.Add((byte)mc.Num)
+				.Add((ushort)mc.HP); // 동시 타격시 순서보장 x
 		}
 
-		pkt.Add((byte)_skill);
+		return pkt;
+	}	
+
+	public static Packet AttackReq(Vector2Int _mouseCellPos, eSkill _skill) // 매개변수 : Attack 번호
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.AttackReq)
+			.Add((byte)UserData.Inst.MyRoomSlot)
+			.Add((short)_mouseCellPos.x)
+			.Add((short)_mouseCellPos.y)
+			.Add((byte)_skill);
 
 		return pkt;
 	}	
 	
-	public static Packet RangedAttack(List<MonsterController> _targets, eSkill _skill, Vector2Int _where) // 매개변수 : Attack 번호
+	public static Packet RangedAttack(byte _who, List<MonsterController> _targets, eSkill _skill, Vector2Int _where) // 매개변수 : Attack 번호
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eServer.RangedAttack)
-			.Add((byte)UserData.Inst.MyRoomSlot)
+			.Add(_who)
 			.Add((ushort)_targets.Count)
 			.Add((short)_where.x) // 음수
-			.Add((short)_where.y); 
+			.Add((short)_where.y)
+			.Add((byte)_skill);
 
-		foreach(MonsterController mc in _targets)
+		foreach (MonsterController mc in _targets)
 		{
 			pkt
 				.Add((byte)mc.Idx)
-				.Add((byte)mc.Num);
+				.Add((byte)mc.Num)
+				.Add((ushort)mc.HP);
 		}
 
-		pkt.Add((byte)_skill);
+		return pkt;
+	}
+	
+	public static Packet RangedAttackReq(Vector2Int _mouseCellPos, eSkill _skill, Vector2Int _where)
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.RangedAttackReq)
+			.Add((byte)UserData.Inst.MyRoomSlot)
+			.Add((short)_mouseCellPos.x)
+			.Add((short)_mouseCellPos.y)
+			.Add((short)_where.x) 
+			.Add((short)_where.y)
+			.Add((byte)_skill);
 
 		return pkt;
 	}

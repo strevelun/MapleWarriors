@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -249,6 +250,40 @@ public void CheckMoveState()
 		else
 		{
 			SkillAnim.Play(_skill.GetSkillName());
+		}
+	}
+
+	public void Attack(byte _who, short _x, short _y)
+	{
+		if (!UserData.Inst.IsRoomOwner) return;
+
+		eSkillType skillType = CurSkill.GetSkillType();
+		if (skillType == eSkillType.Melee)
+		{
+			List<MonsterController> targets = new List<MonsterController>();
+			bool activated = CurSkill.Activate(targets);
+			if (activated)
+			{
+				ChangeState(new PlayerAttackState(CurSkill));
+				foreach (MonsterController mc in targets)
+					mc.Hit(CurSkill);
+				Packet pkt = InGamePacketMaker.Attack(_who, targets, CurSkill.eCurSkill);
+				UDPCommunicator.Inst.SendAll(pkt);
+			}
+		}
+		else if (skillType == eSkillType.Ranged)
+		{
+			List<MonsterController> targets = new List<MonsterController>();
+			bool activated = CurSkill.Activate(targets);
+			if (activated)
+			{
+				ChangeState(new PlayerAttackState(CurSkill));
+				foreach (MonsterController mc in targets)
+					mc.Hit(CurSkill);
+				Packet pkt = InGamePacketMaker.RangedAttack(_who, targets, CurSkill.eCurSkill, new Vector2Int(_x, _y));
+				UDPCommunicator.Inst.SendAll(pkt);
+			}
+			SetRangedSkillObjPos(new Vector2Int(_x, _y));
 		}
 	}
 

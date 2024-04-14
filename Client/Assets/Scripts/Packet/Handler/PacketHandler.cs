@@ -138,8 +138,14 @@ public static class PacketHandler
 				case PacketType.eServer.Attack:
 					InGamePacketHandler.Attack(_reader);
 					break;	
+				case PacketType.eServer.AttackReq:
+					InGamePacketHandler.AttackReq(_reader);
+					break;	
 				case PacketType.eServer.RangedAttack:
 					InGamePacketHandler.RangedAttack(_reader);
+					break;
+				case PacketType.eServer.RangedAttackReq:
+					InGamePacketHandler.RangedAttackReq(_reader);
 					break;
 				case PacketType.eServer.GameOver:
 					InGamePacketHandler.GameOver(_reader);

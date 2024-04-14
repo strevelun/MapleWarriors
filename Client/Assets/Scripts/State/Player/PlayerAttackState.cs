@@ -8,10 +8,10 @@ public class PlayerAttackState : ICreatureState
 {
 	PlayerController m_player;
 	Skill m_skill;
-	List<MonsterController> m_targets;
+	//List<MonsterController> m_targets;
 	bool m_animStart = false;
 	AnimatorStateInfo m_stateInfo, m_skillStateInfo;
-	bool m_hit = false;
+	//bool m_hit = false;
 
 	public bool CanEnter(CreatureController _cs)
 	{
@@ -24,10 +24,10 @@ public class PlayerAttackState : ICreatureState
 
 	// 타겟이 없으면 그냥 공격 모션만 하고 끝
 	// 스킬 정보(애니이름, 언제 히트가 되는지 등)를 담고 있는 객체를 매개변수로
-	public PlayerAttackState(List<MonsterController> _targets, Skill _skill) // 마우스 어디 클릭했는지 정보 받아서 원거리 스킬 이동
+	public PlayerAttackState(Skill _skill) // 마우스 어디 클릭했는지 정보 받아서 원거리 스킬 이동
 	{
 		m_skill = _skill;
-		m_targets = new List<MonsterController>(_targets);
+		//m_targets = new List<MonsterController>(_targets);
 	}
 
 	public void Enter(CreatureController _cs)
@@ -41,8 +41,8 @@ public class PlayerAttackState : ICreatureState
 
 		//m_player.SkillAnim.transform.position = new Vector3(m_player.CellPos.x, -m_player.CellPos.y);
 		
-		foreach(MonsterController mc in m_targets)
-			mc.Hit(m_skill);
+		//foreach(MonsterController mc in m_targets)
+			//mc.Hit(m_skill);
 
 		// 몬스터 멈추기 Dir = None
 	}
@@ -80,7 +80,7 @@ public class PlayerAttackState : ICreatureState
 			Debug.Log("PlayerAttackState Changed");
 			return;
 		}
-
+		/*
 		if (!m_hit && m_targets.Count > 0 && m_stateInfo.normalizedTime >= 0.3f)
 		{
 			foreach (MonsterController mc in m_targets)
@@ -93,5 +93,6 @@ public class PlayerAttackState : ICreatureState
 			
 			m_hit = true;
 		}
+		*/
 	}
 }

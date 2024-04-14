@@ -401,6 +401,7 @@ public class MonsterController : CreatureController
 
 		HP -= damage;
 		if (HP < 0) HP = 0;
+
 		m_hpbarText.text = HP.ToString();
 
 		m_damageObj.SetActive(true);
@@ -418,6 +419,39 @@ public class MonsterController : CreatureController
 		}
 
 		m_damamgeCoroutine = StartCoroutine(DamageCoroutine(1.0f));
+
+		if (ChangeState(new MonsterHitState()) == false)
+		{
+			if (IsDead) ChangeState(new MonsterDeadState());
+		}
+	}
+
+	public void Hit(int _hp)
+	{
+		int damage = HP - _hp;
+		HP = _hp;
+		m_hpbarText.text = HP.ToString();
+
+		m_damageObj.SetActive(true);
+		m_damageCanvasGroup.alpha = 1f;
+
+		m_damageTMP_RT.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_damageUIOffset);
+		m_damageTMP.text = damage.ToString();
+
+		m_hpBarSlider.value -= damage;
+
+		if (m_damamgeCoroutine != null)
+		{
+			StopCoroutine(m_damamgeCoroutine);
+			m_damamgeCoroutine = null;
+		}
+
+		m_damamgeCoroutine = StartCoroutine(DamageCoroutine(1.0f));
+
+		if (ChangeState(new MonsterHitState()) == false)
+		{
+			if (IsDead) ChangeState(new MonsterDeadState());
+		}
 	}
 
 	IEnumerator DamageCoroutine(float _delay)

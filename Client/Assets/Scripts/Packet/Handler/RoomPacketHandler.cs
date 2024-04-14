@@ -66,6 +66,8 @@ public static class RoomPacketHandler
 			obj.SetActive(false);
 			obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_StartBtn);
 			obj.SetActive(true);
+
+			UserData.Inst.RoomOwnerSlot = nextOwnerIdx;
 		}
 
 		if(UserData.Inst.MyRoomSlot == nextOwnerIdx)
@@ -105,11 +107,13 @@ public static class RoomPacketHandler
 		Define.eRoomUserState eState;
 		Define.eCharacterChoice eChoice;
 		string roomTitle = _reader.GetString();
+		int roomOwnerIdx = _reader.GetByte();
 		int numOfUsers = _reader.GetByte();
 		GameObject obj;
 		Transform t;
 		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
 
+		UserData.Inst.RoomOwnerSlot = roomOwnerIdx;
 
 		for (int i=0; i<numOfUsers; ++i)
 		{

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +18,6 @@ public class UserData
 	public string Nickname;
 	public int ConnectionID;
 	public bool IsRoomOwner;
-	public long ticks;
+	public int RoomOwnerSlot;
 	public int MyRoomSlot;
 }
