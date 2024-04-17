@@ -170,10 +170,13 @@ public static class InGamePacketHandler
 		UserData.Inst.RoomOwnerSlot = nextRoomOwnerIdx;
 		GameManager.Inst.SubPlayerCnt();
 		GameManager.Inst.RemovePlayerSlot(leftUserIdx);
+
 		PlayerController pc = ObjectManager.Inst.FindPlayer(leftUserIdx);
-		ObjectManager.Inst.RemovePlayer(leftUserIdx);
 		MapManager.Inst.RemoveAimTile(pc.CellPos.x, pc.CellPos.y);
 		ResourceManager.Inst.Destroy(pc.gameObject);
+		ObjectManager.Inst.RemovePlayer(leftUserIdx);
+
+		UDPCommunicator.Inst.RemoveSendInfo(leftUserIdx);
 	}
 
 	public static void Attack(PacketReader _reader)

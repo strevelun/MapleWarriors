@@ -44,6 +44,8 @@ public class PlayerController : CreatureController
 
 	TextMeshProUGUI m_hpbarText;
 
+	protected GameObject m_nickname;
+
 	// 3Ä­ÀÌ¸é 1.5
 	// 2Ä­ÀÌ¸é 1
 	[SerializeField]
@@ -104,9 +106,9 @@ public class PlayerController : CreatureController
 
 		GameObject playerUI = ResourceManager.Inst.Instantiate("Creature/UI/PlayerUI", gameObject.transform);
 
-		GameObject nickname = Util.FindChild(playerUI, true, "Nickname");
-		m_nicknameTMP = nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-		m_nameTagUI = nickname.GetComponent<RectTransform>();
+		m_nickname = Util.FindChild(playerUI, true, "Nickname");
+		m_nicknameTMP = m_nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		m_nameTagUI = m_nickname.GetComponent<RectTransform>();
 
 		GameObject position = Util.FindChild(playerUI, true, "Position");
 		m_positionTMP = position.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
@@ -123,7 +125,7 @@ public class PlayerController : CreatureController
 		m_hpBarSlider.maxValue = MaxHP;
 		m_hpBarSlider.value = MaxHP;
 		m_hpbarText.text = MaxHP.ToString();
-		m_hpBarUIOffset = new Vector2(HitboxWidth / 2f, -0.3f);
+		m_hpBarUIOffset = new Vector2(HitboxWidth / 2f, -0.2f);
 
 		ChangeState(new PlayerIdleState());
 
@@ -324,13 +326,13 @@ public void CheckMoveState()
 		}
 		else if (Dir == eDir.Up || Dir == eDir.UpRight)
 		{
-			m_skillAnimObj.transform.localPosition = new Vector3(0f, 0.5f);
+			m_skillAnimObj.transform.localPosition = new Vector3(0f, 1.5f);
 			m_skillAnimObj.transform.localRotation = Quaternion.Euler(0f, 0f, -90f);
 			m_skillAnimObj.transform.localScale = new Vector3(1, 1, 1);
 		}
 		else if (Dir == eDir.Down || Dir == eDir.DownLeft)
 		{
-			m_skillAnimObj.transform.localPosition = new Vector3(1f, 0.5f);
+			m_skillAnimObj.transform.localPosition = new Vector3(1f, 0.2f);
 			m_skillAnimObj.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
 			m_skillAnimObj.transform.localScale = new Vector3(1, 1, 1);
 		}

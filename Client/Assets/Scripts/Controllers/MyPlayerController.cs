@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using static Define;
 
 public class MyPlayerController : PlayerController
@@ -28,14 +29,14 @@ public class MyPlayerController : PlayerController
 
 	//int m_testMovingCnt = 0;
 
-    void Start()
+	void Start()
 	{
 		StartCoroutine(MovingCoroutine());
 		StartCoroutine(MoveEndCheckCoroutine());
 	}
 
 	protected override void Update()
-    {
+	{
 		base.Update();
 
 		InputMovement();
@@ -52,6 +53,13 @@ public class MyPlayerController : PlayerController
 	protected override void FixedUpdate()
 	{
 		base.FixedUpdate();
+	}
+
+	public override void Init(int _cellXPos, int _cellYPos)
+	{
+		base.Init(_cellXPos, _cellYPos);
+
+		m_nickname.GetComponent<Image>().color = new Color(69 / 255f, 144 / 255f, 255 / 255f, 190 / 255f);
 	}
 
 	IEnumerator MovingCoroutine()
