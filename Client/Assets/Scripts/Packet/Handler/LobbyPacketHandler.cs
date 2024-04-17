@@ -27,6 +27,8 @@ public static class LobbyPacketHandler
 	public static void LobbyUpdateInfo_UserList(PacketReader _reader)
 	{
 		// TODO : UIPage로 로직 옮기기
+		// 룸으로 들어간 후 이 패킷이 온다면
+		if (SceneManagerEx.Inst.CurScene.SceneType != eScene.Lobby) return;
 
 		TextMeshProUGUI tmp;
 

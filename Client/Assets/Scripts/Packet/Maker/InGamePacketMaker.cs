@@ -169,4 +169,12 @@ public static class InGamePacketMaker
 			.Add(PacketType.eClient.GameOver);
 		return pkt;
 	}
+
+	public static Packet AwakePacket()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.Awake);
+		return pkt;
+	}
 }

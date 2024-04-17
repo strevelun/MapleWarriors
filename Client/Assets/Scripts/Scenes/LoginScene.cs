@@ -56,7 +56,7 @@ public class LoginScene : BaseScene
 		});
 
 		//NetworkManager.Inst.Init("119.67.216.164", 30001); // 포트포워딩
-		NetworkManager.Inst.Init("192.168.219.149", 30001);
+		NetworkManager.Inst.Init("192.168.219.126", 30001);
 		//NetworkManager.Inst.Connect("118.32.36.41", 30001); // gpm
 
 		//InputManager.Inst.KeyAction += OnKeyboardEnter;

@@ -77,7 +77,10 @@ public static class InGamePacketHandler
 		Debug.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
 		Debug.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
 
-		mpc.SetOtherPlayerSlot(idxList);
+		Packet pkt = InGamePacketMaker.AwakePacket();
+		UDPCommunicator.Inst.SendAll(pkt);
+
+		GameManager.Inst.SetOtherPlayerSlot(idxList);
 		GameManager.Inst.GameStart = true;
 	}
 
@@ -166,6 +169,7 @@ public static class InGamePacketHandler
 
 		UserData.Inst.RoomOwnerSlot = nextRoomOwnerIdx;
 		GameManager.Inst.SubPlayerCnt();
+		GameManager.Inst.RemovePlayerSlot(leftUserIdx);
 		PlayerController pc = ObjectManager.Inst.FindPlayer(leftUserIdx);
 		ObjectManager.Inst.RemovePlayer(leftUserIdx);
 		MapManager.Inst.RemoveAimTile(pc.CellPos.x, pc.CellPos.y);

@@ -18,6 +18,8 @@ public class GameManager
 	public int PlayerCnt { get; private set; } = 0;
 	public int MonsterCnt { get; private set; } = 0;
 
+	public List<int> OtherPlayersSlot { get; private set; }
+
 	public bool CheckGameOver()
 	{
 		if (!GameStart) return false;
@@ -44,13 +46,24 @@ public class GameManager
 	{
 		if (PlayerCnt <= 0) return; 
 
-		--PlayerCnt; 
+		--PlayerCnt;
 	}
+
+	public void RemovePlayerSlot(int _idx)
+	{
+		OtherPlayersSlot.Remove(_idx);
+	}
+
 	public void SubMonsterCnt() 
 	{
 		if (MonsterCnt <= 0) return;
 		
 		--MonsterCnt; 
+	}
+
+	public void SetOtherPlayerSlot(List<int> _slotList)
+	{
+		OtherPlayersSlot = _slotList;
 	}
 
 	public void Clear()

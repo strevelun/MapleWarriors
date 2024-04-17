@@ -13,6 +13,7 @@ public class UDPCommunicator : MonoBehaviour
 	private static UDPCommunicator s_inst = null;
 	public static UDPCommunicator Inst { get { return s_inst; } }
 
+	int m_port;
 	UdpClient m_udpClient;
 	PacketReader m_reader = new PacketReader();
 
@@ -40,6 +41,7 @@ public class UDPCommunicator : MonoBehaviour
 
 	public void Init(int _port)
 	{
+		m_port = _port;
 		m_udpClient = new UdpClient(_port);
 		StartReceive();
 	}
@@ -83,9 +85,16 @@ public class UDPCommunicator : MonoBehaviour
 				m_reader.SetBuffer(result.Buffer);
 				PacketHandler.Handle(m_reader);
 				//Debug.Log("result");
-			} 
-			catch(ObjectDisposedException)
+			}
+			catch (SocketException ex)
 			{
+				Debug.Log($"SocketException : {ex.ErrorCode}, {ex.Message}");
+				m_udpClient?.Close();
+				m_udpClient = new UdpClient(m_port);
+			}
+			catch (ObjectDisposedException)
+			{
+				
 				break;
 			}
 		}

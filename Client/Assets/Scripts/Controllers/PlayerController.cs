@@ -28,15 +28,15 @@ public class PlayerController : CreatureController
 	protected eSkill m_eCurSkill = eSkill.None;
 
 	TextMeshProUGUI m_nicknameTMP;
-	//TextMeshProUGUI m_positionTMP;
+	TextMeshProUGUI m_positionTMP;
 	string m_strNickname;
 
 	[SerializeField]
 	Vector2 m_nameTagOffset = new Vector2(0.5f, 1.5f); 
 	RectTransform m_nameTagUI;
 	[SerializeField]
-	//Vector2 m_positionTagOffset = new Vector2(0.5f, 2.5f);
-	//RectTransform m_positionTagUI;
+	Vector2 m_positionTagOffset = new Vector2(0.5f, 2f);
+	RectTransform m_positionTagUI;
 
 	GameObject m_hpbarObj;
 	Slider m_hpBarSlider;
@@ -70,10 +70,10 @@ public class PlayerController : CreatureController
 
 	
 
-		//m_positionTMP.text = $"x = {transform.position.x}, y = {transform.position.y}";
+		m_positionTMP.text = $"x = {transform.position.x}, y = {transform.position.y}";
 
 		m_nameTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_nameTagOffset);
-		//m_positionTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_positionTagOffset);
+		m_positionTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_positionTagOffset);
 	}
 
 	public override void Init(int _cellXPos, int _cellYPos)
@@ -108,9 +108,9 @@ public class PlayerController : CreatureController
 		m_nicknameTMP = nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 		m_nameTagUI = nickname.GetComponent<RectTransform>();
 
-		//GameObject position = Util.FindChild(playerUI, true, "Position");
-		//m_positionTMP = position.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-		//m_positionTagUI = position.GetComponent<RectTransform>();
+		GameObject position = Util.FindChild(playerUI, true, "Position");
+		m_positionTMP = position.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		m_positionTagUI = position.GetComponent<RectTransform>();
 
 		m_hpbarObj = Util.FindChild(playerUI, true, "HPBar");
 		m_hpBarSlider = Util.FindChild(m_hpbarObj, true, "Slider").GetComponent<Slider>();

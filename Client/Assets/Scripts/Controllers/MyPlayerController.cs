@@ -25,9 +25,8 @@ public class MyPlayerController : PlayerController
 	int m_endMovePlayerCnt = 0;
 	bool m_bEndMove = false;
 	bool[] m_endMoveCheck = new bool[4];
-	List<int> m_otherPlayersSlot = null;
 
-	int m_testMovingCnt = 0;
+	//int m_testMovingCnt = 0;
 
     void Start()
 	{
@@ -67,10 +66,6 @@ public class MyPlayerController : PlayerController
 
 			yield return new WaitForSeconds(0.2f);
 
-			++m_testMovingCnt;
-
-			if (2 <= m_testMovingCnt && m_testMovingCnt <= 8) continue;
-
 			Packet pkt = InGamePacketMaker.Moving(transform.position, ByteDir);
 			UDPCommunicator.Inst.SendAll(pkt);
 		}
@@ -80,24 +75,25 @@ public class MyPlayerController : PlayerController
 	{
 		while(true)
 		{
+			yield return new WaitForSeconds(0.2f);
+
 			if (!m_bEndMove)
 			{
 				yield return null;
 				continue;
 			}
 
-			yield return new WaitForSeconds(0.2f);
-
-			foreach(int slot in m_otherPlayersSlot)
+			foreach(int slot in GameManager.Inst.OtherPlayersSlot)
 			{
 				if(m_endMoveCheck[slot] == false)
 				{
 					Packet pkt = InGamePacketMaker.EndMove(transform.position);
 					UDPCommunicator.Inst.Send(pkt, slot);
+					Debug.Log($"{slot}이 아직 EndMove체크를 안해서 또 보내는 중");
 				}
 			}
 
-			Debug.Log("EndMove 체크 중");
+			//Debug.Log("EndMove 체크 중");
 			
 		}
 	}
@@ -111,11 +107,13 @@ public class MyPlayerController : PlayerController
 
 		Debug.Log($"{_slot}이 endMove 체크 완료");
 
-		if (m_endMovePlayerCnt >= m_otherPlayersSlot.Count)
+
+		if (m_endMovePlayerCnt >= GameManager.Inst.PlayerCnt-1)
 		{
+			Debug.Log("모든 플레이어가 EndMove완료");
 			m_bEndMove = false;
 			m_endMovePlayerCnt = 0;
-			foreach (int slot in m_otherPlayersSlot)
+			foreach (int slot in GameManager.Inst.OtherPlayersSlot)
 			{
 				m_endMoveCheck[slot] = false;
 			}
@@ -332,10 +330,7 @@ public class MyPlayerController : PlayerController
 		CurSkill.RemoveAimTiles();
 	}
 
-	public void SetOtherPlayerSlot(List<int> _slotList)
-	{
-		m_otherPlayersSlot = _slotList;
-	}
+
 
 	public override void OnChangeStage()
 	{

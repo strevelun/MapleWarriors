@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class InGameScene : BaseScene
 {
+	Logger m_logger = new Logger();
+
 	[SerializeField]
 	GameObject m_allClear, m_clear, m_wasted;
 
@@ -37,6 +39,9 @@ public class InGameScene : BaseScene
 	void Start()
 	{
 		Init();
+
+		InvokeRepeating("Log", 0f, 0.1f);
+		InvokeRepeating("SendAwake", 0f, 30f);
 	}
 
 	void Update()
@@ -99,5 +104,22 @@ public class InGameScene : BaseScene
 	public void SetWastedImageVisible(bool _visible)
 	{
 		m_wasted.SetActive(_visible);
+	}
+
+	void Log()
+	{
+		m_logger.LogInfo();
+	}
+
+	void OnApplicationQuit()
+	{
+		m_logger.End();	
+	}
+
+	void SendAwake()
+	{
+		Packet pkt = InGamePacketMaker.AwakePacket();
+		UDPCommunicator.Inst.SendAll(pkt);
+		Debug.Log("어웨이크");
 	}
 }
