@@ -30,6 +30,7 @@ public class PlayerRunState : ICreatureState
 	{
 		if (m_mpc)
 		{
+			m_mpc.InputMovement();
 			m_mpc.CheckMoveState();
 			m_mpc.InputAttack();
 		}

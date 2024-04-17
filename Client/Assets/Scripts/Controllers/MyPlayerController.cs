@@ -20,6 +20,8 @@ public class MyPlayerController : PlayerController
 		RightDown
 	}
 
+	bool m_bMove = false;
+
 	bool m_bIsKeyDown = false;
 	bool m_bIsKeyUp = false;
 
@@ -39,7 +41,7 @@ public class MyPlayerController : PlayerController
 	{
 		base.Update();
 
-		InputMovement();
+		//InputMovement();
 
 		if (!IsDead)
 		{
@@ -134,24 +136,28 @@ public class MyPlayerController : PlayerController
 		if (!InputManager.Inst.InputEnabled) return;
 
 		//Debug.Log("InputDownMovement");
-		if (Input.GetKeyDown(KeyCode.W))
+		if (!m_bMove && Input.GetKey(KeyCode.W))
 		{
 			m_bIsKeyDown = true;
+			m_bMove = true;
 			ByteDir |= (byte)eDir.Up;
 		}
-		if (Input.GetKeyDown(KeyCode.S))
+		if (!m_bMove && Input.GetKey(KeyCode.S))
 		{
 			m_bIsKeyDown = true;
+			m_bMove = true;
 			ByteDir |= (byte)eDir.Down;
 		}
-		if (Input.GetKeyDown(KeyCode.A))
+		if (!m_bMove && Input.GetKey(KeyCode.A))
 		{
 			m_bIsKeyDown = true;
+			m_bMove = true;
 			ByteDir |= (byte)eDir.Left;
 		}
-		if (Input.GetKeyDown(KeyCode.D))
+		if (!m_bMove && Input.GetKey(KeyCode.D))
 		{
 			m_bIsKeyDown = true;
+			m_bMove = true;
 			ByteDir |= (byte)eDir.Right;
 		}
 
@@ -161,12 +167,14 @@ public class MyPlayerController : PlayerController
 			m_bIsKeyUp = true;
 			temp = (byte)eDir.Up;
 			ByteDir &= (byte)~temp;
+			m_bMove = false;
 		}
 		if (Input.GetKeyUp(KeyCode.S))
 		{
 			m_bIsKeyUp = true;
 			temp = (byte)eDir.Down;
 			ByteDir &= (byte)~temp;
+			m_bMove = false;
 		}
 		if (Input.GetKeyUp(KeyCode.A))
 		{
@@ -174,11 +182,13 @@ public class MyPlayerController : PlayerController
 			temp = (byte)eDir.Left;
 			ByteDir &= (byte)~temp;
 		}
+		m_bMove = false;
 		if (Input.GetKeyUp(KeyCode.D))
 		{
 			m_bIsKeyUp = true;
 			temp = (byte)eDir.Right;
 			ByteDir &= (byte)~temp;
+			m_bMove = false;
 		}
 	}
 
@@ -337,8 +347,6 @@ public class MyPlayerController : PlayerController
 
 		CurSkill.RemoveAimTiles();
 	}
-
-
 
 	public override void OnChangeStage()
 	{

@@ -36,6 +36,7 @@ public class PlayerIdleState : ICreatureState
 	{
 		if (m_mpc)
 		{
+			m_mpc.InputMovement();
 			m_mpc.UpdateMove();
 			m_mpc.CheckMoveState();
 			m_mpc.InputAttack();

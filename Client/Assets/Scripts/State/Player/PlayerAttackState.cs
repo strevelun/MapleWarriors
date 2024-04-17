@@ -39,10 +39,12 @@ public class PlayerAttackState : ICreatureState
 
 		m_skill.Play(m_player);
 
+		m_player.ByteDir = 0;
+
 		//m_player.SkillAnim.transform.position = new Vector3(m_player.CellPos.x, -m_player.CellPos.y);
-		
+
 		//foreach(MonsterController mc in m_targets)
-			//mc.Hit(m_skill);
+		//mc.Hit(m_skill);
 
 		// 몬스터 멈추기 Dir = None
 	}

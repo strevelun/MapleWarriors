@@ -40,7 +40,7 @@ public class MonsterAttackState : ICreatureState
 	public void FixedUpdate()
 	{
 		UpdateAnimation();
-
+		Attack();
 	}
 
 	public void Exit()
@@ -62,18 +62,20 @@ public class MonsterAttackState : ICreatureState
 			//Debug.Log($"몬스터 어택 끝 : {m_mc.Dir}");
 			return;
 		}
+	}
 
+	void Attack()
+	{
 		// 여러명 공격 가능
 		if (!m_hit && m_targets.Count > 0 && m_stateInfo.normalizedTime >= 0.3f)
 		{
 			foreach (PlayerController pc in m_targets)
 			{
-				if(pc.ChangeState(new PlayerHitState(m_mc)) == false)
+				if (pc.ChangeState(new PlayerHitState(m_mc)) == false)
 				{
 					if (pc.IsDead) pc.ChangeState(new PlayerDeadState());
 				}
 			}
-
 			m_hit = true;
 		}
 	}
