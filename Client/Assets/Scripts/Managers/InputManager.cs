@@ -15,7 +15,7 @@ public class InputManager : MonoBehaviour
 	private void Awake()
 	{
 		DontDestroyOnLoad(this);
-		s_inst = GetComponent<InputManager>();
+		s_inst = this;
 	}
 
 	private void Start()

@@ -68,14 +68,14 @@ public static class InGamePacketHandler
 					if(j < 3) ip += ".";
 				}
 				UDPCommunicator.Inst.AddSendInfo(idx, ip, port);
-				Debug.Log($"socket : {port}, ip : {ip}");
+				InGameConsole.Inst.Log($"{nickname}, port : {port}, ip : {ip}");
 			}
 			ObjectManager.Inst.AddPlayer(idx, player);
 		}
 
-		Debug.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
-		Debug.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
-		Debug.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
+		InGameConsole.Inst.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
+		InGameConsole.Inst.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
+		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
 
 		Packet pkt = InGamePacketMaker.AwakePacket();
 		UDPCommunicator.Inst.SendAll(pkt);

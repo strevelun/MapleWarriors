@@ -18,6 +18,10 @@ public class Packet
 		get { return m_addPos; }
 	}
 
+	public PacketType.eClient GetPacketType()
+	{
+		return (PacketType.eClient)m_buffer[2];
+	}
 
 	//public Packet Add(bool _type) { return Add(GetBytes(_type)); }
 	public Packet Add(byte _type) { return Add(new byte[1] { _type }); }

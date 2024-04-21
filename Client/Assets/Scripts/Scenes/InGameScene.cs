@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class InGameScene : BaseScene
 {
-	Logger m_logger = new Logger();
-
 	[SerializeField]
 	GameObject m_allClear, m_clear, m_wasted;
 
@@ -18,6 +16,9 @@ public class InGameScene : BaseScene
 
 		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.eScene.InGame);
 		uiScene.AddUI("SkillPanel"); // room에서도 똑같이
+		GameObject ingameConsole = uiScene.AddUI("Ingame_Console");
+
+		InGameConsole.Inst.Init(ingameConsole);
 
 		Packet pkt = InGamePacketMaker.ReqInitInfo();
 		NetworkManager.Inst.Send(pkt);
@@ -40,7 +41,6 @@ public class InGameScene : BaseScene
 	{
 		Init();
 
-		InvokeRepeating("Log", 0f, 0.1f);
 		InvokeRepeating("SendAwake", 0f, 30f);
 	}
 
@@ -104,16 +104,6 @@ public class InGameScene : BaseScene
 	public void SetWastedImageVisible(bool _visible)
 	{
 		m_wasted.SetActive(_visible);
-	}
-
-	void Log()
-	{
-		m_logger.LogInfo();
-	}
-
-	void OnApplicationQuit()
-	{
-		m_logger.End();	
 	}
 
 	void SendAwake()

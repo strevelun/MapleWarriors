@@ -182,7 +182,7 @@ public class Skill
 				SetAimTiles();
 		}
 
-		if (m_prevMouseCellPos != m_mouseCellPos || m_cellPos != m_lastCellPos)
+		if (m_prevMouseCellPos != m_mouseCellPos) //|| m_cellPos != m_lastCellPos)
 		{
 			m_cellPos = _cellPos;
 			RemoveAimTiles();

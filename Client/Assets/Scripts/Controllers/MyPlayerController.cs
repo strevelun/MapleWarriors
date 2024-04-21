@@ -20,8 +20,7 @@ public class MyPlayerController : PlayerController
 		RightDown
 	}
 
-	bool m_bMove = false;
-
+	//bool m_bMove = false;
 	bool m_bIsKeyDown = false;
 	bool m_bIsKeyUp = false;
 
@@ -99,7 +98,7 @@ public class MyPlayerController : PlayerController
 				{
 					Packet pkt = InGamePacketMaker.EndMove(transform.position);
 					UDPCommunicator.Inst.Send(pkt, slot);
-					Debug.Log($"{slot}이 아직 EndMove체크를 안해서 또 보내는 중");
+					InGameConsole.Inst.Log($"{slot}이 아직 EndMove체크를 안해서 또 보내는 중");
 				}
 			}
 
@@ -135,31 +134,47 @@ public class MyPlayerController : PlayerController
 		if (!GameManager.Inst.GameStart) return;
 		if (!InputManager.Inst.InputEnabled) return;
 
+		/*
+		if(ByteDir == 0 && m_bMove) // 스킬사용 후 이동 체크
+		{
+			if(Input.GetKey(KeyCode.W))
+				ByteDir |= (byte)eDir.Up;
+			if (Input.GetKey(KeyCode.S))
+				ByteDir |= (byte)eDir.Down;
+			if (Input.GetKey(KeyCode.A))
+				ByteDir |= (byte)eDir.Left;
+			if (Input.GetKey(KeyCode.D))
+				ByteDir |= (byte)eDir.Right;
+
+			Packet pkt = InGamePacketMaker.BeginMove(transform.position, ByteDir);
+			UDPCommunicator.Inst.SendAll(pkt);
+		}
+		*/
+
 		//Debug.Log("InputDownMovement");
-		if (!m_bMove && Input.GetKey(KeyCode.W))
+		if (Input.GetKeyDown(KeyCode.W))
 		{
 			m_bIsKeyDown = true;
-			m_bMove = true;
 			ByteDir |= (byte)eDir.Up;
 		}
-		if (!m_bMove && Input.GetKey(KeyCode.S))
+		if (Input.GetKeyDown(KeyCode.S))
 		{
 			m_bIsKeyDown = true;
-			m_bMove = true;
 			ByteDir |= (byte)eDir.Down;
 		}
-		if (!m_bMove && Input.GetKey(KeyCode.A))
+		if (Input.GetKeyDown(KeyCode.A))
 		{
 			m_bIsKeyDown = true;
-			m_bMove = true;
 			ByteDir |= (byte)eDir.Left;
 		}
-		if (!m_bMove && Input.GetKey(KeyCode.D))
+		if (Input.GetKeyDown(KeyCode.D))
 		{
 			m_bIsKeyDown = true;
-			m_bMove = true;
 			ByteDir |= (byte)eDir.Right;
+			//InGameConsole.Inst.Log("DDDDDfdsfasfewtwertwrtwrDDDDDfdsfasfewtwertwrtwrDDDDDfdsfasfewtwertwrtwrDDDDDfdsfasfewtwertwrtwr");
 		}
+
+		//if (m_bIsKeyDown) m_bMove = true;
 
 		byte temp;
 		if (Input.GetKeyUp(KeyCode.W))
@@ -167,14 +182,12 @@ public class MyPlayerController : PlayerController
 			m_bIsKeyUp = true;
 			temp = (byte)eDir.Up;
 			ByteDir &= (byte)~temp;
-			m_bMove = false;
 		}
 		if (Input.GetKeyUp(KeyCode.S))
 		{
 			m_bIsKeyUp = true;
 			temp = (byte)eDir.Down;
 			ByteDir &= (byte)~temp;
-			m_bMove = false;
 		}
 		if (Input.GetKeyUp(KeyCode.A))
 		{
@@ -182,13 +195,11 @@ public class MyPlayerController : PlayerController
 			temp = (byte)eDir.Left;
 			ByteDir &= (byte)~temp;
 		}
-		m_bMove = false;
 		if (Input.GetKeyUp(KeyCode.D))
 		{
 			m_bIsKeyUp = true;
 			temp = (byte)eDir.Right;
 			ByteDir &= (byte)~temp;
-			m_bMove = false;
 		}
 	}
 
@@ -212,9 +223,9 @@ public class MyPlayerController : PlayerController
 			m_bIsKeyDown = false;
 			m_bIsKeyUp = false;
 			m_bEndMove = false;
-
-
 		}
+
+		//if (ByteDir == 0) m_bMove = false;
 
 		if (ByteDir != 0)
 		{
@@ -249,6 +260,8 @@ public class MyPlayerController : PlayerController
 				{
 					if (activated)
 					{
+						// 스킬 끝나고 방향키 누르고 있을 시 BeginMove
+						ByteDir = 0;
 						ChangeState(new PlayerAttackState(CurSkill)); 
 						foreach (MonsterController mc in targets)
 							mc.Hit(CurSkill);

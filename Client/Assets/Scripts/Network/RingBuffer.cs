@@ -75,7 +75,7 @@ public class RingBuffer : MonoBehaviour
 	private void Awake()
 	{
 		DontDestroyOnLoad(this);
-		s_inst = GetComponent<RingBuffer>();
+		s_inst = this;
 	}
 
 	private void Update()

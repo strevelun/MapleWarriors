@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -13,9 +14,9 @@ public class UDPCommunicator : MonoBehaviour
 	private static UDPCommunicator s_inst = null;
 	public static UDPCommunicator Inst { get { return s_inst; } }
 
-	int m_port;
 	UdpClient m_udpClient;
 	PacketReader m_reader = new PacketReader();
+	ConcurrentQueue<UdpReceiveResult> m_recvQueue = new ConcurrentQueue<UdpReceiveResult>();
 
 	public struct tSendInfo
 	{
@@ -27,7 +28,7 @@ public class UDPCommunicator : MonoBehaviour
 
 	private void Awake()
 	{
-		s_inst = GetComponent<UDPCommunicator>();
+		s_inst = this;
 	}
 
 	void Start()
@@ -36,12 +37,20 @@ public class UDPCommunicator : MonoBehaviour
 
     void Update()
     {
-        
-    }
+		if (!m_recvQueue.IsEmpty)
+		{
+			UdpReceiveResult result;
+			if (m_recvQueue.TryDequeue(out result))
+			{
+				m_reader.SetBuffer(result.Buffer);
+				PacketHandler.Handle(m_reader);
+			}
+		}
+	}
+
 
 	public void Init(int _port)
 	{
-		m_port = _port;
 		m_udpClient = new UdpClient(_port);
 		StartReceive();
 	}
@@ -63,7 +72,7 @@ public class UDPCommunicator : MonoBehaviour
 		if (!DicSendInfo.TryGetValue(_slot, out info)) return;
 
 		int sendbyte = m_udpClient.Send(_pkt.GetBuffer(), _pkt.Size, info.ip, info.port);
-		Debug.Log($"{info.ip}, {info.port}로 보냄 : {sendbyte}");
+		InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {info.ip}, {info.port}로 보냄 : {sendbyte}");
 	}
 
 	public void SendAll(Packet _pkt)
@@ -71,7 +80,7 @@ public class UDPCommunicator : MonoBehaviour
 		foreach (tSendInfo info in DicSendInfo.Values)
 		{
 			int sendbyte = m_udpClient.Send(_pkt.GetBuffer(), _pkt.Size, info.ip, info.port);
-			Debug.Log($"{info.ip}, {info.port}로 보냄 : {sendbyte}");
+			InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {info.ip}, {info.port}로 보냄 : {sendbyte}");
 		}
 	}
 
@@ -82,19 +91,15 @@ public class UDPCommunicator : MonoBehaviour
 			try
 			{
 				var result = await m_udpClient.ReceiveAsync();
-				m_reader.SetBuffer(result.Buffer);
-				PacketHandler.Handle(m_reader);
+				m_recvQueue.Enqueue(result);
 				//Debug.Log("result");
 			}
 			catch (SocketException ex)
 			{
 				Debug.Log($"SocketException : {ex.ErrorCode}, {ex.Message}");
-				m_udpClient?.Close();
-				m_udpClient = new UdpClient(m_port);
 			}
 			catch (ObjectDisposedException)
 			{
-				
 				break;
 			}
 		}

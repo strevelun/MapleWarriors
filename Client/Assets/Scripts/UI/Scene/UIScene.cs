@@ -18,10 +18,11 @@ public class UIScene : MonoBehaviour
         
     }
 
-    public void AddUI(string _uiName)
+    public GameObject AddUI(string _uiName)
     {
 		GameObject obj = Util.FindChild(gameObject, false, _uiName);
         m_dicUI.Add(_uiName, obj);
+        return obj;
 	}
 
     public GameObject FindUI(string _uiName)
