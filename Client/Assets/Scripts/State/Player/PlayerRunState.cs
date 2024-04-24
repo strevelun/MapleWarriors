@@ -33,6 +33,7 @@ public class PlayerRunState : ICreatureState
 			m_mpc.InputMovement();
 			m_mpc.CheckMoveState();
 			m_mpc.InputAttack();
+			m_mpc.InputSkillChoice();
 		}
 		else
 		{

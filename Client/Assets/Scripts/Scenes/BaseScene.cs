@@ -40,7 +40,7 @@ public abstract class BaseScene : MonoBehaviour
 		UIManager.Inst.Clear();
 	}
 
-	private void OnApplicationQuit()
+	protected virtual void OnApplicationQuit()
 	{
 		Packet pkt = LoginPacketMaker.ExitGame();
 		NetworkManager.Inst.Send(pkt);

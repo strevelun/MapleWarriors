@@ -32,10 +32,16 @@ public static class LobbyPacketHandler
 
 		TextMeshProUGUI tmp;
 
-		byte page = _reader.GetByte();
 
 		GameObject userListObj = UIManager.Inst.FindUI(Define.eUI.UILobby_UserList);
 		GameObject uiPageObj = Util.FindChild(userListObj, false, "Page");
+		if (uiPageObj == null)
+		{
+			Debug.Log("uiPageObj is null");
+			return;
+		}
+
+		byte page = _reader.GetByte();
 		tmp = uiPageObj.GetComponent<TextMeshProUGUI>();
 		tmp.text = "∆‰¿Ã¡ˆ : " + page;
 

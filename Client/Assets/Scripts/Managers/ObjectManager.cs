@@ -18,6 +18,8 @@ public class ObjectManager
 	Dictionary<int, PlayerController> m_dicPlayerObj = new Dictionary<int, PlayerController>();
 	Dictionary<string, MonsterController> m_dicMonsterObj = new Dictionary<string, MonsterController>();
 
+	public IReadOnlyDictionary<string, MonsterController> Monsters => m_dicMonsterObj;
+
 	int m_monsterNum = 0;
 
 	public void AddPlayer(int _keyIdx, GameObject _obj)

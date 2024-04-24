@@ -46,9 +46,13 @@ public class PacketReader
 		m_startOffset = 0;
 	}
 
-	public PacketType.eServer GetPacketType()
+	public PacketType.eServer GetPacketType(bool _moveGetPos = true)
 	{
-		return (PacketType.eServer)GetUShort();
+		int prevGetPos = 0;
+		if (!_moveGetPos) prevGetPos = m_getPos;
+		PacketType.eServer type = (PacketType.eServer)GetUShort();
+		if(!_moveGetPos) m_getPos = prevGetPos;
+		return type;
 	}
 
 	public bool GetBool()

@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class RingBuffer : MonoBehaviour
 {
-	private static RingBuffer s_inst = null;
-	public static RingBuffer Inst { get { return s_inst; } }
+	//private static RingBuffer s_inst = null;
+	//public static RingBuffer Inst { get { return s_inst; } }
 
 	object m_lock = new object();
 
@@ -72,10 +72,9 @@ public class RingBuffer : MonoBehaviour
 		}
 	}
 
-	private void Awake()
+	public void DontDestroyRingBuffer()
 	{
 		DontDestroyOnLoad(this);
-		s_inst = this;
 	}
 
 	private void Update()
@@ -83,6 +82,7 @@ public class RingBuffer : MonoBehaviour
 		while (IsBufferReadable())
 		{
 			m_reader.SetBuffer(this, m_readPos);
+			Debug.Log($"{m_reader.GetPacketType(false)} : 처리시작");
 			PacketHandler.Handle(m_reader);
 			MoveReadPos(m_reader.Size);
 		}
@@ -92,7 +92,7 @@ public class RingBuffer : MonoBehaviour
 	{
 		if (TotalReadableSize < Define.PacketSize)
 		{
-			//Debug.Log("사이즈를 읽을 수 없는 패킷");
+			//Debug.Log("쓸 공간이 적어 사이즈를 읽을 수 없는 패킷");
 			return false;
 		}
 
@@ -111,9 +111,14 @@ public class RingBuffer : MonoBehaviour
 		{
 			return false;
 		}
-		if (packetSize > Define.PacketBufferMax)
+		else if (packetSize > Define.PacketBufferMax)
 		{
 			Debug.Log("패킷 사이즈가 PacketBufferMax보다 큼 : " + packetSize);
+			return false;
+		}
+		else if (packetSize < Define.PacketHeaderSize)
+		{
+			Debug.Log("패킷크기는 최소 4바이트 이상이어야 한다.");
 			return false;
 		}
 
@@ -123,11 +128,12 @@ public class RingBuffer : MonoBehaviour
 	public bool SetWriteSegment(out ArraySegment<byte> _seg)
 	{
 		int writableSize;
+		lock (m_lock)
+		{
+			while ((writableSize = WritableSize) == 0) {; }
 
-		while ((writableSize = WritableSize) == 0) { ; }
-
-		_seg = new ArraySegment<byte>(m_buffer, m_writePos, writableSize);
-	
+			_seg = new ArraySegment<byte>(m_buffer, m_writePos, writableSize);
+		}
 		return true;
 	}
 
@@ -146,9 +152,9 @@ public class RingBuffer : MonoBehaviour
 		lock (m_lock)
 		{
 			m_writtenBytes += _recvBytes;
+			m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
 		}
 		//Debug.Log("씀 : " + m_writtenBytes);
-		m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
-		//Debug.Log("writePos : " + m_writePos);
+		Debug.Log("writePos : " + m_writePos);
 	}
 }

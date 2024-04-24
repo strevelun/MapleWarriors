@@ -393,6 +393,7 @@ public class MonsterController : CreatureController
 	*/
 	public void Hit(Skill _skill)
 	{
+		if (!gameObject.activeSelf) return;
 		if (HP <= 0) return;
 
 		//m_dest.Clear();
@@ -426,9 +427,11 @@ public class MonsterController : CreatureController
 		}
 	}
 
-	public void Hit(int _hp)
+	public void Hit(int _hp) // 이 함수가 실행될때 이미 gameObject가 inactive
 	{
-		int damage = HP - _hp;
+		if (!gameObject.activeSelf) return;
+
+		int damage = HP - _hp < 0 ? 0 : HP - _hp;
 		HP = _hp;
 		m_hpbarText.text = HP.ToString();
 

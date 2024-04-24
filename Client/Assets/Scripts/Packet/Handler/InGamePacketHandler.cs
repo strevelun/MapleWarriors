@@ -14,6 +14,9 @@ public static class InGamePacketHandler
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
 		GameObject camObj = GameObject.Find("CM vcam1");
+		GameObject ringBufferObj = GameObject.Find("IngameRingBuffer");
+		RingBuffer ringBuffer = null;
+		if (ringBufferObj) ringBuffer = ringBufferObj.GetComponent<RingBuffer>();
 		CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
 
 		GameObject mapObj = MapManager.Inst.Load(mapID, camObj); // TestMap : 1
@@ -51,7 +54,7 @@ public static class InGamePacketHandler
 				mpc.Idx = idx;
 				mpc.SetNickname(nickname);
 				vcam1.Follow = player.transform;
-				UDPCommunicator.Inst.Init(port);
+				UDPCommunicator.Inst.Init(ringBuffer, port);
 			}
 			else
 			{
@@ -76,9 +79,6 @@ public static class InGamePacketHandler
 		InGameConsole.Inst.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
 		InGameConsole.Inst.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
 		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
-
-		Packet pkt = InGamePacketMaker.AwakePacket();
-		UDPCommunicator.Inst.SendAll(pkt);
 
 		GameManager.Inst.SetOtherPlayerSlot(idxList);
 		GameManager.Inst.GameStart = true;
@@ -162,6 +162,7 @@ public static class InGamePacketHandler
 	public static void InGameExit(PacketReader _reader)
 	{
 		byte leftUserIdx = _reader.GetByte();
+		InGameConsole.Inst.Log($"InGameExit : {leftUserIdx}");
 		byte nextRoomOwnerIdx = _reader.GetByte();
 
 		if (UserData.Inst.MyRoomSlot == nextRoomOwnerIdx)
@@ -261,11 +262,33 @@ public static class InGamePacketHandler
 	}
 
 	public static void GameOver(PacketReader _reader)
-	{
+	{ 
+		InGameConsole.Inst.Log("GameOver");
 		GameManager.Inst.Clear();
 		ObjectManager.Inst.ClearPlayers();
 		ObjectManager.Inst.ClearMonsters();
 		MapManager.Inst.Destroy();
 		SceneManagerEx.Inst.LoadSceneWithFadeOut(eScene.Room);
+	}
+
+	public static void AllMonstersInfo(PacketReader _reader)
+	{
+		// 이미 죽어있는 상태인지 체크 후 상태변경 막기
+
+		ushort count = _reader.GetUShort();
+		MonsterController mc;
+		int idx, num;
+
+		for (int i = 0; i < count; ++i)
+		{
+			idx = _reader.GetByte();
+			num = _reader.GetByte();
+			mc = ObjectManager.Inst.FindMonster(idx, num);
+			ushort hp = _reader.GetUShort();
+			if (!mc.IsDead)
+				mc.HP = hp;
+
+			InGameConsole.Inst.Log($"{idx}_{num} : HP[{hp}], IsDead[{mc.IsDead}]");
+		}
 	}
 }

@@ -47,6 +47,7 @@ public class PacketType
 		RangedAttackReq,
 		GameOver,
 		Awake,
+		AllMonstersInfo,
 		Max,
 	}
 

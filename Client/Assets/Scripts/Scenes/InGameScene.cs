@@ -26,6 +26,8 @@ public class InGameScene : BaseScene
 
 		InputManager.Inst.SetInputEnabled(false);
 		StartFadeCoroutine();
+
+		//StartCoroutine(UpdateMonstersInfo());
 	}
 
 	public override void Clear()
@@ -35,13 +37,15 @@ public class InGameScene : BaseScene
 		SetAllClearImageVisible(false);
 		SetClearImageVisible(false);
 		SetWastedImageVisible(false);
+
+		UDPCommunicator.Inst.Disconnect();
 	}
 
 	void Start()
 	{
 		Init();
 
-		InvokeRepeating("SendAwake", 0f, 30f);
+		InvokeRepeating("SendAwake", 3f, 30f);
 	}
 
 	void Update()
@@ -65,7 +69,30 @@ public class InGameScene : BaseScene
 			StartCoroutine(GameOverCoroutine());
 			GameManager.Inst.GameStart = false;
 		}
-		
+	}
+
+	protected override void OnApplicationQuit()
+	{
+		base.OnApplicationQuit();
+
+		UDPCommunicator.Inst.Disconnect(); // 비정상 종료 대비
+	}
+
+	IEnumerator UpdateMonstersInfo()
+	{
+		while(true)
+		{
+			yield return new WaitForSeconds(3f);
+			if (!UserData.Inst.IsRoomOwner)
+			{
+				yield return null;
+				continue;
+			}
+
+			Packet pkt = InGamePacketMaker.AllMonstersInfo();
+			UDPCommunicator.Inst.SendAll(pkt);
+
+		}
 	}
 
 	IEnumerator GameOverCoroutine()

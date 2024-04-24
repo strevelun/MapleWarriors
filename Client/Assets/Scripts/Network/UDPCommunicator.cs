@@ -1,121 +1,120 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using UnityEngine;
 
-public class UDPCommunicator : MonoBehaviour
+public class UDPCommunicator
 {
 	private static UDPCommunicator s_inst = null;
-	public static UDPCommunicator Inst { get { return s_inst; } }
-
-	UdpClient m_udpClient;
-	PacketReader m_reader = new PacketReader();
-	ConcurrentQueue<UdpReceiveResult> m_recvQueue = new ConcurrentQueue<UdpReceiveResult>();
-
-	public struct tSendInfo
+	public static UDPCommunicator Inst
 	{
-		public string ip;
-		public int port;
-	}
-
-	public Dictionary<int, tSendInfo> DicSendInfo { get; } = new Dictionary<int, tSendInfo>();
-
-	private void Awake()
-	{
-		s_inst = this;
-	}
-
-	void Start()
-    {
-	}
-
-    void Update()
-    {
-		if (!m_recvQueue.IsEmpty)
+		get
 		{
-			UdpReceiveResult result;
-			if (m_recvQueue.TryDequeue(out result))
-			{
-				m_reader.SetBuffer(result.Buffer);
-				PacketHandler.Handle(m_reader);
-			}
+			if (s_inst == null) s_inst = new UDPCommunicator();
+			return s_inst;
 		}
 	}
 
+	Socket m_socket;
+	SocketAsyncEventArgs m_recvArgs;
+	RingBuffer m_ringBuffer;
 
-	public void Init(int _port)
-	{
-		m_udpClient = new UdpClient(_port);
-		StartReceive();
-	}
+	public Dictionary<int, IPEndPoint> DicSendInfo { get; private set; } = new Dictionary<int, IPEndPoint>();
 
-	async void StartReceive()
+	public void Init(RingBuffer _ringBuffer, int _port)
 	{
-		await ReceiveUDP();
-	}
+		m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+		m_socket.Bind(new IPEndPoint(IPAddress.Any, _port));
 
-	private void OnDestroy()
-	{
-		m_udpClient?.Close();
-		s_inst = null;
+		InGameConsole.Inst.Log($"{_port} 번호로 바인딩");
+
+		m_ringBuffer = _ringBuffer;
+
+		m_recvArgs = new SocketAsyncEventArgs();
+		m_recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
+		RegisterRecv();
 	}
 
 	public void Send(Packet _pkt, int _slot)
 	{
-		tSendInfo info;
-		if (!DicSendInfo.TryGetValue(_slot, out info)) return;
+		//InGameConsole.Inst.Log("Send");
+		IPEndPoint ep;
+		if (!DicSendInfo.TryGetValue(_slot, out ep)) return;
 
-		int sendbyte = m_udpClient.Send(_pkt.GetBuffer(), _pkt.Size, info.ip, info.port);
-		InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {info.ip}, {info.port}로 보냄 : {sendbyte}");
+		int sendbyte = m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
+		//InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
 	}
 
 	public void SendAll(Packet _pkt)
 	{
-		foreach (tSendInfo info in DicSendInfo.Values)
+		//InGameConsole.Inst.Log($"SendAll : {DicSendInfo.Count}");
+		foreach (IPEndPoint ep in DicSendInfo.Values)
 		{
-			int sendbyte = m_udpClient.Send(_pkt.GetBuffer(), _pkt.Size, info.ip, info.port);
-			InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {info.ip}, {info.port}로 보냄 : {sendbyte}");
+			int sendbyte = m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
+			//InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
 		}
 	}
 
-	private async Task ReceiveUDP()
+	public void RegisterRecv()
 	{
-		while (true)
+		ArraySegment<byte> seg;
+		if (!m_ringBuffer.SetWriteSegment(out seg))
 		{
-			try
-			{
-				var result = await m_udpClient.ReceiveAsync();
-				m_recvQueue.Enqueue(result);
-				//Debug.Log("result");
-			}
-			catch (SocketException ex)
-			{
-				Debug.Log($"SocketException : {ex.ErrorCode}, {ex.Message}");
-			}
-			catch (ObjectDisposedException)
-			{
-				break;
-			}
+			Debug.Log("버퍼에 공간이 없습니다");
+			return;
 		}
-		Debug.Log("its damned");
+
+		m_recvArgs.SetBuffer(seg.Array, seg.Offset, seg.Count);
+
+		Debug.Log("RegisterRecv");
+
+		bool pending = m_socket.ReceiveAsync(m_recvArgs);
+		if (!pending) OnRecvCompleted(null, m_recvArgs);
 	}
+
+	public void OnRecvCompleted(object _sender, SocketAsyncEventArgs _args)
+	{
+		if(_args.SocketError == SocketError.ConnectionReset)
+		{
+			InGameConsole.Inst.Log($"ConnectionReset : {_args.BytesTransferred}");
+			RegisterRecv();
+
+			return;
+		}
+
+		if (_args.BytesTransferred == 0 || _args.SocketError != SocketError.Success)
+		{
+			InGameConsole.Inst.Log($"Error : {_args.SocketError}");
+			//Disconnect();
+			RegisterRecv();
+			return;
+		}
+
+		m_ringBuffer.MoveWritePos(_args.BytesTransferred);
+
+		RegisterRecv();
+	}
+
 
 	public void AddSendInfo(int _slot, string _ip, int _port)
 	{
-		tSendInfo info = new tSendInfo();
-		info.ip = _ip;
-		info.port = _port;
-		DicSendInfo.Add(_slot, info);
+		InGameConsole.Inst.Log($"AddSendInfo : {DicSendInfo.Count}");
+		DicSendInfo.Add(_slot, new IPEndPoint(IPAddress.Parse(_ip), _port));
 	}
 
 	public void RemoveSendInfo(int _slot)
 	{
 		DicSendInfo.Remove(_slot);
+	}
+
+	public void Disconnect()
+	{
+
+		InGameConsole.Inst.Log($"Disconnect");
+		m_socket.Close();
+		DicSendInfo.Clear();
+		m_recvArgs = null;
+		m_socket = null;
 	}
 }

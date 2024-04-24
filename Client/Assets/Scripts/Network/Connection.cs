@@ -11,11 +11,15 @@ public class Connection
 	System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
     SocketAsyncEventArgs m_recvArgs = new SocketAsyncEventArgs();
+    RingBuffer m_ringBuffer;
 
 	public Connection(Socket _socket)
     {
-        m_socket = _socket; 
-       
+        m_socket = _socket;
+        GameObject ringBufferObj = GameObject.Find("@RingBuffer");
+        m_ringBuffer = ringBufferObj.GetComponent<RingBuffer>();
+		m_ringBuffer.DontDestroyRingBuffer();
+
 		m_recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
         RegisterRecv();
 	}
@@ -28,7 +32,7 @@ public class Connection
 	public void RegisterRecv()
     {
         ArraySegment<byte> seg;
-        if(!RingBuffer.Inst.SetWriteSegment(out seg))
+        if(!m_ringBuffer.SetWriteSegment(out seg))
         {
             Debug.Log("버퍼에 공간이 없습니다");
             return;
@@ -54,12 +58,7 @@ public class Connection
 
         if (maxByte < _args.BytesTransferred) maxByte = _args.BytesTransferred;
 
-		RingBuffer.Inst.MoveWritePos(_args.BytesTransferred);
-
-        //Thread.Sleep(1);
-        //UserData.Inst.ticks = DateTime.Now.Ticks;
-
-		//Debug.Log("받은 바이트 수 : " + _args.BytesTransferred + ", 최대바이트 : " + maxByte);
+		m_ringBuffer.MoveWritePos(_args.BytesTransferred);
 
 		RegisterRecv();
     }

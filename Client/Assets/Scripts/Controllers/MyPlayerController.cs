@@ -42,11 +42,7 @@ public class MyPlayerController : PlayerController
 
 		//InputMovement();
 
-		if (!IsDead)
-		{
-			InputSkillChoice();
-			CurSkill.Update(CellPos, LastDir);
-		}
+		CurSkill.Update(CellPos, LastDir);
 
 		HandleInputMovement();
 	}
@@ -98,7 +94,7 @@ public class MyPlayerController : PlayerController
 				{
 					Packet pkt = InGamePacketMaker.EndMove(transform.position);
 					UDPCommunicator.Inst.Send(pkt, slot);
-					InGameConsole.Inst.Log($"{slot}이 아직 EndMove체크를 안해서 또 보내는 중");
+					//InGameConsole.Inst.Log($"{slot}이 아직 EndMove체크를 안해서 또 보내는 중");
 				}
 			}
 
@@ -309,7 +305,7 @@ public class MyPlayerController : PlayerController
 		}
 	}
 
-	void InputSkillChoice()
+	public void InputSkillChoice()
 	{
 		if (!GameManager.Inst.GameStart) return;
 		if (!InputManager.Inst.InputEnabled) return;

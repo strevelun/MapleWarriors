@@ -12,6 +12,9 @@ public class InGameConsole : MonoBehaviour
 	TextMeshProUGUI m_text;
 	ScrollRect m_scrollRect;
 
+	const int MaxLine = 100;
+	int curLineCnt = 0;
+
 	void Start()
 	{
 		s_inst = this;
@@ -27,6 +30,13 @@ public class InGameConsole : MonoBehaviour
 
 	public void Log(string _text)
 	{
+		if (curLineCnt >= MaxLine)
+		{
+			m_text.text = m_text.text.Substring(m_text.text.IndexOf('\n') + 1);
+		}
+		else
+			++curLineCnt;
+
 		m_text.text += $"{_text}\n"; 
 
 		if (m_scrollRect.verticalNormalizedPosition <= 0.1f)

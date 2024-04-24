@@ -8,7 +8,7 @@ public static class PacketHandler
     {
 		Define.eScene eSceneType = SceneManagerEx.Inst.CurScene.SceneType;
 		PacketType.eServer type = _reader.GetPacketType();
-		//Debug.Log(eSceneType.ToString());
+		Debug.Log(type);
 
 		if (eSceneType == Define.eScene.Login)
 		{
@@ -149,6 +149,9 @@ public static class PacketHandler
 					break;
 				case PacketType.eServer.GameOver:
 					InGamePacketHandler.GameOver(_reader);
+					break;
+				case PacketType.eServer.AllMonstersInfo:
+					InGamePacketHandler.AllMonstersInfo(_reader);
 					break;
 			}
 		}

@@ -177,4 +177,22 @@ public static class InGamePacketMaker
 			.Add(PacketType.eServer.Awake);
 		return pkt;
 	}
+
+	public static Packet AllMonstersInfo()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.AllMonstersInfo)
+			.Add((ushort)ObjectManager.Inst.Monsters.Count);
+
+		foreach (MonsterController info in ObjectManager.Inst.Monsters.Values)
+		{
+			pkt
+				.Add((byte)info.Idx)
+				.Add((byte)info.Num)
+				.Add((ushort)info.HP);
+		}
+
+		return pkt;
+	}
 }
