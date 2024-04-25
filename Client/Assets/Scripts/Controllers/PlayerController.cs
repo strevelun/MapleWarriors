@@ -83,7 +83,7 @@ public class PlayerController : CreatureController
 		base.Init(_cellXPos, _cellYPos);
 
 		MaxSpeed = 4f;
-		MaxHP = 5000;
+		MaxHP = 10;
 		HP = MaxHP;
 		AttackDamage = 5;
 		AttackRange = 2;
@@ -305,7 +305,7 @@ public void CheckMoveState()
 
 		m_tombstoneAnimObj.SetActive(true);
 
-		GameManager.Inst.SubPlayerCnt();
+		GameManager.Inst.SubPlayerAliveCnt();
 	}
 
 	public override void Flip()
@@ -348,10 +348,18 @@ public void CheckMoveState()
 	{
 		ChangeState(new PlayerIdleState());
 
+		m_spriteObject.SetActive(true);
 		m_tombstoneAnimObj.SetActive(false);
+		
+		if(IsDead)
+		{
+			GameManager.Inst.AddPlayerAliveCnt();
+		}
 
 		HP = MaxHP;
 		m_hpbarText.text = HP.ToString();
+		m_hpBarSlider.value = MaxHP;
 		ByteDir = 0;
+
 	}
 }

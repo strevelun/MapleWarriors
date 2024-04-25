@@ -52,7 +52,7 @@ public class UDPCommunicator
 		foreach (IPEndPoint ep in DicSendInfo.Values)
 		{
 			int sendbyte = m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
-			//InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
+			InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
 		}
 	}
 
@@ -110,11 +110,11 @@ public class UDPCommunicator
 
 	public void Disconnect()
 	{
-
-		InGameConsole.Inst.Log($"Disconnect");
+		Debug.Log("Disconnect");
 		m_socket.Close();
 		DicSendInfo.Clear();
 		m_recvArgs = null;
 		m_socket = null;
+		m_ringBuffer = null;
 	}
 }

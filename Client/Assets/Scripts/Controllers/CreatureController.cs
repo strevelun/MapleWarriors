@@ -547,7 +547,6 @@ public class CreatureController : MonoBehaviour
 	{
 		MapManager.Inst.RemoveHitboxTile(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight);
 		m_spriteObject.SetActive(false);
-		//IsDead = true;
 	}
 
 	public void Knockback(float _duration)

@@ -4,15 +4,8 @@ using UnityEngine;
 
 public class Portal : MonoBehaviour
 {
-	Vector3[] m_positions = new Vector3[] {
-	new Vector3(2, -1), 
-    new Vector3(2, -3), 
-    new Vector3(4, -1), 
-    new Vector3(4, -3)  
-};
 
 	int m_cntPlayer = 0;
-    Dictionary<string, GameObject> m_playerObj = new Dictionary<string, GameObject>();
 
     void Start()
     {
@@ -26,17 +19,13 @@ public class Portal : MonoBehaviour
         // 조건이 충족되면 모든 플레이어 비활성화 + 위치이동 + 맵 프리팹 로드
         if(GameManager.Inst.CheckMapClear())
         {
-            if(m_cntPlayer == GameManager.Inst.PlayerCnt)
+            if(m_cntPlayer == GameManager.Inst.PlayerAliveCnt)
 			{
                 InGameScene ingame = SceneManagerEx.Inst.CurScene as InGameScene;
 
 				ingame.SetClearImageVisible(false);
-				int i = 0;
-                foreach(GameObject obj in m_playerObj.Values)
-                {
-                    obj.transform.position = m_positions[i++];
-                    obj.GetComponent<PlayerController>().OnChangeStage();
-				}
+                GameManager.Inst.OnChangeStage();
+			
                 MapManager.Inst.LoadNextStage();
                 ingame.StartFadeInOutCoroutine();
             }
@@ -47,7 +36,6 @@ public class Portal : MonoBehaviour
 	{
         if (!GameManager.Inst.CheckMapClear()) return;
 
-        m_playerObj.Add(_collision.gameObject.name, _collision.gameObject);
 		++m_cntPlayer;
 	}
 
@@ -56,7 +44,6 @@ public class Portal : MonoBehaviour
 		if (!GameManager.Inst.CheckMapClear()) return;
 		if (m_cntPlayer <= 0) return;
 
-		m_playerObj.Remove(_collision.gameObject.name);
 		--m_cntPlayer;
 	}
 }

@@ -113,7 +113,7 @@ public class MyPlayerController : PlayerController
 		Debug.Log($"{_slot}이 endMove 체크 완료");
 
 
-		if (m_endMovePlayerCnt >= GameManager.Inst.PlayerCnt-1)
+		if (m_endMovePlayerCnt >= GameManager.Inst.PlayerCnt-1 || m_endMovePlayerCnt >= GameManager.Inst.PlayerAliveCnt - 1)
 		{
 			Debug.Log("모든 플레이어가 EndMove완료");
 			m_bEndMove = false;

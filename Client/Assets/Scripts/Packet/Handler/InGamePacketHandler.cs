@@ -21,6 +21,7 @@ public static class InGamePacketHandler
 
 		GameObject mapObj = MapManager.Inst.Load(mapID, camObj); // TestMap : 1
 		GameManager.Inst.SetPlayerCnt(numOfUsers);
+		GameManager.Inst.SetPlayerAliveCnt(numOfUsers);
 
 		GameObject monsters = Util.FindChild(mapObj, false, "Monsters");
 		int activeCnt = 0;
@@ -46,6 +47,8 @@ public static class InGamePacketHandler
 
 			player = ResourceManager.Inst.Instantiate($"Creature/Player_{characterChoice}"); // 플레이어 선택
 			player.name = $"Player_{characterChoice}_{idx}"; // slot 넘버로
+
+			GameManager.Inst.AddPlayer(player);
 
 			if (connectionID == UserData.Inst.ConnectionID)
 			{
@@ -173,6 +176,7 @@ public static class InGamePacketHandler
 		GameManager.Inst.RemovePlayerSlot(leftUserIdx);
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(leftUserIdx);
+		GameManager.Inst.RemovePlayer(pc.name);
 		MapManager.Inst.RemoveAimTile(pc.CellPos.x, pc.CellPos.y);
 		ResourceManager.Inst.Destroy(pc.gameObject);
 		ObjectManager.Inst.RemovePlayer(leftUserIdx);

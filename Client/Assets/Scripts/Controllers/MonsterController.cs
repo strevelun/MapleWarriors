@@ -573,6 +573,12 @@ public class MonsterController : CreatureController
 		if (_other.gameObject.tag != "Player") return;
 		
 		PlayerController pc = _other.gameObject.GetComponent<PlayerController>();
+		if (m_playerEnter[pc.Idx] == true && pc.IsDead)
+		{
+			m_playerEnter[pc.Idx] = false;
+			m_targets.Remove(pc);
+			return;
+		}
 		if (m_playerEnter[pc.Idx] == true) return;
 		if (pc.IsDead) return;
 
