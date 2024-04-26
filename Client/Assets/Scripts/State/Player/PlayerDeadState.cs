@@ -41,7 +41,7 @@ public class PlayerDeadState : ICreatureState
 
 		if (m_stateInfo.normalizedTime >= 1.0f)
 		{
-			m_player.Die();
+			m_player.Die(); // Die 호출되기 전에 BeginMove등으로 인해 상태를 빠져나감
 			return;
 		}
 	}

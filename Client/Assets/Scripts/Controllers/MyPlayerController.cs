@@ -355,6 +355,8 @@ public class MyPlayerController : PlayerController
 		base.Die();
 
 		CurSkill.RemoveAimTiles();
+		ByteDir = 0;
+		Dir = eDir.None;
 	}
 
 	public override void OnChangeStage()

@@ -48,7 +48,7 @@ public class PlayerHitState : ICreatureState
 
 	public void Exit()
 	{
-
+		
 	}
 
 	void UpdateAnimation()
@@ -65,8 +65,8 @@ public class PlayerHitState : ICreatureState
 				m_monster.RemoveTarget(m_player);
 				m_player.ChangeState(new PlayerDeadState());
 			}
-			else m_player.ChangeState(new PlayerIdleState());
-
+			else
+				m_player.ChangeState(new PlayerIdleState());
 			//Debug.Log($"PlayerHitState HP : {m_player.HP}, {m_player.IsDead}");
 		}
 	}

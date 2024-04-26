@@ -289,10 +289,21 @@ public static class InGamePacketHandler
 			num = _reader.GetByte();
 			mc = ObjectManager.Inst.FindMonster(idx, num);
 			ushort hp = _reader.GetUShort();
-			if (!mc.IsDead)
-				mc.HP = hp;
+			mc.HP = hp;
 
-			InGameConsole.Inst.Log($"{idx}_{num} : HP[{hp}], IsDead[{mc.IsDead}]");
+			//InGameConsole.Inst.Log($"{idx}_{num} : HP[{hp}], IsDead[{mc.IsDead}]");
 		}
+		/*
+		ushort playerCnt = _reader.GetUShort();
+		PlayerController pc;
+
+		for (int i = 0; i < playerCnt; ++i)
+		{
+			idx = _reader.GetByte();
+			pc = ObjectManager.Inst.FindPlayer(idx);
+			ushort hp = _reader.GetUShort();
+			pc.HP = hp;
+		}
+		*/
 	}
 }

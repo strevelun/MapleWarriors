@@ -8,7 +8,8 @@ public static class PacketHandler
     {
 		Define.eScene eSceneType = SceneManagerEx.Inst.CurScene.SceneType;
 		PacketType.eServer type = _reader.GetPacketType();
-		Debug.Log(type);
+		
+		if(eSceneType == Define.eScene.InGame) InGameConsole.Inst.Log(type.ToString());
 
 		if (eSceneType == Define.eScene.Login)
 		{

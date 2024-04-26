@@ -187,9 +187,22 @@ public static class InGamePacketMaker
 
 		foreach (MonsterController info in ObjectManager.Inst.Monsters.Values)
 		{
+			if (info.IsDead) continue;
+
 			pkt
 				.Add((byte)info.Idx)
 				.Add((byte)info.Num)
+				.Add((ushort)info.HP);
+		}
+
+		pkt.Add((ushort)ObjectManager.Inst.Players.Count);
+
+		foreach (PlayerController info in ObjectManager.Inst.Players.Values)
+		{
+			if (info.IsDead) continue;
+
+			pkt
+				.Add((byte)info.Idx)
 				.Add((ushort)info.HP);
 		}
 

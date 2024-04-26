@@ -67,7 +67,6 @@ public class UDPCommunicator
 
 		m_recvArgs.SetBuffer(seg.Array, seg.Offset, seg.Count);
 
-		Debug.Log("RegisterRecv");
 
 		bool pending = m_socket.ReceiveAsync(m_recvArgs);
 		if (!pending) OnRecvCompleted(null, m_recvArgs);
@@ -93,6 +92,7 @@ public class UDPCommunicator
 
 		m_ringBuffer.MoveWritePos(_args.BytesTransferred);
 
+
 		RegisterRecv();
 	}
 
@@ -110,7 +110,7 @@ public class UDPCommunicator
 
 	public void Disconnect()
 	{
-		Debug.Log("Disconnect");
+		InGameConsole.Inst.Log("Disconnect");
 		m_socket.Close();
 		DicSendInfo.Clear();
 		m_recvArgs = null;

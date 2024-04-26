@@ -60,7 +60,8 @@ public class InGameScene : BaseScene
 				GameManager.Inst.GameStart = false;
 			}
 		}
-		else if (!m_clear.activeSelf && !m_wasted.activeSelf && GameManager.Inst.CheckMapClear())
+		
+		if (!m_clear.activeSelf && !m_wasted.activeSelf && GameManager.Inst.CheckMapClear())
 		{
 			SetClearImageVisible(true);
 		}
@@ -82,8 +83,8 @@ public class InGameScene : BaseScene
 	{
 		while(true)
 		{
-			yield return new WaitForSeconds(3f);
-			if (!UserData.Inst.IsRoomOwner)
+			yield return new WaitForSeconds(0.2f);
+			if (!GameManager.Inst.GameStart || !UserData.Inst.IsRoomOwner)
 			{
 				yield return null;
 				continue;
@@ -91,7 +92,6 @@ public class InGameScene : BaseScene
 
 			Packet pkt = InGamePacketMaker.AllMonstersInfo();
 			UDPCommunicator.Inst.SendAll(pkt);
-
 		}
 	}
 

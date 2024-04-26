@@ -13,11 +13,11 @@ public class PlayerAttackState : ICreatureState
 	AnimatorStateInfo m_stateInfo, m_skillStateInfo;
 	//bool m_hit = false;
 
+	// 때리는 도중 몬스터가 공격해서 체력이 0되는 경우
 	public bool CanEnter(CreatureController _cs)
-	{
-		// 현재 몬스터가 Dead 인 경우 AttackState로 바꿀 수 없음
-		//if (_target.CurState is MonsterHitState) return false;
-		//if (m_target?.CurState is MonsterDeadState) return false;
+	{ 
+		if (_cs.CurState is PlayerHitState) return false;
+		if (_cs.CurState is PlayerDeadState) return false;
 
 		return true;
 	}
@@ -78,7 +78,8 @@ public class PlayerAttackState : ICreatureState
 
 		if (m_animStart && !m_stateInfo.IsName("Attack") && m_skillStateInfo.IsName("None"))
 		{
-			m_player.ChangeState(new PlayerIdleState());
+			if (m_player.IsDead) m_player.ChangeState(new PlayerDeadState());
+			else m_player.ChangeState(new PlayerIdleState());
 			Debug.Log("PlayerAttackState Changed");
 			return;
 		}

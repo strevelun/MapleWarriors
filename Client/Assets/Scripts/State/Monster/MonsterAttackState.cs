@@ -71,10 +71,13 @@ public class MonsterAttackState : ICreatureState
 		{
 			foreach (PlayerController pc in m_targets)
 			{
+				pc.ChangeState(new PlayerHitState(m_mc));
+				/*
 				if (pc.ChangeState(new PlayerHitState(m_mc)) == false)
 				{
 					if (pc.IsDead) pc.ChangeState(new PlayerDeadState());
 				}
+				*/
 			}
 			m_hit = true;
 		}

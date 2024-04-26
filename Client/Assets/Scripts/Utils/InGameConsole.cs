@@ -12,7 +12,7 @@ public class InGameConsole : MonoBehaviour
 	TextMeshProUGUI m_text;
 	ScrollRect m_scrollRect;
 
-	const int MaxLine = 100;
+	const int MaxLine = 200;
 	int curLineCnt = 0;
 
 	void Start()
