@@ -24,10 +24,12 @@ public class Portal : MonoBehaviour
                 InGameScene ingame = SceneManagerEx.Inst.CurScene as InGameScene;
 
 				ingame.SetClearImageVisible(false);
-                GameManager.Inst.OnChangeStage();
+
+                GameManager.Inst.GameStart = false;
+
+				GameManager.Inst.OnChangeStage();
 			
-                MapManager.Inst.LoadNextStage();
-                ingame.StartFadeInOutCoroutine();
+                //ingame.StartFadeInOutCoroutine();
             }
         }
     }

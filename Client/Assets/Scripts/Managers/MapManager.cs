@@ -159,6 +159,8 @@ public class MapManager
 		Debug.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
 		Debug.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
 		Debug.Log($"현재 스테이지 : {MapManager.Inst.CurStage}");
+
+		GameManager.Inst.GameStart = true;
 	}
 
 	public bool IsBlocked(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight)

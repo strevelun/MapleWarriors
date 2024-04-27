@@ -27,6 +27,8 @@ public class InGameScene : BaseScene
 		InputManager.Inst.SetInputEnabled(false);
 		StartFadeCoroutine();
 
+		GameManager.Inst.Init(this);
+
 		//StartCoroutine(UpdateMonstersInfo());
 	}
 

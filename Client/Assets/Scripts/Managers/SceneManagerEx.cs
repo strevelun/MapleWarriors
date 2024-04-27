@@ -31,7 +31,7 @@ public class SceneManagerEx
 	{
 		CurScene.IsLoading = true;
 		CurScene.Clear();
-		CurScene.StartFadeOutCoroutine(_type); 
+		CurScene.StartFadeInOutCoroutine(() => LoadScene(_type));
 	}
 
 	private string GetSceneName(Define.eScene _type)

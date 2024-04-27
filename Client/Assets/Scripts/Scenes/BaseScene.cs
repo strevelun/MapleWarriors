@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -73,12 +74,12 @@ public abstract class BaseScene : MonoBehaviour
 		StartCoroutine(FadeInCoroutine());
 	}
 
-	public void StartFadeInOutCoroutine()
+	public void StartFadeInOutCoroutine(Action _action)
 	{
-		StartCoroutine(FadeInOutCoroutine());
+		StartCoroutine(FadeInOutCoroutine(_action));
 	}
 
-	protected IEnumerator FadeInOutCoroutine()
+	protected IEnumerator FadeInOutCoroutine(Action _action)
 	{
 		InputManager.Inst.SetInputEnabled(false);
 		float fadeCnt = 0f;
@@ -90,6 +91,7 @@ public abstract class BaseScene : MonoBehaviour
 		}
 		m_fadeInOut.color = new Color(0, 0, 0, 1);
 
+		if (_action != null) _action.Invoke();
 		yield return new WaitForSeconds(1f);
 
 		fadeCnt = 0f;
@@ -104,15 +106,20 @@ public abstract class BaseScene : MonoBehaviour
 		InputManager.Inst.SetInputEnabled(true);
 	}
 
-	public void StartFadeOutCoroutine(Define.eScene _type)
+	public void StartFadeInCoroutine()
 	{
-		InputManager.Inst.SetInputEnabled(false);
-		StartCoroutine(FadeOutCoroutine(_type));
+		StartCoroutine(FadeInCoroutine());
+	}
+
+	public void StartFadeOutCoroutine()
+	{
+		StartCoroutine(FadeOutCoroutine());
 	}
 
 	// 호출 전 인풋 잠금
-	protected IEnumerator FadeOutCoroutine(Define.eScene _type)
+	protected IEnumerator FadeOutCoroutine()
 	{
+		InputManager.Inst.SetInputEnabled(false);
 		float fadeCnt = 0f;
 		while(fadeCnt < m_fadeOutSecond)
 		{
@@ -121,7 +128,6 @@ public abstract class BaseScene : MonoBehaviour
 			yield return null;
 		}
 		m_fadeInOut.color = new Color(0, 0, 0, 1);
-		SceneManagerEx.Inst.LoadScene(_type);
 	}
 
 	// 호출 후 인풋 잠금 해제

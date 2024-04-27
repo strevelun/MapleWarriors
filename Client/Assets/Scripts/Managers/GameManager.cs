@@ -30,6 +30,13 @@ public class GameManager
 
 	public List<int> OtherPlayersSlot { get; private set; }
 
+	InGameScene m_inGameScene;
+
+	public void Init(InGameScene _inGameScene)
+	{
+		m_inGameScene = _inGameScene;
+	}
+
 	public bool CheckGameOver()
 	{
 		if (!GameStart) return false;
@@ -100,12 +107,15 @@ public class GameManager
 
 	public void OnChangeStage()
 	{
+		GameManager.Inst.GameStart = false;
 		int i = 0;
 		foreach (GameObject obj in m_playerObj.Values)
 		{
 			obj.transform.position = m_positions[i++];
 			obj.GetComponent<PlayerController>().OnChangeStage();
 		}
+
+		m_inGameScene.StartFadeInOutCoroutine(() => MapManager.Inst.LoadNextStage());
 	}
 
 	public void Clear()
