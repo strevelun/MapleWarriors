@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,10 +31,16 @@ public class MyPlayerController : PlayerController
 
 	byte LastByteDir = 0;
 
+	CinemachineVirtualCamera m_vcam;
+	int m_cameraIdx = 0;
+
 	//int m_testMovingCnt = 0;
 
 	void Start()
 	{
+		GameObject camObj = GameObject.Find("CM vcam1");
+		m_vcam = camObj.GetComponent<CinemachineVirtualCamera>();
+
 		StartCoroutine(MovingCoroutine());
 		StartCoroutine(MoveEndCheckCoroutine());
 	}
@@ -127,6 +134,22 @@ public class MyPlayerController : PlayerController
 			{
 				m_endMoveCheck[slot] = false;
 			}
+		}
+	}
+
+	public void SetCameraFollowMe()
+	{
+		m_vcam.Follow = transform;
+	}
+
+	public void InputDead()
+	{
+		if (!IsDead) return;
+
+		if(Input.GetKeyDown(KeyCode.Space))
+		{
+			m_cameraIdx = (m_cameraIdx + 1) % GameManager.Inst.PlayerCnt;
+			GameManager.Inst.ChangeCamera(m_vcam, m_cameraIdx);
 		}
 	}
 

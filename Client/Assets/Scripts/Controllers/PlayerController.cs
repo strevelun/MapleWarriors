@@ -70,7 +70,7 @@ public class PlayerController : CreatureController
 
 	protected override void FixedUpdate()
 	{
-			base.FixedUpdate();
+		base.FixedUpdate();
 
 	
 
@@ -312,6 +312,7 @@ public void CheckMoveState()
 		m_tombstoneAnimObj.SetActive(true);
 
 		GameManager.Inst.SubPlayerAliveCnt();
+
 	}
 
 	public override void Flip()

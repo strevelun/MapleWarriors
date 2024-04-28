@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PlayerDeadState : ICreatureState
 {
-	PlayerController m_player;
+	PlayerController m_pc = null;
+	MyPlayerController m_mpc = null;
 	AnimatorStateInfo m_stateInfo;
 
 	public bool CanEnter(CreatureController _cs)
@@ -15,14 +16,22 @@ public class PlayerDeadState : ICreatureState
 
 	public void Enter(CreatureController _cs)
 	{
-		m_player = _cs as PlayerController;
-		m_player.Anim.SetBool("Dead", true);
+		if (_cs is MyPlayerController)
+		{
+			m_mpc = _cs as MyPlayerController;
+			m_mpc.Anim.SetBool("Dead", true);
+		}
+		else if (_cs is PlayerController)
+		{
+			m_pc = _cs as PlayerController;
+			m_pc.Anim.SetBool("Dead", true);
+		}
 	}
 
 	public void Update()
 	{
 		UpdateAnimation();
-
+		if (m_mpc) m_mpc.InputDead();
 	}
 
 	public void FixedUpdate()
@@ -32,16 +41,21 @@ public class PlayerDeadState : ICreatureState
 
 	public void Exit()
 	{
-
+		if(m_mpc)
+		{
+			m_mpc.SetCameraFollowMe();
+		}
 	}
 
 	void UpdateAnimation()
 	{
-		m_stateInfo = m_player.Anim.GetCurrentAnimatorStateInfo(0);
+		if(m_mpc) m_stateInfo = m_mpc.Anim.GetCurrentAnimatorStateInfo(0);
+		else if(m_pc) m_stateInfo = m_pc.Anim.GetCurrentAnimatorStateInfo(0);
 
 		if (m_stateInfo.normalizedTime >= 1.0f)
 		{
-			m_player.Die(); // Die 호출되기 전에 BeginMove등으로 인해 상태를 빠져나감
+			if(m_mpc) m_mpc.Die();
+			else if(m_pc) m_pc.Die();
 			return;
 		}
 	}

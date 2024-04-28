@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Cinemachine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -116,6 +117,20 @@ public class GameManager
 		}
 
 		m_inGameScene.StartFadeInOutCoroutine(() => MapManager.Inst.LoadNextStage());
+	}
+
+	public void ChangeCamera(CinemachineVirtualCamera _vcam, int _cameraIdx)
+	{
+		int i = 0;
+		foreach(GameObject pc in m_playerObj.Values)
+		{
+			if (i == _cameraIdx)
+			{
+				_vcam.Follow = pc.transform;
+				break;
+			}
+			++i;
+		}
 	}
 
 	public void Clear()

@@ -32,6 +32,7 @@ public class MonsterIdleState : ICreatureState
 		m_mc.Attack();
 		m_mc.UpdateMove();
 		m_mc.CheckMoveState();
+		m_mc.Flip();
 	}
 
 	public void Exit()

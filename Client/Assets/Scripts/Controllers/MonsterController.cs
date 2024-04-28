@@ -80,6 +80,11 @@ public class MonsterController : CreatureController
 	public bool TargetHit { get; set; } = false;
 	public bool FlyingAttack { get; private set; } = false;
 
+	GameObject m_horizontalSplashAttack = null;
+	Vector2 m_hsaLeftPos = new Vector2(-2.5f, 0.5f);
+	Vector2 m_hsaRightPos = new Vector2(3.5f, 0.5f);
+
+
 	void Start()
 	{
 		
@@ -96,6 +101,11 @@ public class MonsterController : CreatureController
 			FlyingAttack = true;
 		}
 
+		m_horizontalSplashAttack = Util.FindChild(gameObject, true, "HorizontalSplashAttack");
+		if(m_horizontalSplashAttack)
+		{
+
+		}
 	}
 
 	protected override void Update()
@@ -497,6 +507,9 @@ public class MonsterController : CreatureController
 		if (!UserData.Inst.IsRoomOwner) return;
 		if (!AttackReady) return;
 		if (m_targets.Count == 0) return;
+
+		// 음수면 오른쪽, 양수면 왼쪽 (나 - 상대)
+
 
 		Queue<PlayerController> targets = new Queue<PlayerController>(m_targets);
 		List<PlayerController> finalTargets = new List<PlayerController>();
