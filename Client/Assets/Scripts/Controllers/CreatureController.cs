@@ -26,6 +26,15 @@ public class CreatureController : MonoBehaviour
 	public eDir LastDir { get; protected set; } = eDir.None;
 	public float MaxSpeed { get; protected set; } = 1f;
 
+	protected Coroutine m_damamgeCoroutine = null;
+
+	protected GameObject m_damageObj;
+	protected CanvasGroup m_damageCanvasGroup;
+	protected TextMeshProUGUI m_damageTMP;
+	protected RectTransform m_damageTMP_RT;
+
+	[SerializeField]
+	protected Vector2 m_damageUIOffset = new Vector2(0.5f, 1.5f);
 
 	Vector3 m_knockbackOrigin;
 	Coroutine m_knockbackCoroutine = null;
@@ -501,6 +510,8 @@ public class CreatureController : MonoBehaviour
 		m_spriteRenderer = m_spriteObject.GetComponent<SpriteRenderer>();
 		CenterPos = new Vector2(m_spriteObject.transform.position.x, m_spriteObject.transform.position.y - 0.5f);
 
+	
+
 		SetPosition(_cellXPos, _cellYPos);
 	}
 
@@ -579,5 +590,28 @@ public class CreatureController : MonoBehaviour
 		}
 		transform.position = m_knockbackOrigin;
 		m_knockbackCoroutine = null;
+	}
+
+
+	protected IEnumerator DamageCoroutine(float _delay)
+	{
+		float elapsedTime = 0f;
+		Vector3 startPos = m_damageTMP_RT.position;
+		Vector3 destPos = startPos + new Vector3(0, 50, 0);
+		float t = 0.0f;
+
+		while (elapsedTime < _delay)
+		{
+			elapsedTime += Time.deltaTime;
+			t = elapsedTime / _delay;
+
+			m_damageTMP_RT.position = Vector3.Lerp(startPos, destPos, t);
+
+			m_damageCanvasGroup.alpha = 1.0f - t;
+
+			yield return null;
+		}
+
+		m_damageObj.SetActive(false);
 	}
 }

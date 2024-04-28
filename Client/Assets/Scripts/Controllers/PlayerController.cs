@@ -108,6 +108,12 @@ public class PlayerController : CreatureController
 
 		GameObject playerUI = ResourceManager.Inst.Instantiate("Creature/UI/PlayerUI", gameObject.transform);
 
+		m_damageObj = Util.FindChild(playerUI, true, "Damage");
+		m_damageCanvasGroup = m_damageObj.GetComponent<CanvasGroup>();
+		m_damageTMP = m_damageObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		m_damageTMP_RT = m_damageObj.transform.GetChild(0).GetComponent<RectTransform>();
+		m_damageObj.SetActive(false);
+
 		m_nickname = Util.FindChild(playerUI, true, "Nickname");
 		m_nicknameTMP = m_nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 		m_nameTagUI = m_nickname.GetComponent<RectTransform>();
@@ -303,6 +309,19 @@ public void CheckMoveState()
 		m_hpbarText.text = HP.ToString();
 		m_hpBarSlider.value -= _damage;
 
+		m_damageObj.SetActive(true);
+		m_damageCanvasGroup.alpha = 1f;
+
+		m_damageTMP_RT.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_damageUIOffset);
+		m_damageTMP.text = _damage.ToString();
+
+		if (m_damamgeCoroutine != null)
+		{
+			StopCoroutine(m_damamgeCoroutine);
+			m_damamgeCoroutine = null;
+		}
+
+		m_damamgeCoroutine = StartCoroutine(DamageCoroutine(1.0f));
 	}
 
 	public override void Die()

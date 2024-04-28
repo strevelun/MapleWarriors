@@ -45,15 +45,7 @@ public class MonsterController : CreatureController
 	public bool CellArrived { get; private set; } = true;
 	public int MaxHitPlayer { get; private set; }
 
-	Coroutine m_damamgeCoroutine = null;
 
-	GameObject m_damageObj;
-	CanvasGroup m_damageCanvasGroup;
-	TextMeshProUGUI m_damageTMP;
-	RectTransform m_damageTMP_RT;
-
-	[SerializeField]
-	Vector2 m_damageUIOffset = new Vector2(0.5f, 1.5f);
 
 	GameObject m_hpbarObj;
 	Slider m_hpBarSlider;
@@ -80,9 +72,9 @@ public class MonsterController : CreatureController
 	public bool TargetHit { get; set; } = false;
 	public bool FlyingAttack { get; private set; } = false;
 
-	GameObject m_horizontalSplashAttack = null;
-	Vector2 m_hsaLeftPos = new Vector2(-2.5f, 0.5f);
-	Vector2 m_hsaRightPos = new Vector2(3.5f, 0.5f);
+	//GameObject m_horizontalSplashAttack = null;
+	//Vector2 m_hsaLeftPos = new Vector2(-2.5f, 0.5f);
+	//Vector2 m_hsaRightPos = new Vector2(3.5f, 0.5f);
 
 	List<GameObject> m_rangedAttackObjList = new List<GameObject>();
 	List<Animator> m_rangedAttackObjAnimList = new List<Animator>();
@@ -488,28 +480,6 @@ public class MonsterController : CreatureController
 		{
 			if (IsDead) ChangeState(new MonsterDeadState());
 		}
-	}
-
-	IEnumerator DamageCoroutine(float _delay)
-	{
-		float elapsedTime = 0f;
-		Vector3 startPos = m_damageTMP_RT.position;
-		Vector3 destPos = startPos + new Vector3(0, 50, 0);
-		float t = 0.0f;
-
-		while (elapsedTime < _delay)
-		{
-			elapsedTime += Time.deltaTime;
-			t = elapsedTime / _delay;
-
-			m_damageTMP_RT.position = Vector3.Lerp(startPos, destPos, t);
-
-			m_damageCanvasGroup.alpha = 1.0f - t;
-
-			yield return null;
-		}
-
-		m_damageObj.SetActive(false);
 	}
 
 	public void Attack()
