@@ -84,6 +84,9 @@ public class MonsterController : CreatureController
 	Vector2 m_hsaLeftPos = new Vector2(-2.5f, 0.5f);
 	Vector2 m_hsaRightPos = new Vector2(3.5f, 0.5f);
 
+	List<GameObject> m_rangedAttackObjList = new List<GameObject>();
+	List<Animator> m_rangedAttackObjAnimList = new List<Animator>();
+	public bool RangedAttack { get; private set; } = false;
 
 	void Start()
 	{
@@ -101,10 +104,17 @@ public class MonsterController : CreatureController
 			FlyingAttack = true;
 		}
 
-		m_horizontalSplashAttack = Util.FindChild(gameObject, true, "HorizontalSplashAttack");
-		if(m_horizontalSplashAttack)
+		attack = Util.FindChild(gameObject, true, "RangedAttack");
+		if (attack)
 		{
+			m_rangedAttackObjList = new List<GameObject>(Util.FindChildren(attack));
 
+			foreach(GameObject obj in m_rangedAttackObjList)
+			{
+				m_rangedAttackObjAnimList.Add(obj.GetComponent<Animator>());
+			}
+
+			RangedAttack = true;
 		}
 	}
 
@@ -533,6 +543,7 @@ public class MonsterController : CreatureController
 		if (finalTargets.Count == 0) return;
 
 		StartFlyingAttackCoroutine(finalTargets);
+		StartRangedAttackCoroutine(finalTargets);
 
 		Packet pkt = InGamePacketMaker.MonsterAttack(finalTargets, Idx, Num);
 		UDPCommunicator.Inst.SendAll(pkt);
@@ -585,7 +596,34 @@ public class MonsterController : CreatureController
 
 	public void StartFlyingAttackCoroutine(List<PlayerController> _targets)
 	{
-		if (m_flyingAttackObjList.Count != 0) StartCoroutine(FlyingAttackObjCoroutine(_targets));
+		if (FlyingAttack) StartCoroutine(FlyingAttackObjCoroutine(_targets));
+	}
+
+	public void StartRangedAttackCoroutine(List<PlayerController> _targets)
+	{
+		if (RangedAttack) StartCoroutine(RangedAttackObjCoroutine(_targets));
+	}
+
+	IEnumerator RangedAttackObjCoroutine(List<PlayerController> _targets)
+	{
+		AnimatorStateInfo info = m_rangedAttackObjAnimList[0].GetCurrentAnimatorStateInfo(0);
+
+		int i = 0;
+		foreach(PlayerController pc in _targets)
+		{
+			m_rangedAttackObjList[i].transform.position = new Vector2(pc.transform.position.x + 0.5f, pc.transform.position.y - 0.5f);
+			m_rangedAttackObjList[i].SetActive(true);
+			++i;
+		}
+
+		while (info.normalizedTime < 1.0f)
+		{
+			info = m_rangedAttackObjAnimList[0].GetCurrentAnimatorStateInfo(0);
+			yield return null;
+		}
+
+		foreach (GameObject obj in m_rangedAttackObjList)
+			obj.SetActive(false);
 	}
 
 	IEnumerator FlyingAttackObjCoroutine(List<PlayerController> _targets)

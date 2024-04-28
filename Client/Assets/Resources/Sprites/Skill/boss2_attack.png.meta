@@ -59,6 +59,9 @@ TextureImporter:
   - first:
       213: 3098504645368977015
     second: boss2_attack_18
+  - first:
+      213: 5162334204739697608
+    second: boss2_attack_19
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -538,6 +541,27 @@ TextureImporter:
       bones: []
       spriteID: 7769d12fe89100b20800000000000000
       internalID: 3098504645368977015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss2_attack_19
+      rect:
+        serializedVersion: 2
+        x: 4750
+        y: 0
+        width: 250
+        height: 384
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8cbbb55ab9b44a740800000000000000
+      internalID: 5162334204739697608
       vertices: []
       indices: 
       edges: []
