@@ -66,20 +66,28 @@ public class MonsterAttackState : ICreatureState
 
 	void Attack()
 	{
-		// 여러명 공격 가능
-		if (!m_hit && m_targets.Count > 0 && m_stateInfo.normalizedTime >= 0.3f)
+		if (m_mc.FlyingAttack)
 		{
-			foreach (PlayerController pc in m_targets)
+			if (m_mc.TargetHit)
 			{
-				pc.ChangeState(new PlayerHitState(m_mc));
-				/*
-				if (pc.ChangeState(new PlayerHitState(m_mc)) == false)
+				foreach (PlayerController pc in m_targets)
 				{
-					if (pc.IsDead) pc.ChangeState(new PlayerDeadState());
+					pc.ChangeState(new PlayerHitState(m_mc));
 				}
-				*/
+				m_mc.TargetHit = false;
 			}
-			m_hit = true;
+		}
+		else
+		{
+			if (!m_hit && m_targets.Count > 0 && m_stateInfo.normalizedTime >= 0.3f)
+			{
+				m_hit = true;
+				foreach (PlayerController pc in m_targets)
+				{
+					pc.ChangeState(new PlayerHitState(m_mc));
+					pc.HitObj.SetActive(true);
+				}
+			}
 		}
 	}
 }

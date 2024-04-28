@@ -46,6 +46,8 @@ public class PlayerController : CreatureController
 
 	protected GameObject m_nickname;
 
+	public GameObject HitObj { get; private set; }
+
 	// 3Ä­ÀÌ¸é 1.5
 	// 2Ä­ÀÌ¸é 1
 	[SerializeField]
@@ -126,6 +128,9 @@ public class PlayerController : CreatureController
 		m_hpBarSlider.value = MaxHP;
 		m_hpbarText.text = MaxHP.ToString();
 		m_hpBarUIOffset = new Vector2(HitboxWidth / 2f, -0.2f);
+
+		HitObj = Util.FindChild(gameObject, true, "Hit");
+		HitObj.SetActive(false);
 
 		ChangeState(new PlayerIdleState());
 
@@ -297,6 +302,7 @@ public void CheckMoveState()
 		if (HP < 0) HP = 0;
 		m_hpbarText.text = HP.ToString();
 		m_hpBarSlider.value -= _damage;
+
 	}
 
 	public override void Die()

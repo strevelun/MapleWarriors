@@ -159,6 +159,7 @@ public static class InGamePacketHandler
 		}
 
 		MonsterController mc = ObjectManager.Inst.FindMonster(_reader.GetByte(), _reader.GetByte());
+		mc.StartFlyingAttackCoroutine(targets);
 		if(mc) mc.ChangeState(new MonsterAttackState(targets));
 	}
 

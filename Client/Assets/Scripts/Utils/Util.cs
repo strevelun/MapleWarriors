@@ -48,4 +48,24 @@ public class Util
         }
         return null;
     }
+
+    public static GameObject[] FindChildren(GameObject _parent, bool _recursive = false, string _name = null)
+	{
+		Transform child = FindChild<Transform>(_parent, _recursive, _name);
+		if (child == null) return null;
+
+		return child.GetComponentsInChildren<GameObject>();
+	}
+
+	public static GameObject[] FindChildren(GameObject _parent)
+	{
+		Transform[] children = _parent.GetComponentsInChildren<Transform>(true);
+		GameObject[] result = new GameObject[children.Length - 1]; 
+		for (int i = 1; i <= result.Length; i++)
+		{
+			result[i - 1] = children[i].gameObject;
+		}
+
+		return result;
+	}
 }

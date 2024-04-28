@@ -48,7 +48,7 @@ public class PlayerHitState : ICreatureState
 
 	public void Exit()
 	{
-		
+		if(m_player.HitObj.activeSelf) m_player.HitObj.SetActive(false);
 	}
 
 	void UpdateAnimation()

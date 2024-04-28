@@ -75,13 +75,26 @@ public class MonsterController : CreatureController
 	bool m_beginMove = false;
 	Vector2Int m_destReserved = new Vector2Int(0, 0);
 
+	List<GameObject> m_flyingAttackObjList = new List<GameObject>();
+	List<Animator> m_flyingAttackObjAnimList = new List<Animator>();
+	public bool TargetHit { get; set; } = false;
+	public bool FlyingAttack { get; private set; } = false;
+
 	void Start()
 	{
 		
 		Init((int)transform.position.x, (int)transform.position.y);
 
-
-
+		GameObject attack = Util.FindChild(gameObject, true, "FlyingAttack");
+		if (attack)
+		{
+			m_flyingAttackObjList = new List<GameObject>(Util.FindChildren(attack));
+			foreach(GameObject obj in m_flyingAttackObjList)
+			{
+				m_flyingAttackObjAnimList.Add(obj.GetComponent<Animator>());
+			}
+			FlyingAttack = true;
+		}
 
 	}
 
@@ -506,6 +519,8 @@ public class MonsterController : CreatureController
 
 		if (finalTargets.Count == 0) return;
 
+		StartFlyingAttackCoroutine(finalTargets);
+
 		Packet pkt = InGamePacketMaker.MonsterAttack(finalTargets, Idx, Num);
 		UDPCommunicator.Inst.SendAll(pkt);
 
@@ -552,6 +567,76 @@ public class MonsterController : CreatureController
 			{
 				yield return null;
 			}
+		}
+	}
+
+	public void StartFlyingAttackCoroutine(List<PlayerController> _targets)
+	{
+		if (m_flyingAttackObjList.Count != 0) StartCoroutine(FlyingAttackObjCoroutine(_targets));
+	}
+
+	IEnumerator FlyingAttackObjCoroutine(List<PlayerController> _targets)
+	{
+		Vector2 startPos = m_flyingAttackObjList[0].transform.position;
+		float elapsedTime = 0;
+
+		for (int i = 0; i < _targets.Count; ++i)
+		{
+			m_flyingAttackObjList[i].SetActive(true);
+			m_flyingAttackObjAnimList[i].speed = 0;
+		}
+
+		while (elapsedTime < 0.5f)
+		{
+			for (int i = 0; i < _targets.Count; ++i)
+			{
+				//Vector2 curPos = m_flyingAttackObjList[i].transform.position;
+				float totalDist = Vector3.Distance(startPos, new Vector2(_targets[i].transform.position.x + 0.5f, _targets[i].transform.position.y + 0.5f));
+				float curDist = totalDist * (elapsedTime / 0.5f);
+
+				Debug.Log($"{startPos}, {_targets[i].transform.position}, {curDist / totalDist}");
+
+				m_flyingAttackObjList[i].transform.position = Vector3.Lerp(startPos, new Vector2(_targets[i].transform.position.x + 0.5f, _targets[i].transform.position.y + 0.5f), curDist / totalDist);
+
+				elapsedTime += Time.deltaTime;
+			}
+			yield return null;
+		}
+		Debug.Log("1초 지남");
+		yield return StartCoroutine(FlyingAttackObjAnimCoroutine(_targets.Count, startPos, _targets));
+
+	}
+
+	IEnumerator FlyingAttackObjAnimCoroutine(int _cnt, Vector2 _startPos, List<PlayerController> _targets)
+	{
+		AnimatorStateInfo info = m_flyingAttackObjAnimList[0].GetCurrentAnimatorStateInfo(0);
+
+		for (int i = 0; i < _cnt; ++i)
+		{
+			m_flyingAttackObjAnimList[i].speed = 1;
+			m_flyingAttackObjAnimList[i].Play("MonsterFlyingAttack");
+		}
+
+		Debug.Log("코루틴 while 전");
+
+		TargetHit = true;
+
+		while (info.normalizedTime < 1.0f)
+		{
+			for (int i = 0; i < _cnt; ++i)
+			{
+				m_flyingAttackObjList[i].transform.position = new Vector2(_targets[i].transform.position.x + 0.5f, _targets[i].transform.position.y + 0.5f);
+			}
+			Debug.Log(info.normalizedTime);
+			info = m_flyingAttackObjAnimList[0].GetCurrentAnimatorStateInfo(0);
+			yield return null;
+		}
+
+		for (int i = 0; i < _cnt; ++i)
+		{
+			m_flyingAttackObjList[i].transform.position = _startPos;
+			m_flyingAttackObjList[i].SetActive(false);
+			Debug.Log($"{_startPos}로 리셋");
 		}
 	}
 
