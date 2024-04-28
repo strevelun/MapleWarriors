@@ -25,7 +25,6 @@ public class Portal : MonoBehaviour
 
 				ingame.SetClearImageVisible(false);
 
-                GameManager.Inst.GameStart = false;
 
 				GameManager.Inst.OnChangeStage();
 			

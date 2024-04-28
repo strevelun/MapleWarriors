@@ -28,6 +28,8 @@ public class MyPlayerController : PlayerController
 	bool m_bEndMove = false;
 	bool[] m_endMoveCheck = new bool[4];
 
+	byte LastByteDir = 0;
+
 	//int m_testMovingCnt = 0;
 
 	void Start()
@@ -40,11 +42,11 @@ public class MyPlayerController : PlayerController
 	{
 		base.Update();
 
-		//InputMovement();
+		InputMovement();
 
 		CurSkill.Update(CellPos, LastDir);
 
-		HandleInputMovement();
+		//HandleInputMovement();
 	}
 
 	protected override void FixedUpdate()
@@ -63,16 +65,19 @@ public class MyPlayerController : PlayerController
 	{
 		while (true)
 		{
+			yield return new WaitForSeconds(0.2f);
+
 			if (Dir == eDir.None)
 			{
 				yield return null;
 				continue;
 			}
 
-			yield return new WaitForSeconds(0.2f);
-
-			Packet pkt = InGamePacketMaker.Moving(transform.position, ByteDir);
-			UDPCommunicator.Inst.SendAll(pkt);
+			if (!m_bEndMove && LastByteDir == 0) 
+			{
+				Packet pkt = InGamePacketMaker.Moving(transform.position, ByteDir);
+				UDPCommunicator.Inst.SendAll(pkt);
+			}
 		}
 	}
 
@@ -199,7 +204,7 @@ public class MyPlayerController : PlayerController
 		}
 	}
 
-	void HandleInputMovement()
+	public void HandleInputMovement()
 	{
 		if (m_bIsKeyUp && ByteDir == (byte)eDir.None)
 		{
@@ -212,13 +217,24 @@ public class MyPlayerController : PlayerController
 			}
 		}
 
+		if(LastByteDir != 0) // 스킬을 누른 시점에 이동키를 눌렀으면
+		{
+			// 스킬 끝났는데 이동키가 누른 시점과 다르면
+			//if(ByteDir != )
+			//if (ByteDir != 0) // 
+			//	ByteDir = LastByteDir;
+
+			LastByteDir = 0;
+		}
+
 		if (m_bIsKeyDown || m_bIsKeyUp) // ByteDir가 0이 아니면서 m_bIsKeyUp이면 방향이 바뀐 것.
 		{
+
 			Packet pkt = InGamePacketMaker.BeginMove(transform.position, ByteDir);
 			UDPCommunicator.Inst.SendAll(pkt);
 			m_bIsKeyDown = false;
 			m_bIsKeyUp = false;
-			m_bEndMove = false;
+			//m_bEndMove = false;
 		}
 
 		//if (ByteDir == 0) m_bMove = false;
@@ -247,6 +263,15 @@ public class MyPlayerController : PlayerController
 
 		if (Input.GetMouseButtonDown(0))
 		{
+			LastByteDir = ByteDir;
+			//ByteDir = 0;
+			if (ByteDir != 0)
+			{
+				Packet pkt = InGamePacketMaker.EndMove(transform.position);
+				UDPCommunicator.Inst.SendAll(pkt);
+				m_bEndMove = true;
+			}
+
 			if (CurSkill.GetSkillType() == eSkillType.Melee)
 			{
 				List<MonsterController> targets = new List<MonsterController>();
@@ -256,8 +281,6 @@ public class MyPlayerController : PlayerController
 				{
 					if (activated)
 					{
-						// 스킬 끝나고 방향키 누르고 있을 시 BeginMove
-						ByteDir = 0;
 						ChangeState(new PlayerAttackState(CurSkill)); 
 						foreach (MonsterController mc in targets)
 							mc.Hit(CurSkill);

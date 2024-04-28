@@ -107,7 +107,7 @@ public class GameManager
 
 	public void OnChangeStage()
 	{
-		GameManager.Inst.GameStart = false;
+		GameStart = false;
 		int i = 0;
 		foreach (GameObject obj in m_playerObj.Values)
 		{

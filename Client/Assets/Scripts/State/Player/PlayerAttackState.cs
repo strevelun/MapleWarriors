@@ -39,7 +39,7 @@ public class PlayerAttackState : ICreatureState
 
 		m_skill.Play(m_player);
 
-		m_player.ByteDir = 0;
+		//m_player.ByteDir = 0;
 
 		//m_player.SkillAnim.transform.position = new Vector3(m_player.CellPos.x, -m_player.CellPos.y);
 
