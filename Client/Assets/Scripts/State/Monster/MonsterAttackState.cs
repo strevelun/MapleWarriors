@@ -46,6 +46,7 @@ public class MonsterAttackState : ICreatureState
 	public void Exit()
 	{
 		m_mc.AttackReady = false;
+		if (m_mc.AttackEffect) m_mc.AttackObj.SetActive(false);
 	}
 
 	// 몬스터가 AttackSTate일때 맞으면 Attack 끝까지 재생
@@ -66,6 +67,13 @@ public class MonsterAttackState : ICreatureState
 
 	void Attack()
 	{
+
+		if (m_mc.AttackEffect)
+		{
+			if(m_stateInfo.normalizedTime >= 0.5f)
+				m_mc.AttackObj.SetActive(true);
+		}
+
 		if (m_mc.FlyingAttack)
 		{
 			if (m_mc.TargetHit)

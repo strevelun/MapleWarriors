@@ -71,12 +71,11 @@ public class UIChat : MonoBehaviour
 
 		//Debug.Log("스크롤바 : " + m_scrollbar.value);
 
-		StartCoroutine(SetScrollbarDownCoroutine());
 	}
 
 	private IEnumerator SetScrollbarDownCoroutine()
 	{
-		//Canvas.ForceUpdateCanvases(); // 수백번 호출하면 뻗음
+		Canvas.ForceUpdateCanvases(); // 수백번 호출하면 뻗음
 		yield return null;
 		m_scrollbar.value = 0f;
 	}
@@ -126,6 +125,8 @@ public class UIChat : MonoBehaviour
 			tmp = obj.GetComponent<TextMeshProUGUI>();
 			tmp.text = "[" + _nickname + "] : " + _text;
 			t.SetAsLastSibling();
-		} 
+		}
+		m_scrollbar.value = 0f;
+		Canvas.ForceUpdateCanvases();
 	}
 }

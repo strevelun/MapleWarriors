@@ -80,6 +80,9 @@ public class MonsterController : CreatureController
 	List<Animator> m_rangedAttackObjAnimList = new List<Animator>();
 	public bool RangedAttack { get; private set; } = false;
 
+	public GameObject AttackObj { get; private set; } = null;
+	public bool AttackEffect { get; private set; } = false;
+
 	void Start()
 	{
 		
@@ -107,6 +110,14 @@ public class MonsterController : CreatureController
 			}
 
 			RangedAttack = true;
+		}
+
+		attack = Util.FindChild(gameObject, true, "Attack");
+		if (attack)
+		{
+			AttackObj = attack;
+			AttackObj.SetActive(false);
+			AttackEffect = true;
 		}
 	}
 
