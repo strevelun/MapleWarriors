@@ -345,6 +345,7 @@ public class MyPlayerController : PlayerController
 						ChangeState(new PlayerAttackState(CurSkill));
 						Packet pkt = InGamePacketMaker.RangedAttackReq(mouseCellPos, m_eCurSkill, new Vector2Int(xpos, ypos));
 						UDPCommunicator.Inst.Send(pkt, UserData.Inst.RoomOwnerSlot);
+						InGameConsole.Inst.Log($"{UserData.Inst.RoomOwnerSlot}에게 보냄");
 					}
 				}
 			}

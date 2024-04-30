@@ -54,6 +54,7 @@ public class UIChat : MonoBehaviour
 		{
 			--ChatCount;
 		}
+
 	}
 
 	private void OnScrollbarValueChanged(float value)
@@ -126,7 +127,6 @@ public class UIChat : MonoBehaviour
 			tmp.text = "[" + _nickname + "] : " + _text;
 			t.SetAsLastSibling();
 		}
-		m_scrollbar.value = 0f;
-		Canvas.ForceUpdateCanvases();
+		StartCoroutine(SetScrollbarDownCoroutine());
 	}
 }

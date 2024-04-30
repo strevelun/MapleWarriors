@@ -11,6 +11,7 @@ public class InGameConsole : MonoBehaviour
 
 	TextMeshProUGUI m_text;
 	ScrollRect m_scrollRect;
+	Scrollbar m_scrollbar;
 
 	const int MaxLine = 200;
 	int curLineCnt = 0;
@@ -22,6 +23,7 @@ public class InGameConsole : MonoBehaviour
 
 	public void Init(GameObject _objInGameConsole)
 	{
+		m_scrollbar = Util.FindChild(_objInGameConsole, false, "Scrollbar").GetComponent<Scrollbar>();
 		GameObject textObj = Util.FindChild(_objInGameConsole, true, "Text");
 		m_scrollRect = _objInGameConsole.GetComponent<ScrollRect>();
 		//GameObject textObj.transform.parent;
@@ -41,6 +43,9 @@ public class InGameConsole : MonoBehaviour
 
 		if (m_scrollRect.verticalNormalizedPosition <= 0.1f)
 			m_scrollRect.verticalNormalizedPosition = 0;
+
+		m_scrollbar.value = 0f;
+		Canvas.ForceUpdateCanvases();
 	}
 
 	private void OnDestroy()

@@ -171,7 +171,10 @@ public static class InGamePacketHandler
 		byte nextRoomOwnerIdx = _reader.GetByte();
 
 		if (UserData.Inst.MyRoomSlot == nextRoomOwnerIdx)
+		{
 			UserData.Inst.IsRoomOwner = true;
+		}
+		InGameConsole.Inst.Log($"방장이 바뀌었습니다 : {leftUserIdx} -> {nextRoomOwnerIdx}");
 
 		UserData.Inst.RoomOwnerSlot = nextRoomOwnerIdx;
 		GameManager.Inst.SubPlayerCnt();
