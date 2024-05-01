@@ -39,11 +39,11 @@ public class PacketReader
 		m_startOffset = _pos;
 	}
 
-	public void SetBuffer(byte[] _buffer)
+	public void SetBuffer(byte[] _buffer, int _pos)
 	{
 		m_buffer = new ArraySegment<byte>(_buffer);
-		m_getPos = Define.PacketSize;
-		m_startOffset = 0;
+		m_getPos = _pos + Define.PacketSize;
+		m_startOffset = _pos;
 	}
 
 	public PacketType.eServer GetPacketType(bool _moveGetPos = true)

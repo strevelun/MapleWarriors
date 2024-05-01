@@ -13,10 +13,10 @@ public class RingBuffer : MonoBehaviour
 	object m_lock = new object();
 
 	PacketReader m_reader = new PacketReader();
-	private byte[] m_buffer = new byte[Define.BufferMax];
-	private int m_readPos = 0;
-	private int m_writePos = 0;
-	private int m_writtenBytes = 0;
+	byte[] m_buffer = new byte[Define.BufferMax];
+	int m_readPos = 0;
+	int m_writePos = 0;
+	int m_writtenBytes = 0;
 
 	//public byte[] ReadAddr { get { return m_bIsTempUsed ? m_tempBuffer : m_buffer.Skip(m_readPos).ToArray(); } }
 	//public byte[] WriteAddr { get { return m_buffer.Skip(m_writePos).ToArray(); } }
@@ -77,12 +77,11 @@ public class RingBuffer : MonoBehaviour
 		DontDestroyOnLoad(this);
 	}
 
-	private void Update()
+	void Update()
 	{
 		while (IsBufferReadable())
 		{
 			m_reader.SetBuffer(this, m_readPos);
-			Debug.Log($"{m_reader.GetPacketType(false)} : 처리시작");
 			PacketHandler.Handle(m_reader);
 			MoveReadPos(m_reader.Size);
 		}
@@ -130,7 +129,8 @@ public class RingBuffer : MonoBehaviour
 		int writableSize;
 		lock (m_lock)
 		{
-			while ((writableSize = WritableSize) == 0) {; }
+			writableSize = WritableSize;
+			if (writableSize < Define.PacketHeaderSize) return false;
 
 			_seg = new ArraySegment<byte>(m_buffer, m_writePos, writableSize);
 		}

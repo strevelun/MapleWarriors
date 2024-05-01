@@ -53,14 +53,6 @@ public static class InGamePacketMaker
 			.Add((int)(_vecEndPos.y * 1000000));
 		return pkt;
 	}
-	public static Packet EndMoveOK()
-	{
-		Packet pkt = new Packet();
-		pkt
-			.Add(PacketType.eServer.EndMoveOK)
-			.Add((byte)UserData.Inst.MyRoomSlot);
-		return pkt;
-	}
 
 	// 패킷을 받은 후에 몬스터 AttackState로 전환
 	public static Packet MonsterAttack(List<PlayerController> _finalTargets, int _monsterIdx, int _monsterNum)

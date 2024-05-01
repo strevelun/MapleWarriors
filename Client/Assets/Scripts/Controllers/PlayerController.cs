@@ -53,7 +53,7 @@ public class PlayerController : CreatureController
 	[SerializeField]
 	Vector2 m_hpBarUIOffset;
 
-	int m_moveCnt = 0;
+	//int m_moveCnt = 0;
 	Coroutine m_movingCoroutine = null;
 
 	void Start()
@@ -170,20 +170,21 @@ public void UpdateSecondMove()
 	
 }
 	*/
-
+	/*
 	IEnumerator MovingCheckCoroutine()
 	{
 		while (true)
 		{
+			
 			if (ByteDir == 0)
 			{
 				Debug.Log($"ByteDir = 0이라서 break : {m_moveCnt}");
 				m_moveCnt = 0;
 				break;
 			}
-
+			
 			yield return new WaitForSeconds(0.2f);
-
+			
 			if(m_moveCnt == 0)
 			{
 				// 스탑!
@@ -197,18 +198,23 @@ public void UpdateSecondMove()
 		}
 		m_movingCoroutine = null;
 	}
-
+*/
 	public void Moving(float _xpos, float _ypos, byte _byteDir)
 	{
-		++m_moveCnt;
+		//++m_moveCnt;
 
-		Debug.Log($"Moving : {m_moveCnt}");
 
-		if (Dir == eDir.None)
+		// moving으로 들어온 좌표가 우선
+		float distX = Math.Abs(_xpos - transform.position.x);
+		float distY = Math.Abs(_ypos - transform.position.y);
+
+		//InGameConsole.Inst.Log($"Moving : {distX}, {distY}, 현재위치 : {transform.position.x}, {transform.position.y}, 패킷위치 : {_xpos}, {_ypos}");
+		
+		if(distX > MaxSpeed * 0.01f || distY > MaxSpeed * 0.01f)
 		{
 			transform.position = new Vector3(_xpos, _ypos);
-			SetDir(_byteDir);
-			if(m_movingCoroutine == null) m_movingCoroutine = StartCoroutine(MovingCheckCoroutine());
+			SetByteDir(_byteDir);
+		//	if (m_movingCoroutine == null) m_movingCoroutine = StartCoroutine(MovingCheckCoroutine());
 		}
 	}
 
@@ -237,20 +243,29 @@ public void CheckMoveState()
 
 	public void BeginMovePosition(float _startXPos, float _startYPos, byte _byteDir)
 	{
-		m_moveCnt = 1;
-		Debug.Log($"BeginMove : {m_moveCnt}");
+		//InGameConsole.Inst.Log($"BeginMove : {Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(_startXPos, _startYPos))}");
+		InGameConsole.Inst.Log($"BeginMove : 현재 : {transform.position.x}, {transform.position.y}, 패킷 : {_startXPos}, {_startYPos}");
+
+		//m_moveCnt = 1;
+		//Debug.Log($"BeginMove : {m_moveCnt}");
 		transform.position = new Vector3(_startXPos, _startYPos);
-		SetDir(_byteDir);
-		if (m_movingCoroutine == null) m_movingCoroutine = StartCoroutine(MovingCheckCoroutine());
+		SetByteDir(_byteDir);
+		//if (m_movingCoroutine == null) m_movingCoroutine = StartCoroutine(MovingCheckCoroutine());
 	}
 
 	// _destXPos가 0이 나오는 경우
 	public void EndMovePosition(float _destXPos, float _destYPos)
 	{
-		Debug.Log($"EndMove : {m_moveCnt}");
+		//Debug.Log($"EndMove : {m_moveCnt}");
 		// CellPos갱신은 CreatureController에서 
-		SetDir(0);
+		InGameConsole.Inst.Log($"EndMove : 현재 : {transform.position.x}, {transform.position.y}, 패킷 : {_destXPos}, {_destYPos}");
+
+		SetByteDir(0);
+		//eDir dir = GetDir(_byteDir);
+		//Flip(dir);
 		transform.position = new Vector3(_destXPos, _destYPos);
+
+		//InGameConsole.Inst.Log($"EndMove : {Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(_destXPos, _destYPos))}");
 	}
 
 	public void PlayCurSkillAnim(Skill _skill)

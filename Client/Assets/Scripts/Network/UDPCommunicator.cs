@@ -18,18 +18,18 @@ public class UDPCommunicator
 
 	Socket m_socket;
 	SocketAsyncEventArgs m_recvArgs;
-	RingBuffer m_ringBuffer;
+	UDPBuffer m_udpBuffer;
 
 	public Dictionary<int, IPEndPoint> DicSendInfo { get; private set; } = new Dictionary<int, IPEndPoint>();
 
-	public void Init(RingBuffer _ringBuffer, int _port)
+	public void Init(UDPBuffer _udpBuffer, int _port)
 	{
 		m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 		m_socket.Bind(new IPEndPoint(IPAddress.Any, _port));
 
-		InGameConsole.Inst.Log($"{_port} 번호로 바인딩");
+		m_udpBuffer = _udpBuffer;
 
-		m_ringBuffer = _ringBuffer;
+		InGameConsole.Inst.Log($"{_port} 번호로 바인딩");
 
 		m_recvArgs = new SocketAsyncEventArgs();
 		m_recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
@@ -52,21 +52,16 @@ public class UDPCommunicator
 		foreach (IPEndPoint ep in DicSendInfo.Values)
 		{
 			int sendbyte = m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
-			InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
+			//InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
 		}
 	}
 
 	public void RegisterRecv()
 	{
 		ArraySegment<byte> seg;
-		if (!m_ringBuffer.SetWriteSegment(out seg))
-		{
-			Debug.Log("버퍼에 공간이 없습니다");
-			return;
-		}
+		m_udpBuffer.SetWriteSegment(out seg);
 
 		m_recvArgs.SetBuffer(seg.Array, seg.Offset, seg.Count);
-
 
 		bool pending = m_socket.ReceiveAsync(m_recvArgs);
 		if (!pending) OnRecvCompleted(null, m_recvArgs);
@@ -78,7 +73,12 @@ public class UDPCommunicator
 		{
 			InGameConsole.Inst.Log($"ConnectionReset : {_args.BytesTransferred}");
 			RegisterRecv();
+			return;
+		}
 
+		if(_args.SocketError == SocketError.MessageSize)
+		{
+			Debug.Log($"MessageSize : {_args.BytesTransferred}");
 			return;
 		}
 
@@ -90,12 +90,9 @@ public class UDPCommunicator
 			return;
 		}
 
-		m_ringBuffer.MoveWritePos(_args.BytesTransferred);
+		m_udpBuffer.OnRecv(this, _args.BytesTransferred);
 
-
-		RegisterRecv();
 	}
-
 
 	public void AddSendInfo(int _slot, string _ip, int _port)
 	{
@@ -115,6 +112,6 @@ public class UDPCommunicator
 		DicSendInfo.Clear();
 		m_recvArgs = null;
 		m_socket = null;
-		m_ringBuffer = null;
+		m_udpBuffer = null;
 	}
 }

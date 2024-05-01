@@ -9,7 +9,7 @@ using UnityEditor;
 public class MultiplayMenu
 {
 #if UNITY_EDITOR
-	[MenuItem("Run Multiplayer(Win64)/1 Players")]
+	[MenuItem("Run Multiplayer(Win64)/1 Player")]
 	static void PerformWin64Build1()
 	{
 		PerformWin64Build(1);

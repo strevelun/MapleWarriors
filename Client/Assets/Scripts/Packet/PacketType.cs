@@ -37,7 +37,6 @@ public class PacketType
 		BeginMove,
 		Moving,
 		EndMove,
-		EndMoveOK,
 		MonsterAttack,
 		BeginMoveMonster,
 		InGameExit,

@@ -38,17 +38,17 @@ public class PlayerIdleState : ICreatureState
 		{
 			//m_mpc.InputMovement();
 			m_mpc.HandleInputMovement();
-			m_mpc.UpdateMove();
+			m_mpc.UpdateMove(Time.deltaTime);
+			m_mpc.Flip();
 			m_mpc.CheckMoveState();
 			m_mpc.InputAttack();
 			m_mpc.InputSkillChoice();
-			m_mpc.Flip();
 		}
 		else
 		{
-			m_pc.UpdateMove();
-			m_pc.CheckMoveState();
+			m_pc.UpdateMove(Time.deltaTime);
 			m_pc.Flip();
+			m_pc.CheckMoveState();
 		}
 	}
 

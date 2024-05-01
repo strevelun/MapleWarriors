@@ -74,9 +74,9 @@ public class UIChat : MonoBehaviour
 
 	}
 
-	private IEnumerator SetScrollbarDownCoroutine()
+	IEnumerator SetScrollbarDownCoroutine()
 	{
-		Canvas.ForceUpdateCanvases(); // 수백번 호출하면 뻗음
+		Canvas.ForceUpdateCanvases(); 
 		yield return null;
 		m_scrollbar.value = 0f;
 	}

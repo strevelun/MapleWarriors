@@ -61,16 +61,17 @@ public class CreatureController : MonoBehaviour
 	{
 	}
 
-    protected virtual void Update()
-	{
-		CurState?.Update();
-	}
-
 	protected virtual void FixedUpdate()
 	{
 		CurState?.FixedUpdate();
 	}
 
+	protected virtual void Update()
+	{
+		CurState?.Update();
+	}
+
+	
 	public bool ChangeState(ICreatureState _newState)
 	{
 		if(_newState.CanEnter(this) == false)
@@ -88,7 +89,7 @@ public class CreatureController : MonoBehaviour
 		return true;
 	}
 
-	public void UpdateMove()
+	public void UpdateMove(float _deltaTime)
 	{
 		if (ByteDir == (byte)eDir.UpRight)			Dir = eDir.UpRight;
 		else if (ByteDir == (byte)eDir.UpLeft)		Dir = eDir.UpLeft;
@@ -105,50 +106,50 @@ public class CreatureController : MonoBehaviour
 		switch (Dir)
 		{
 			case eDir.Up:
-				newY = transform.position.y + (MaxSpeed * Time.fixedDeltaTime);
+				newY = transform.position.y + (MaxSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.Down:
-				newY = transform.position.y - (MaxSpeed * Time.fixedDeltaTime);
+				newY = transform.position.y - (MaxSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.Left:
-				newX = transform.position.x - (MaxSpeed * Time.fixedDeltaTime);
+				newX = transform.position.x - (MaxSpeed * _deltaTime);
 				m_convertCellXPosOffset =0;
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.Right:
-				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
+				newX = transform.position.x + (MaxSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.UpLeft: //
-				newX = transform.position.x - (MaxSpeed * Time.fixedDeltaTime);
-				newY = transform.position.y + (MaxSpeed * Time.fixedDeltaTime);
+				newX = transform.position.x - (MaxSpeed * _deltaTime);
+				newY = transform.position.y + (MaxSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
-				m_convertCellYPosOffset = -(MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellYPosOffset = -(MaxSpeed * _deltaTime);
 				break;
 			case eDir.UpRight:
-				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
-				newY = transform.position.y + (MaxSpeed * Time.fixedDeltaTime);
+				newX = transform.position.x + (MaxSpeed * _deltaTime);
+				newY = transform.position.y + (MaxSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.DownLeft: //
-				newX = transform.position.x - (MaxSpeed * Time.fixedDeltaTime);
-				newY = transform.position.y - (MaxSpeed * Time.fixedDeltaTime);
-				m_convertCellXPosOffset = -(MaxSpeed * Time.fixedDeltaTime);
+				newX = transform.position.x - (MaxSpeed * _deltaTime);
+				newY = transform.position.y - (MaxSpeed * _deltaTime);
+				m_convertCellXPosOffset = -(MaxSpeed * _deltaTime);
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.DownRight:
-				newX = transform.position.x + (MaxSpeed * Time.fixedDeltaTime);
-				newY = transform.position.y - (MaxSpeed * Time.fixedDeltaTime);
-			//	m_convertCellXPosOffset = MaxSpeed * Time.fixedDeltaTime;
-			//	m_convertCellYPosOffset = -(MaxSpeed * Time.fixedDeltaTime);
+				newX = transform.position.x + (MaxSpeed * _deltaTime);
+				newY = transform.position.y - (MaxSpeed * _deltaTime);
+			//	m_convertCellXPosOffset = MaxSpeed * _deltaTime;
+			//	m_convertCellYPosOffset = -(MaxSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
-				m_convertCellYPosOffset = -(MaxSpeed * Time.fixedDeltaTime);
+				m_convertCellYPosOffset = -(MaxSpeed * _deltaTime);
 				break;
 		}
 
@@ -515,10 +516,28 @@ public class CreatureController : MonoBehaviour
 		SetPosition(_cellXPos, _cellYPos);
 	}
 
-	public void SetDir(byte _byteDir) 
+	public void SetByteDir(byte _byteDir) 
 	{
 		ByteDir = _byteDir;
 	}
+
+	public eDir GetDir(byte _byteDir)
+	{
+		eDir dir;
+
+		if (_byteDir == (byte)eDir.UpRight) dir = eDir.UpRight;
+		else if (_byteDir == (byte)eDir.UpLeft) dir = eDir.UpLeft;
+		else if (_byteDir == (byte)eDir.DownLeft) dir = eDir.DownLeft;
+		else if (_byteDir == (byte)eDir.DownRight) dir = eDir.DownRight;
+		else if (_byteDir == (byte)eDir.Up) dir = eDir.Up;
+		else if (_byteDir == (byte)eDir.Down) dir = eDir.Down;
+		else if (_byteDir == (byte)eDir.Left) dir = eDir.Left;
+		else if (_byteDir == (byte)eDir.Right) dir = eDir.Right;
+		else dir = eDir.None;
+
+		return dir;
+	}
+
 	/*
 	public void UnSetDir(eDir _eDir)
 	{
@@ -548,6 +567,16 @@ public class CreatureController : MonoBehaviour
 	{
 		if (((Dir == eDir.Right || Dir == eDir.UpRight || Dir == eDir.DownRight) && m_bIsFacingLeft)
 			|| ((Dir == eDir.Left || Dir == eDir.UpLeft || Dir == eDir.DownLeft) && !m_bIsFacingLeft))
+		{
+			m_spriteRenderer.flipX = m_bIsFacingLeft;
+			m_bIsFacingLeft = !m_bIsFacingLeft;
+		}
+	}
+
+	public virtual void Flip(eDir _dir)
+	{
+		if (((_dir == eDir.Right || _dir == eDir.UpRight || _dir == eDir.DownRight) && m_bIsFacingLeft)
+			|| ((_dir == eDir.Left || _dir == eDir.UpLeft || _dir == eDir.DownLeft) && !m_bIsFacingLeft))
 		{
 			m_spriteRenderer.flipX = m_bIsFacingLeft;
 			m_bIsFacingLeft = !m_bIsFacingLeft;

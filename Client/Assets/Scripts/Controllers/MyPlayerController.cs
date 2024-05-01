@@ -26,7 +26,7 @@ public class MyPlayerController : PlayerController
 	bool m_bIsKeyUp = false;
 
 	int m_endMovePlayerCnt = 0;
-	bool m_bEndMove = false;
+	//bool m_bEndMove = false;
 	bool[] m_endMoveCheck = new bool[4];
 
 	byte LastByteDir = 0;
@@ -42,14 +42,14 @@ public class MyPlayerController : PlayerController
 		m_vcam = camObj.GetComponent<CinemachineVirtualCamera>();
 
 		StartCoroutine(MovingCoroutine());
-		StartCoroutine(MoveEndCheckCoroutine());
 	}
 
 	protected override void Update()
 	{
+		InputMovement();
+
 		base.Update();
 
-		InputMovement();
 
 		CurSkill.Update(CellPos, LastDir);
 
@@ -74,65 +74,10 @@ public class MyPlayerController : PlayerController
 		{
 			yield return new WaitForSeconds(0.2f);
 
-			if (Dir == eDir.None)
-			{
-				yield return null;
-				continue;
-			}
-
-			if (!m_bEndMove && LastByteDir == 0) 
+			//if (LastByteDir == 0) 
 			{
 				Packet pkt = InGamePacketMaker.Moving(transform.position, ByteDir);
 				UDPCommunicator.Inst.SendAll(pkt);
-			}
-		}
-	}
-
-	IEnumerator MoveEndCheckCoroutine()
-	{
-		while(true)
-		{
-			yield return new WaitForSeconds(0.2f);
-
-			if (!m_bEndMove)
-			{
-				yield return null;
-				continue;
-			}
-
-			foreach(int slot in GameManager.Inst.OtherPlayersSlot)
-			{
-				if(m_endMoveCheck[slot] == false)
-				{
-					Packet pkt = InGamePacketMaker.EndMove(transform.position);
-					UDPCommunicator.Inst.Send(pkt, slot);
-					//InGameConsole.Inst.Log($"{slot}이 아직 EndMove체크를 안해서 또 보내는 중");
-				}
-			}
-
-			//Debug.Log("EndMove 체크 중");
-			
-		}
-	}
-
-	public void SetEndCheck(int _slot)
-	{
-		if (!m_bEndMove) return;
-
-		++m_endMovePlayerCnt;
-		m_endMoveCheck[_slot] = true;
-
-		Debug.Log($"{_slot}이 endMove 체크 완료");
-
-
-		if (m_endMovePlayerCnt >= GameManager.Inst.PlayerCnt-1 || m_endMovePlayerCnt >= GameManager.Inst.PlayerAliveCnt - 1)
-		{
-			Debug.Log("모든 플레이어가 EndMove완료");
-			m_bEndMove = false;
-			m_endMovePlayerCnt = 0;
-			foreach (int slot in GameManager.Inst.OtherPlayersSlot)
-			{
-				m_endMoveCheck[slot] = false;
 			}
 		}
 	}
@@ -234,9 +179,10 @@ public class MyPlayerController : PlayerController
 			m_bIsKeyUp = false;
 			if (GameManager.Inst.PlayerCnt > 1)
 			{
+				//InGameConsole.Inst.Log("EndMove 직전");
 				Packet pkt = InGamePacketMaker.EndMove(transform.position);
 				UDPCommunicator.Inst.SendAll(pkt);
-				m_bEndMove = true;
+				//m_bEndMove = true;
 			}
 		}
 
@@ -290,9 +236,9 @@ public class MyPlayerController : PlayerController
 			//ByteDir = 0;
 			if (ByteDir != 0)
 			{
-				Packet pkt = InGamePacketMaker.EndMove(transform.position);
+				Packet pkt = InGamePacketMaker.EndMove(transform.position); 
 				UDPCommunicator.Inst.SendAll(pkt);
-				m_bEndMove = true;
+				//m_bEndMove = true;
 			}
 
 			if (CurSkill.GetSkillType() == eSkillType.Melee)

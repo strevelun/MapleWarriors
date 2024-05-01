@@ -47,7 +47,7 @@ public class InGameScene : BaseScene
 	{
 		Init();
 
-		InvokeRepeating("SendAwake", 3f, 30f);
+		//InvokeRepeating("SendAwake", 3f, 30f);
 	}
 
 	void Update()

@@ -24,7 +24,7 @@ public class MonsterRunState : ICreatureState
 	public void FixedUpdate()
 	{
 		m_mc.Attack();
-		m_mc.UpdateMove();
+		m_mc.UpdateMove(Time.fixedDeltaTime);
 		m_mc.CheckMoveState();
 		m_mc.Flip();
 	}

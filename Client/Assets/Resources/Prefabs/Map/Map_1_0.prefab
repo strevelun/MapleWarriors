@@ -8804,6 +8804,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Boss1
       objectReference: {fileID: 0}
+    - target: {fileID: 5611273796657946858, guid: 5cf32d3c8adce614080bc0454a2a016d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5cf32d3c8adce614080bc0454a2a016d, type: 3}
 --- !u!4 &4438244450087561548 stripped
@@ -9372,7 +9377,7 @@ PrefabInstance:
     - target: {fileID: 7717579961242797413, guid: ded5d859d523a484383c006291159e8b,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ded5d859d523a484383c006291159e8b, type: 3}
@@ -9468,6 +9473,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Boss2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1543250342407972219, guid: 1a678b61855fdee42a83e79efecc3928,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6935941156144523030, guid: 1a678b61855fdee42a83e79efecc3928,
         type: 3}

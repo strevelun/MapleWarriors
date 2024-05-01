@@ -14,9 +14,9 @@ public static class InGamePacketHandler
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
 		GameObject camObj = GameObject.Find("CM vcam1");
-		GameObject ringBufferObj = GameObject.Find("IngameRingBuffer");
-		RingBuffer ringBuffer = null;
-		if (ringBufferObj) ringBuffer = ringBufferObj.GetComponent<RingBuffer>();
+		GameObject udpBufferObj = GameObject.Find("IngameUDPBuffer");
+		UDPBuffer udpBuffer = null;
+		if (udpBufferObj) udpBuffer = udpBufferObj.GetComponent<UDPBuffer>();
 		CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
 
 		GameObject mapObj = MapManager.Inst.Load(mapID, camObj); // TestMap : 1
@@ -57,7 +57,7 @@ public static class InGamePacketHandler
 				mpc.Idx = idx;
 				mpc.SetNickname(nickname);
 				vcam1.Follow = player.transform;
-				UDPCommunicator.Inst.Init(ringBuffer, port);
+				UDPCommunicator.Inst.Init(udpBuffer, port);
 			}
 			else
 			{
@@ -89,6 +89,8 @@ public static class InGamePacketHandler
 
 	public static void BeginMove(PacketReader _reader)
 	{
+		//InGameConsole.Inst.Log("BeginMove");
+
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
@@ -103,31 +105,21 @@ public static class InGamePacketHandler
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
-		byte dir = _reader.GetByte();
+		byte byteDir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc.Moving(xpos, ypos, dir);
+		pc.Moving(xpos, ypos, byteDir);
 	}
 
 	public static void EndMove(PacketReader _reader)
 	{
+		//InGameConsole.Inst.Log("EndMove");
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		pc.EndMovePosition(xpos, ypos);
-
-		Packet pkt = InGamePacketMaker.EndMoveOK();
-		UDPCommunicator.Inst.Send(pkt, roomSlot);
-	}
-
-	public static void EndMoveOK(PacketReader _reader)
-	{
-		byte roomSlot = _reader.GetByte();
-
-		MyPlayerController mpc = ObjectManager.Inst.FindPlayer(UserData.Inst.MyRoomSlot) as MyPlayerController;
-		mpc.SetEndCheck(roomSlot);
 	}
 
 	public static void BeginMoveMonster(PacketReader _reader)

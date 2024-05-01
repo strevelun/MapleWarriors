@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class InGameConsole : MonoBehaviour
 
 	const int MaxLine = 200;
 	int curLineCnt = 0;
+
+	Coroutine m_scrollbarDownCoroutine = null;
 
 	void Start()
 	{
@@ -39,13 +42,20 @@ public class InGameConsole : MonoBehaviour
 		else
 			++curLineCnt;
 
-		m_text.text += $"{_text}\n"; 
+		m_text.text += $"{_text}\n";
 
 		if (m_scrollRect.verticalNormalizedPosition <= 0.1f)
 			m_scrollRect.verticalNormalizedPosition = 0;
 
+		if(m_scrollbarDownCoroutine == null) m_scrollbarDownCoroutine = StartCoroutine(SetScrollbarDownCoroutine());
+	}
+
+	IEnumerator SetScrollbarDownCoroutine()
+	{
+		//Canvas.ForceUpdateCanvases();
+		yield return null;
 		m_scrollbar.value = 0f;
-		Canvas.ForceUpdateCanvases();
+		m_scrollbarDownCoroutine = null;
 	}
 
 	private void OnDestroy()
