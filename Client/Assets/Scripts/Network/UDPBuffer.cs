@@ -21,6 +21,7 @@ public class UDPBuffer : MonoBehaviour
 
 	void Update()
     {
+		//Debug.Log("Update");
 		OnBufferReadable();
 	}
 
@@ -44,7 +45,7 @@ public class UDPBuffer : MonoBehaviour
 			if (m_writePos > Define.BufferMax - Define.PacketBufferMax) m_writePos = 0;
 
 			_seg = new ArraySegment<byte>(m_buffer, m_writePos, Define.BufferMax - m_writePos);
-			Debug.Log($"SetWriteSegment : {m_writePos}");
+		//	Debug.Log($"SetWriteSegment : {m_writePos}");
 		}
 	}
 
@@ -52,6 +53,13 @@ public class UDPBuffer : MonoBehaviour
 	{
 		lock(m_lock)
 		{
+			m_reader.SetBuffer(m_buffer, m_writePos);
+			PacketType.eServer type = m_reader.GetPacketType(false);
+			if(PacketType.eServer.EndMove == type)
+			{
+				Debug.Log($"EndMove왓따!!! : {DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}");
+			}
+
 			MoveWritePos(_bytesTransferred);
 			_comm.RegisterRecv();
 		}
@@ -63,7 +71,7 @@ public class UDPBuffer : MonoBehaviour
 		{
 			m_readPos = (_readBytes + m_readPos) % Define.BufferMax;
 			if (m_readPos > Define.BufferMax - Define.PacketBufferMax) m_readPos = 0;
-			Debug.Log($"MoveReadPos : {m_readPos}");
+			//Debug.Log($"MoveReadPos : {m_readPos}");
 		}
 	}
 
@@ -73,7 +81,7 @@ public class UDPBuffer : MonoBehaviour
 		{
 			m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
 			if (m_writePos > Define.BufferMax - Define.PacketBufferMax) m_writePos = 0;
-			Debug.Log($"MoveWritePos : {m_writePos}");
+			//Debug.Log($"MoveWritePos : {m_writePos}");
 		}
 	}
 }

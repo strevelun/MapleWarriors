@@ -25,6 +25,7 @@ public class CreatureController : MonoBehaviour
 	//public eDir MoveDir { get; set; } = eDir.None; // 움직일때만 Dir 갱신, 안 움직이면 None
 	public eDir LastDir { get; protected set; } = eDir.None;
 	public float MaxSpeed { get; protected set; } = 1f;
+	public float CurSpeed { get; protected set; } = 1f;
 
 	protected Coroutine m_damamgeCoroutine = null;
 
@@ -106,50 +107,50 @@ public class CreatureController : MonoBehaviour
 		switch (Dir)
 		{
 			case eDir.Up:
-				newY = transform.position.y + (MaxSpeed * _deltaTime);
+				newY = transform.position.y + (CurSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.Down:
-				newY = transform.position.y - (MaxSpeed * _deltaTime);
+				newY = transform.position.y - (CurSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.Left:
-				newX = transform.position.x - (MaxSpeed * _deltaTime);
+				newX = transform.position.x - (CurSpeed * _deltaTime);
 				m_convertCellXPosOffset =0;
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.Right:
-				newX = transform.position.x + (MaxSpeed * _deltaTime);
+				newX = transform.position.x + (CurSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.UpLeft: //
-				newX = transform.position.x - (MaxSpeed * _deltaTime);
-				newY = transform.position.y + (MaxSpeed * _deltaTime);
+				newX = transform.position.x - (CurSpeed * _deltaTime);
+				newY = transform.position.y + (CurSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
-				m_convertCellYPosOffset = -(MaxSpeed * _deltaTime);
+				m_convertCellYPosOffset = -(CurSpeed * _deltaTime);
 				break;
 			case eDir.UpRight:
-				newX = transform.position.x + (MaxSpeed * _deltaTime);
-				newY = transform.position.y + (MaxSpeed * _deltaTime);
+				newX = transform.position.x + (CurSpeed * _deltaTime);
+				newY = transform.position.y + (CurSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.DownLeft: //
-				newX = transform.position.x - (MaxSpeed * _deltaTime);
-				newY = transform.position.y - (MaxSpeed * _deltaTime);
-				m_convertCellXPosOffset = -(MaxSpeed * _deltaTime);
+				newX = transform.position.x - (CurSpeed * _deltaTime);
+				newY = transform.position.y - (CurSpeed * _deltaTime);
+				m_convertCellXPosOffset = -(CurSpeed * _deltaTime);
 				m_convertCellYPosOffset = 0;
 				break;
 			case eDir.DownRight:
-				newX = transform.position.x + (MaxSpeed * _deltaTime);
-				newY = transform.position.y - (MaxSpeed * _deltaTime);
-			//	m_convertCellXPosOffset = MaxSpeed * _deltaTime;
-			//	m_convertCellYPosOffset = -(MaxSpeed * _deltaTime);
+				newX = transform.position.x + (CurSpeed * _deltaTime);
+				newY = transform.position.y - (CurSpeed * _deltaTime);
+			//	m_convertCellXPosOffset = CurSpeed * _deltaTime;
+			//	m_convertCellYPosOffset = -(CurSpeed * _deltaTime);
 				m_convertCellXPosOffset = 0;
-				m_convertCellYPosOffset = -(MaxSpeed * _deltaTime);
+				m_convertCellYPosOffset = -(CurSpeed * _deltaTime);
 				break;
 		}
 
@@ -410,7 +411,7 @@ public class CreatureController : MonoBehaviour
 			if (Math.Abs(_newY - targetY) < 0.1f)
 				_newY = targetY;
 			else
-				_newY -= (MaxSpeed * Time.fixedDeltaTime);
+				_newY -= (CurSpeed * Time.fixedDeltaTime);
 		}
 		else
 		{
@@ -422,7 +423,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newY - targetY) < 0.1f)
 						_newY = targetY;
 					else
-						_newY += (MaxSpeed * Time.fixedDeltaTime);
+						_newY += (CurSpeed * Time.fixedDeltaTime);
 				}
 			}
 			else if (testY >= 0.9f)
@@ -434,7 +435,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newY - targetY) < 0.1f)
 						_newY = targetY;
 					else
-						_newY -= (MaxSpeed * Time.fixedDeltaTime);
+						_newY -= (CurSpeed * Time.fixedDeltaTime);
 				}
 
 			}
@@ -473,7 +474,7 @@ public class CreatureController : MonoBehaviour
 			if (Math.Abs(_newX - targetX) < 0.1f)
 				_newX = targetX;
 			else
-				_newX += (MaxSpeed * Time.fixedDeltaTime);
+				_newX += (CurSpeed * Time.fixedDeltaTime);
 		}
 		else
 		{
@@ -485,7 +486,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newX - targetX) < 0.1f)
 						_newX = targetX;
 					else
-						_newX -= (MaxSpeed * Time.fixedDeltaTime);
+						_newX -= (CurSpeed * Time.fixedDeltaTime);
 				}
 			}
 			else if (testX >= 0.9f)
@@ -497,7 +498,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newX - targetX) < 0.1f)
 						_newX = targetX;
 					else
-						_newX += (MaxSpeed * Time.fixedDeltaTime);
+						_newX += (CurSpeed * Time.fixedDeltaTime);
 				}
 
 			}

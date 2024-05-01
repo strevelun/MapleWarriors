@@ -56,6 +56,9 @@ public class PlayerController : CreatureController
 	//int m_moveCnt = 0;
 	Coroutine m_movingCoroutine = null;
 
+	protected long m_startTime;
+	//Vector2 targetPos;
+
 	void Start()
 	{
 		
@@ -63,6 +66,8 @@ public class PlayerController : CreatureController
 
 	protected override void Update()
 	{
+		//if(Idx == 1) Debug.Log("Player Update");
+
 		base.Update();
 
 		m_sliderRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_hpBarUIOffset);
@@ -84,8 +89,11 @@ public class PlayerController : CreatureController
 	{
 		base.Init(_cellXPos, _cellYPos);
 
+		//targetPos = new Vector2(transform.position.x, transform.position.y);
+
 		MaxSpeed = 4f;
-		MaxHP = 50;
+		CurSpeed = MaxSpeed;
+		MaxHP = 9999;
 		HP = MaxHP;
 		AttackDamage = 5;
 		AttackRange = 2;
@@ -199,10 +207,24 @@ public void UpdateSecondMove()
 		m_movingCoroutine = null;
 	}
 */
-	public void Moving(float _xpos, float _ypos, byte _byteDir)
+	public void Moving(float _xpos, float _ypos, byte _byteDir, long _time)
 	{
 		//++m_moveCnt;
 
+		
+
+		long endTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+		long time = endTime - _time;
+
+		// 4 * x = 3.82
+		//CurSpeed = MaxSpeed - (MaxSpeed * (time * 0.001f) * 5f);
+		//CurSpeed = MaxSpeed * (1 - 0.1f * ((time * 0.001f) - 0.004f));
+
+		//targetPos = new Vector2(_xpos, _ypos);
+
+
+
+		InGameConsole.Inst.Log($"Moving : {time} ms 걸림, CurSpeed : {CurSpeed}");
 
 		// moving으로 들어온 좌표가 우선
 		float distX = Math.Abs(_xpos - transform.position.x);
@@ -210,9 +232,11 @@ public void UpdateSecondMove()
 
 		//InGameConsole.Inst.Log($"Moving : {distX}, {distY}, 현재위치 : {transform.position.x}, {transform.position.y}, 패킷위치 : {_xpos}, {_ypos}");
 		
-		if(distX > MaxSpeed * 0.01f || distY > MaxSpeed * 0.01f)
+		if(distX > 0.1f || distY > 0.1f)
 		{
-			transform.position = new Vector3(_xpos, _ypos);
+			Debug.Log($"Moving 보정 : {distX}, {distY}");
+			//transform.position = new Vector3(_xpos, _ypos);
+			transform.position = Vector2.Lerp(new Vector2(transform.position.x, transform.position.y), new Vector2(_xpos, _ypos), 0.7f);
 			SetByteDir(_byteDir);
 		//	if (m_movingCoroutine == null) m_movingCoroutine = StartCoroutine(MovingCheckCoroutine());
 		}
@@ -245,11 +269,16 @@ public void CheckMoveState()
 	{
 		//InGameConsole.Inst.Log($"BeginMove : {Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(_startXPos, _startYPos))}");
 		InGameConsole.Inst.Log($"BeginMove : 현재 : {transform.position.x}, {transform.position.y}, 패킷 : {_startXPos}, {_startYPos}");
-
+		
+		
+		m_startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+		
 		//m_moveCnt = 1;
 		//Debug.Log($"BeginMove : {m_moveCnt}");
-		transform.position = new Vector3(_startXPos, _startYPos);
+		//transform.position = new Vector3(_startXPos, _startYPos);
 		SetByteDir(_byteDir);
+
+		m_startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 		//if (m_movingCoroutine == null) m_movingCoroutine = StartCoroutine(MovingCheckCoroutine());
 	}
 
@@ -258,12 +287,15 @@ public void CheckMoveState()
 	{
 		//Debug.Log($"EndMove : {m_moveCnt}");
 		// CellPos갱신은 CreatureController에서 
-		InGameConsole.Inst.Log($"EndMove : 현재 : {transform.position.x}, {transform.position.y}, 패킷 : {_destXPos}, {_destYPos}");
+		//InGameConsole.Inst.Log($"EndMove : 현재 : {transform.position.x}, {transform.position.y}, 패킷 : {_destXPos}, {_destYPos}");
+		Debug.Log($"EndMove : 현재 : {transform.position.x}, {transform.position.y}, 패킷 : {_destXPos}, {_destYPos}");
 
 		SetByteDir(0);
 		//eDir dir = GetDir(_byteDir);
 		//Flip(dir);
-		transform.position = new Vector3(_destXPos, _destYPos);
+		//transform.position = new Vector3(_destXPos, _destYPos);
+
+		Vector2.Lerp(new Vector2(transform.position.x, transform.position.y), new Vector2(_destXPos, _destYPos), 0.7f);
 
 		//InGameConsole.Inst.Log($"EndMove : {Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(_destXPos, _destYPos))}");
 	}

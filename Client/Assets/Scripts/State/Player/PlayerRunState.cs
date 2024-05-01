@@ -30,9 +30,8 @@ public class PlayerRunState : ICreatureState
 	{
 		if (m_mpc)
 		{
-			//m_mpc.InputMovement();
-			m_mpc.HandleInputMovement();
 			m_mpc.UpdateMove(Time.deltaTime);
+			m_mpc.HandleInputMovement();
 			m_mpc.Flip();
 			m_mpc.CheckMoveState();
 			m_mpc.InputAttack();
@@ -48,7 +47,17 @@ public class PlayerRunState : ICreatureState
 
 	public void FixedUpdate()
 	{
-		
+		/*
+		if (m_mpc)
+		{
+			m_mpc.HandleInputMovement();
+			m_mpc.UpdateMove(Time.fixedDeltaTime);
+		}
+		else
+		{
+			m_pc.UpdateMove(Time.fixedDeltaTime);
+		}
+		*/
 	}
 
 	public void Exit()

@@ -24,10 +24,12 @@ public static class InGamePacketMaker
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eServer.BeginMove) // Client로 바로 보냄
+			.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecStartPos.x * 1000000))
 			.Add((int)(_vecStartPos.y * 1000000))
 			.Add(_byteDir);
+
 		return pkt;
 	}
 
@@ -36,6 +38,7 @@ public static class InGamePacketMaker
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eServer.Moving)
+			.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecStartPos.x * 1000000))
 			.Add((int)(_vecStartPos.y * 1000000))
@@ -48,6 +51,7 @@ public static class InGamePacketMaker
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eServer.EndMove)
+			.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecEndPos.x * 1000000)) // 소수점 6자리 정밀도
 			.Add((int)(_vecEndPos.y * 1000000));

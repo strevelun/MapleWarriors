@@ -36,7 +36,6 @@ public class PlayerIdleState : ICreatureState
 	{
 		if (m_mpc)
 		{
-			//m_mpc.InputMovement();
 			m_mpc.HandleInputMovement();
 			m_mpc.UpdateMove(Time.deltaTime);
 			m_mpc.Flip();
@@ -54,6 +53,17 @@ public class PlayerIdleState : ICreatureState
 
 	public void FixedUpdate()
 	{
+		/*
+		if (m_mpc)
+		{
+			m_mpc.HandleInputMovement();
+			m_mpc.UpdateMove(Time.fixedDeltaTime);
+		}
+		else
+		{
+			m_pc.UpdateMove(Time.fixedDeltaTime);
+		}
+		*/
 	}
 
 	public void Exit()

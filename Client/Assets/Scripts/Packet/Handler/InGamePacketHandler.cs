@@ -1,4 +1,5 @@
 using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -91,10 +92,13 @@ public static class InGamePacketHandler
 	{
 		//InGameConsole.Inst.Log("BeginMove");
 
+		long time = _reader.GetInt64();
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
 		byte dir = _reader.GetByte();
+
+		InGameConsole.Inst.Log($"BeginMove패킷 전송 시간 : {DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - time} ms");
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		pc.BeginMovePosition(xpos, ypos, dir);
@@ -102,21 +106,26 @@ public static class InGamePacketHandler
 
 	public static void Moving(PacketReader _reader)
 	{
+		long time = _reader.GetInt64();
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
 		byte byteDir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc.Moving(xpos, ypos, byteDir);
+		pc.Moving(xpos, ypos, byteDir, time);
 	}
 
 	public static void EndMove(PacketReader _reader)
 	{
 		//InGameConsole.Inst.Log("EndMove");
+		long time = _reader.GetInt64();
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
+
+
+		InGameConsole.Inst.Log($"EndMove패킷 전송 시간 : {DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - time} ms");
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		pc.EndMovePosition(xpos, ypos);

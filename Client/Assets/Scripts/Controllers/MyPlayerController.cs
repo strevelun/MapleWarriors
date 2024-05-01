@@ -34,6 +34,7 @@ public class MyPlayerController : PlayerController
 	CinemachineVirtualCamera m_vcam;
 	int m_cameraIdx = 0;
 
+
 	//int m_testMovingCnt = 0;
 
 	void Start()
@@ -100,6 +101,7 @@ public class MyPlayerController : PlayerController
 
 	public void InputMovement()
 	{
+
 		if (!GameManager.Inst.GameStart) return;
 		if (!InputManager.Inst.InputEnabled) return;
 
@@ -176,6 +178,9 @@ public class MyPlayerController : PlayerController
 	{
 		if (m_bIsKeyUp && ByteDir == (byte)eDir.None)
 		{
+			long endTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+			InGameConsole.Inst.Log($"키보드 뗌 : {endTime - m_startTime} ms 걸림");
+
 			m_bIsKeyUp = false;
 			if (GameManager.Inst.PlayerCnt > 1)
 			{
@@ -198,7 +203,7 @@ public class MyPlayerController : PlayerController
 
 		if (m_bIsKeyDown || m_bIsKeyUp) // ByteDir가 0이 아니면서 m_bIsKeyUp이면 방향이 바뀐 것.
 		{
-
+			m_startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 			Packet pkt = InGamePacketMaker.BeginMove(transform.position, ByteDir);
 			UDPCommunicator.Inst.SendAll(pkt);
 			m_bIsKeyDown = false;
