@@ -26,7 +26,13 @@ public class Connection
 
 	public void Send(Packet _packet)
 	{
-        m_socket.Send(_packet.GetBuffer(), _packet.Size, SocketFlags.None);
+        try
+        {
+            m_socket.Send(_packet.GetBuffer(), _packet.Size, SocketFlags.None);
+        } catch(SocketException _ex)
+		{
+			Debug.Log($"Send SocketException : {_ex.Message}");
+		}
 	}
 
 	public void RegisterRecv()
@@ -40,8 +46,8 @@ public class Connection
         m_recvArgs.SetBuffer(seg.Array, seg.Offset, seg.Count);
         //Debug.Log("offset : " + seg.Offset + ", Count : " + seg.Count);
 
-        bool pending = m_socket.ReceiveAsync(m_recvArgs);
-        if (!pending)       OnRecvCompleted(null, m_recvArgs);
+		bool readLater = m_socket.ReceiveAsync(m_recvArgs);
+        if (!readLater)       OnRecvCompleted(null, m_recvArgs);
 	}
 
 	public void OnRecvCompleted(object _sender, SocketAsyncEventArgs _args)
@@ -61,7 +67,7 @@ public class Connection
 
     public void Shutdown()
     {
-		m_socket.Shutdown(SocketShutdown.Both);
+		m_socket.Shutdown(SocketShutdown.Send);
         Debug.Log("Shutdown");
 	}
 
