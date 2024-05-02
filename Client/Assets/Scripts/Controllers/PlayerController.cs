@@ -53,12 +53,6 @@ public class PlayerController : CreatureController
 	[SerializeField]
 	Vector2 m_hpBarUIOffset;
 
-	//int m_moveCnt = 0;
-	Coroutine m_movingCoroutine = null;
-
-	protected long m_startTime;
-	//Vector2 targetPos;
-
 	void Start()
 	{
 		
@@ -121,6 +115,9 @@ public class PlayerController : CreatureController
 		m_damageTMP = m_damageObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 		m_damageTMP_RT = m_damageObj.transform.GetChild(0).GetComponent<RectTransform>();
 		m_damageObj.SetActive(false);
+
+		m_startFontSize = m_damageTMP.fontSize;
+		m_endFontSize = m_startFontSize * 3f;
 
 		m_nickname = Util.FindChild(playerUI, true, "Nickname");
 		m_nicknameTMP = m_nickname.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
@@ -224,7 +221,7 @@ public void UpdateSecondMove()
 
 
 
-		InGameConsole.Inst.Log($"Moving : {time} ms 걸림, CurSpeed : {CurSpeed}");
+		//InGameConsole.Inst.Log($"Moving : {time} ms 걸림");
 
 		// moving으로 들어온 좌표가 우선
 		float distX = Math.Abs(_xpos - transform.position.x);
@@ -270,15 +267,11 @@ public void CheckMoveState()
 		//InGameConsole.Inst.Log($"BeginMove : {Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(_startXPos, _startYPos))}");
 		InGameConsole.Inst.Log($"BeginMove : 현재 : {transform.position.x}, {transform.position.y}, 패킷 : {_startXPos}, {_startYPos}");
 		
-		
-		m_startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-		
 		//m_moveCnt = 1;
 		//Debug.Log($"BeginMove : {m_moveCnt}");
 		//transform.position = new Vector3(_startXPos, _startYPos);
 		SetByteDir(_byteDir);
 
-		m_startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 		//if (m_movingCoroutine == null) m_movingCoroutine = StartCoroutine(MovingCheckCoroutine());
 	}
 
@@ -365,6 +358,7 @@ public void CheckMoveState()
 		if (m_damamgeCoroutine != null)
 		{
 			StopCoroutine(m_damamgeCoroutine);
+			m_damageTMP.fontSize = m_startFontSize;
 			m_damamgeCoroutine = null;
 		}
 

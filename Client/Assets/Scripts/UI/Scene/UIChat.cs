@@ -76,7 +76,7 @@ public class UIChat : MonoBehaviour
 
 	IEnumerator SetScrollbarDownCoroutine()
 	{
-		Canvas.ForceUpdateCanvases(); 
+		//Canvas.ForceUpdateCanvases(); 
 		yield return null;
 		m_scrollbar.value = 0f;
 	}

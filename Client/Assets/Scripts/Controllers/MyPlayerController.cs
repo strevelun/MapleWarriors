@@ -25,7 +25,6 @@ public class MyPlayerController : PlayerController
 	bool m_bIsKeyDown = false;
 	bool m_bIsKeyUp = false;
 
-	int m_endMovePlayerCnt = 0;
 	//bool m_bEndMove = false;
 	bool[] m_endMoveCheck = new bool[4];
 
@@ -33,7 +32,6 @@ public class MyPlayerController : PlayerController
 
 	CinemachineVirtualCamera m_vcam;
 	int m_cameraIdx = 0;
-
 
 	//int m_testMovingCnt = 0;
 
@@ -179,7 +177,6 @@ public class MyPlayerController : PlayerController
 		if (m_bIsKeyUp && ByteDir == (byte)eDir.None)
 		{
 			long endTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-			InGameConsole.Inst.Log($"키보드 뗌 : {endTime - m_startTime} ms 걸림");
 
 			m_bIsKeyUp = false;
 			if (GameManager.Inst.PlayerCnt > 1)
@@ -191,23 +188,14 @@ public class MyPlayerController : PlayerController
 			}
 		}
 
-		if(LastByteDir != 0) // 스킬을 누른 시점에 이동키를 눌렀으면
-		{
-			// 스킬 끝났는데 이동키가 누른 시점과 다르면
-			//if(ByteDir != )
-			//if (ByteDir != 0) // 
-			//	ByteDir = LastByteDir;
 
-			LastByteDir = 0;
-		}
-
-		if (m_bIsKeyDown || m_bIsKeyUp) // ByteDir가 0이 아니면서 m_bIsKeyUp이면 방향이 바뀐 것.
+		if (LastByteDir != 0 || m_bIsKeyDown || m_bIsKeyUp) // ByteDir가 0이 아니면서 m_bIsKeyUp이면 방향이 바뀐 것.
 		{
-			m_startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 			Packet pkt = InGamePacketMaker.BeginMove(transform.position, ByteDir);
 			UDPCommunicator.Inst.SendAll(pkt);
 			m_bIsKeyDown = false;
 			m_bIsKeyUp = false;
+			LastByteDir = 0;
 			//m_bEndMove = false;
 		}
 

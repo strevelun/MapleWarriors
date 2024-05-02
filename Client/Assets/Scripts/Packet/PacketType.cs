@@ -54,7 +54,6 @@ public class PacketType
 	{
 		None = 0,
 		Test,
-		Exit,
 		LoginReq,
 		LobbyChat,
 		LobbyUpdateInfo,

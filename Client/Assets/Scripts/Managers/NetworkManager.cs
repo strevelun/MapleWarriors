@@ -58,7 +58,7 @@ public class NetworkManager
 
 	public void Disconnect()
 	{
-		m_connection.Disconnect();
+		m_connection?.Shutdown();
 		m_connection = null;
 	}
 }

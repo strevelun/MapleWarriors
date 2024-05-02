@@ -8114,6 +8114,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dark_Stone_Golem
       objectReference: {fileID: 0}
+    - target: {fileID: 7717579961242797413, guid: ded5d859d523a484383c006291159e8b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ded5d859d523a484383c006291159e8b, type: 3}
 --- !u!4 &2191371673481434544 stripped
@@ -8189,6 +8194,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dark_Stone_Golem
       objectReference: {fileID: 0}
+    - target: {fileID: 7717579961242797413, guid: ded5d859d523a484383c006291159e8b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ded5d859d523a484383c006291159e8b, type: 3}
 --- !u!4 &757032256227630241 stripped
@@ -8263,6 +8273,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Dark_Stone_Golem
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717579961242797413, guid: ded5d859d523a484383c006291159e8b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ded5d859d523a484383c006291159e8b, type: 3}
@@ -8414,6 +8429,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dark_Stone_Golem
       objectReference: {fileID: 0}
+    - target: {fileID: 7717579961242797413, guid: ded5d859d523a484383c006291159e8b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ded5d859d523a484383c006291159e8b, type: 3}
 --- !u!4 &2817556812976791789 stripped
@@ -8488,6 +8508,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Dark_Stone_Golem
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717579961242797413, guid: ded5d859d523a484383c006291159e8b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ded5d859d523a484383c006291159e8b, type: 3}

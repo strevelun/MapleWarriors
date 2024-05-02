@@ -13,14 +13,6 @@ public static class LobbyPacketMaker
 		return pkt;
 	}
 
-	public static Packet ExitGame()
-	{
-		Packet pkt = new Packet();
-		pkt
-			.Add(PacketType.eClient.Exit);
-		return pkt;
-	}
-
 	public static Packet SendChat(string _text)
 	{
 		Packet packet = new Packet();

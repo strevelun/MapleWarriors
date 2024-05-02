@@ -43,12 +43,19 @@ public abstract class BaseScene : MonoBehaviour
 
 	protected virtual void OnApplicationQuit()
 	{
-		Packet pkt = LoginPacketMaker.ExitGame();
-		NetworkManager.Inst.Send(pkt);
-
+		NetworkManager.Inst.Disconnect();
 		UIManager.Inst.ClearAll();
 
 		Debug.Log("OnApplicationQuit");
+	}
+
+	protected void Quit()
+	{
+#if UNITY_EDITOR
+		UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif
 	}
 
 	protected void StartFadeCoroutine()

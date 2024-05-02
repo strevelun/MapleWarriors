@@ -130,7 +130,8 @@ public class RingBuffer : MonoBehaviour
 		lock (m_lock)
 		{
 			writableSize = WritableSize;
-			if (writableSize < Define.PacketHeaderSize) return false;
+			while((writableSize = WritableSize) == 0) { Debug.Log("WritableSize°¡ 0"); }
+			//if (writableSize < Define.PacketHeaderSize) return false;
 
 			_seg = new ArraySegment<byte>(m_buffer, m_writePos, writableSize);
 		}

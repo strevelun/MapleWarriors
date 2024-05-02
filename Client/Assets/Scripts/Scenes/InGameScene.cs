@@ -29,7 +29,7 @@ public class InGameScene : BaseScene
 
 		GameManager.Inst.Init(this);
 
-		//StartCoroutine(UpdateMonstersInfo());
+		StartCoroutine(UpdateMonstersInfo());
 	}
 
 	public override void Clear()

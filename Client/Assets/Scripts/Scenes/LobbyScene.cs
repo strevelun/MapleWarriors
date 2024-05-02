@@ -193,9 +193,7 @@ public class LobbyScene : BaseScene
 
 	void OnExitBtnClicked()
 	{
-		Packet pkt = LobbyPacketMaker.ExitGame();
-		NetworkManager.Inst.Send(pkt);
-
 		NetworkManager.Inst.Disconnect();
+		Quit();
 	}
 }

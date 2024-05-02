@@ -178,6 +178,9 @@ public class MonsterController : CreatureController
 		m_damageTMP_RT = m_damageObj.transform.GetChild(0).GetComponent<RectTransform>();
 		m_damageObj.SetActive(false);
 
+		m_startFontSize = m_damageTMP.fontSize;
+		m_endFontSize = m_startFontSize * 3f;
+
 		m_hpbarObj = Util.FindChild(monsterUI, true, "HPBar");
 
 		m_hpBarSlider = Util.FindChild(m_hpbarObj, true, "Slider").GetComponent<Slider>();
@@ -468,6 +471,8 @@ public class MonsterController : CreatureController
 		if (!gameObject.activeSelf) return;
 
 		int damage = HP - _hp < 0 ? 0 : HP - _hp;
+		if (damage == 0) return;
+
 		HP = _hp;
 		m_hpbarText.text = HP.ToString();
 

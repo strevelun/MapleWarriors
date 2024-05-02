@@ -9,7 +9,7 @@ public class Skill
 	Vector2Int m_prevMouseCellPos = Vector2Int.zero;
 	Vector2Int m_dist;
 	Vector2Int m_mouseCellPos;
-	Vector2Int m_cellPos, m_lastCellPos;
+	Vector2Int m_cellPos;
 	eDir m_eDir;
 	public eSkill eCurSkill { get; private set; } = eSkill.Slash;
 
@@ -182,7 +182,7 @@ public class Skill
 				SetAimTiles();
 		}
 
-		if (m_prevMouseCellPos != m_mouseCellPos || m_cellPos != m_lastCellPos)
+		if (m_prevMouseCellPos != m_mouseCellPos)
 		{
 			m_cellPos = _cellPos;
 			RemoveAimTiles();

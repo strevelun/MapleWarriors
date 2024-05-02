@@ -44,37 +44,30 @@ public class Connection
         if (!pending)       OnRecvCompleted(null, m_recvArgs);
 	}
 
-	static int maxByte = 0;
-
 	public void OnRecvCompleted(object _sender, SocketAsyncEventArgs _args)
     {
         if(_args.BytesTransferred == 0 || _args.SocketError != SocketError.Success)
 		{
 			ActionQueue.Inst.Enqueue(() => UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIDisconnectPopup, "서버와의 연결이 끊어졌습니다!\n" + _args.SocketError.ToString()));
 
-			Disconnect();
+			Close();
             return;
         }
-
-        if (maxByte < _args.BytesTransferred) maxByte = _args.BytesTransferred;
 
 		m_ringBuffer.MoveWritePos(_args.BytesTransferred);
 
 		RegisterRecv();
     }
 
-
-	public void Disconnect()
+    public void Shutdown()
     {
-        try
-		{
-			m_socket.Shutdown(SocketShutdown.Both);
-			m_socket.Close();
-		} catch (SocketException ex)
-        {
-            Debug.Log(ex.ErrorCode);
-		}
-        maxByte = 0;
+		m_socket.Shutdown(SocketShutdown.Both);
+        Debug.Log("Shutdown");
+	}
+
+	public void Close()
+    {
+		m_socket.Close();
         Debug.Log("Disconnected");
     }
 }

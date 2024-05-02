@@ -137,6 +137,7 @@ public class MapManager
 	{
 		if (m_map == null) return;
 
+		ObjectManager.Inst.ClearMonsters();
 		ResourceManager.Inst.Destroy(m_map);
 
 		string name = m_mapData.mapList[CurStage];
@@ -158,7 +159,7 @@ public class MapManager
 
 		Debug.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
 		Debug.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
-		Debug.Log($"현재 스테이지 : {MapManager.Inst.CurStage}");
+		Debug.Log($"현재 스테이지 : {CurStage}");
 
 		GameManager.Inst.GameStart = true;
 	}

@@ -48,6 +48,8 @@ public class CreatureController : MonoBehaviour
 	protected float m_convertCellXPosOffset = 0.02f;
 	protected float m_convertCellYPosOffset = 0.02f;
 
+	protected float m_startFontSize, m_endFontSize;
+
 	public int HP { get; set; }
 	public int MaxHP { get; set; }
 	public int AttackDamage { get; protected set; }
@@ -512,7 +514,6 @@ public class CreatureController : MonoBehaviour
 		m_spriteRenderer = m_spriteObject.GetComponent<SpriteRenderer>();
 		CenterPos = new Vector2(m_spriteObject.transform.position.x, m_spriteObject.transform.position.y - 0.5f);
 
-	
 
 		SetPosition(_cellXPos, _cellYPos);
 	}
@@ -628,6 +629,7 @@ public class CreatureController : MonoBehaviour
 		float elapsedTime = 0f;
 		Vector3 startPos = m_damageTMP_RT.position;
 		Vector3 destPos = startPos + new Vector3(0, 50, 0);
+
 		float t = 0.0f;
 
 		while (elapsedTime < _delay)
@@ -636,12 +638,13 @@ public class CreatureController : MonoBehaviour
 			t = elapsedTime / _delay;
 
 			m_damageTMP_RT.position = Vector3.Lerp(startPos, destPos, t);
-
+			m_damageTMP.fontSize = Mathf.Lerp(m_startFontSize, m_endFontSize, t);
 			m_damageCanvasGroup.alpha = 1.0f - t;
 
 			yield return null;
 		}
 
+		m_damageTMP.fontSize = m_startFontSize;
 		m_damageObj.SetActive(false);
 	}
 }

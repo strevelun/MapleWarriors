@@ -29,7 +29,9 @@ public class MonsterAttackState : ICreatureState
 		m_mc.Anim.SetTrigger("Attack");
 
 		foreach (PlayerController pc in m_targets)
+		{
 			pc.Hit(m_mc.AttackDamage);
+		}
 	}
 
 	public void Update()

@@ -55,7 +55,7 @@ public class LoginScene : BaseScene
 #endif
 		});
 
-		//NetworkManager.Inst.Init("119.67.216.164", 30001); // 포트포워딩
+		//0NetworkManager.Inst.Init("119.67.216.164", 30001); // 포트포워딩
 		NetworkManager.Inst.Init("192.168.219.126", 30001);
 		//NetworkManager.Inst.Connect("118.32.36.41", 30001); // gpm
 
@@ -98,12 +98,7 @@ public class LoginScene : BaseScene
 	void OnConnectFailButtonClicked()
 	{
 		UIManager.Inst.HidePopupUI(Define.eUIPopup.UIConnectFailPopup);
-
-#if UNITY_EDITOR
-		UnityEditor.EditorApplication.isPlaying = false;
-#else
-    Application.Quit();
-#endif
+		Quit();
 	}
 
 	private void OnEndEdit(string _text)

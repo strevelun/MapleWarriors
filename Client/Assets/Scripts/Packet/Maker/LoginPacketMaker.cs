@@ -3,14 +3,6 @@
 
 public static class LoginPacketMaker
 {
-	public static Packet ExitGame()
-	{
-		Packet pkt = new Packet();
-		pkt
-			.Add(PacketType.eClient.Exit);
-		return pkt;
-	}
-
 	public static Packet CheckNickname()
 	{
 		Packet packet = new Packet();
