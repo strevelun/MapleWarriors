@@ -18,6 +18,7 @@ public class Define
 	public const int RoomUserSlot = 4;
 
 	public const int RoomTitleMaxCount = 15;
+	public const float MaxExpelTime = 5f;
 
 	public enum eScene
 	{

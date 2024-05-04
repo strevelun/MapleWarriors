@@ -43,7 +43,6 @@ public abstract class BaseScene : MonoBehaviour
 
 	protected virtual void OnApplicationQuit()
 	{
-		NetworkManager.Inst.Disconnect();
 		UIManager.Inst.ClearAll();
 
 		Debug.Log("OnApplicationQuit");
@@ -111,6 +110,7 @@ public abstract class BaseScene : MonoBehaviour
 		m_fadeInOut.color = new Color(0, 0, 0, 0);
 		//Debug.Log("FadeInOut");
 		InputManager.Inst.SetInputEnabled(true);
+		GameManager.Inst.StageLoading = false;
 	}
 
 	public void StartFadeInCoroutine()

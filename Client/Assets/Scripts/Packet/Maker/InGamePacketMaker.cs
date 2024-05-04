@@ -37,7 +37,7 @@ public static class InGamePacketMaker
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eServer.Moving)
-			.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+			//.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecStartPos.x * 1000000))
 			.Add((int)(_vecStartPos.y * 1000000))
@@ -168,7 +168,8 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.Awake);
+			.Add(PacketType.eServer.Awake)
+			.Add((byte)UserData.Inst.MyRoomSlot);
 		return pkt;
 	}
 
@@ -200,6 +201,56 @@ public static class InGamePacketMaker
 				.Add((ushort)info.HP);
 		}
 
+		return pkt;
+	}
+
+	public static Packet Ready()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.Ready)
+			.Add((byte)UserData.Inst.MyRoomSlot);
+		return pkt;
+	}
+
+	public static Packet Start(long _startTime)
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.Start)
+			.Add(_startTime);
+		return pkt;
+	}
+
+	public static Packet NextStage()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.NextStage);
+		return pkt;
+	}
+
+	public static Packet MapClear()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.MapClear);
+		return pkt;
+	}
+
+	public static Packet StageClear()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.StageClear);
+		return pkt;
+	}
+
+	public static Packet Annihilated()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.Annihilated);
 		return pkt;
 	}
 }

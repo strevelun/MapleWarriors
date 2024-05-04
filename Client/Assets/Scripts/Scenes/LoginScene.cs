@@ -47,12 +47,8 @@ public class LoginScene : BaseScene
 
 		popup = UIManager.Inst.AddUI(Define.eUIPopup.UIDisconnectPopup, false);
 		popup.SetButtonAction("OKBtn", () => { 
-			UIManager.Inst.HidePopupUI(Define.eUIPopup.UIDisconnectPopup);
-#if UNITY_EDITOR
-			UnityEditor.EditorApplication.isPlaying = false;
-#else
-    Application.Quit();
-#endif
+			//UIManager.Inst.HidePopupUI(Define.eUIPopup.UIDisconnectPopup);
+			Quit();
 		});
 
 		//0NetworkManager.Inst.Init("119.67.216.164", 30001); // 포트포워딩

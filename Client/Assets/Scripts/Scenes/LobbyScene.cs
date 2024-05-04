@@ -194,6 +194,5 @@ public class LobbyScene : BaseScene
 	void OnExitBtnClicked()
 	{
 		NetworkManager.Inst.Disconnect();
-		Quit();
 	}
 }

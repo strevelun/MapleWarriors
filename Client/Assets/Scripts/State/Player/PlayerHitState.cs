@@ -28,6 +28,8 @@ public class PlayerHitState : ICreatureState
 	{
 		m_player = _cs as PlayerController;
 		m_player.Anim.SetTrigger("Hit");
+
+		InGameConsole.Inst.Log("PlayerHitState");
 	}
 
 	public void Update()
@@ -54,10 +56,22 @@ public class PlayerHitState : ICreatureState
 	void UpdateAnimation()
 	{
 		m_stateInfo = m_player.Anim.GetCurrentAnimatorStateInfo(0);
+/*
+		if (m_stateInfo.normalizedTime >= 1.0f)
+		{
+			if (m_player.IsDead)
+			{
+				m_monster.RemoveTarget(m_player);
+				m_player.ChangeState(new PlayerDeadState());
+			}
+			else
+				m_player.ChangeState(new PlayerIdleState());
+		}
+*/
 
 		if (!m_animStart && m_stateInfo.IsName("Hit"))
 			m_animStart = true;
-
+		
 		if (m_animStart && !m_stateInfo.IsName("Hit"))
 		{
 			if (m_player.IsDead)

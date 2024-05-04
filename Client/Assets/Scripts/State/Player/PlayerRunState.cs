@@ -24,6 +24,7 @@ public class PlayerRunState : ICreatureState
 			m_pc = _cs as PlayerController;
 			m_pc.Anim.SetBool("Run", true);
 		}
+		InGameConsole.Inst.Log("PlayerRunState");
 	}
 
 	public void Update()

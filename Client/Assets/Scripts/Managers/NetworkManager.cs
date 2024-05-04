@@ -21,6 +21,7 @@ public class NetworkManager
 	}
 
 	Connection m_connection = null;
+	bool m_shutdown = false;
 
 	public bool Init(string _serverIp, int _port)
 	{
@@ -58,7 +59,9 @@ public class NetworkManager
 
 	public void Disconnect()
 	{
+		if (m_shutdown) return;
+
 		m_connection?.Shutdown();
-		m_connection = null;
+		m_shutdown = true;
 	}
 }

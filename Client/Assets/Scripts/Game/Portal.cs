@@ -17,18 +17,13 @@ public class Portal : MonoBehaviour
     {
         // 맵의 몬스터는 다 죽었는지 확인
         // 조건이 충족되면 모든 플레이어 비활성화 + 위치이동 + 맵 프리팹 로드
-        if(GameManager.Inst.CheckMapClear())
+        if(UserData.Inst.IsRoomOwner && GameManager.Inst.CheckMapClear())
         {
             if(m_cntPlayer == GameManager.Inst.PlayerAliveCnt)
 			{
-                InGameScene ingame = SceneManagerEx.Inst.CurScene as InGameScene;
-
-				ingame.SetClearImageVisible(false);
-
-
+                Packet pkt = InGamePacketMaker.NextStage();
+                UDPCommunicator.Inst.SendAll(pkt);
 				GameManager.Inst.OnChangeStage();
-			
-                //ingame.StartFadeInOutCoroutine();
             }
         }
     }

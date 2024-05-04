@@ -87,7 +87,7 @@ public class PlayerController : CreatureController
 
 		MaxSpeed = 4f;
 		CurSpeed = MaxSpeed;
-		MaxHP = 9999;
+		MaxHP = 50;
 		HP = MaxHP;
 		AttackDamage = 5;
 		AttackRange = 2;
@@ -204,26 +204,8 @@ public void UpdateSecondMove()
 		m_movingCoroutine = null;
 	}
 */
-	public void Moving(float _xpos, float _ypos, byte _byteDir, long _time)
+	public void Moving(float _xpos, float _ypos, byte _byteDir)
 	{
-		//++m_moveCnt;
-
-		
-
-		long endTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-		long time = endTime - _time;
-
-		// 4 * x = 3.82
-		//CurSpeed = MaxSpeed - (MaxSpeed * (time * 0.001f) * 5f);
-		//CurSpeed = MaxSpeed * (1 - 0.1f * ((time * 0.001f) - 0.004f));
-
-		//targetPos = new Vector2(_xpos, _ypos);
-
-
-
-		//InGameConsole.Inst.Log($"Moving : {time} ms 걸림");
-
-		// moving으로 들어온 좌표가 우선
 		float distX = Math.Abs(_xpos - transform.position.x);
 		float distY = Math.Abs(_ypos - transform.position.y);
 
@@ -237,14 +219,19 @@ public void UpdateSecondMove()
 			SetByteDir(_byteDir);
 		//	if (m_movingCoroutine == null) m_movingCoroutine = StartCoroutine(MovingCheckCoroutine());
 		}
+
+		if(IsDead)
+		{
+			transform.position = new Vector2(_xpos, _ypos);
+		}
 	}
 
 // 매 프레임마다 new
-public void CheckMoveState()
+	public void CheckMoveState()
 	{
 		if(CurState is PlayerIdleState)
 		{
-			if(Dir != eDir.None)
+			if (Dir != eDir.None)
 				ChangeState(new PlayerRunState());
 			return;
 		}
@@ -265,7 +252,7 @@ public void CheckMoveState()
 	public void BeginMovePosition(float _startXPos, float _startYPos, byte _byteDir)
 	{
 		//InGameConsole.Inst.Log($"BeginMove : {Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(_startXPos, _startYPos))}");
-		InGameConsole.Inst.Log($"BeginMove : 현재 : {transform.position.x}, {transform.position.y}, 패킷 : {_startXPos}, {_startYPos}");
+		//InGameConsole.Inst.Log($"BeginMove : 현재 : {transform.position.x}, {transform.position.y}, 패킷 : {_startXPos}, {_startYPos}");
 		
 		//m_moveCnt = 1;
 		//Debug.Log($"BeginMove : {m_moveCnt}");

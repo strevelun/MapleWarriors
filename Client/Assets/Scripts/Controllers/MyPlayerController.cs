@@ -99,9 +99,9 @@ public class MyPlayerController : PlayerController
 
 	public void InputMovement()
 	{
-
 		if (!GameManager.Inst.GameStart) return;
 		if (!InputManager.Inst.InputEnabled) return;
+		if (IsDead) return;
 
 		/*
 		if(ByteDir == 0 && m_bMove) // 스킬사용 후 이동 체크

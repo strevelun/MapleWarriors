@@ -47,6 +47,12 @@ public class PacketType
 		GameOver,
 		Awake,
 		AllMonstersInfo,
+		Ready,
+		Start,
+		NextStage,
+		MapClear,
+		StageClear,
+		Annihilated,
 		Max,
 	}
 

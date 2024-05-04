@@ -4,7 +4,7 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: -2268724034098933372
-    second: player_hit_0
+    second: player_hit_7
   - first:
       213: -2558708435609265335
     second: player_hit_1
@@ -20,6 +20,9 @@ TextureImporter:
   - first:
       213: 6125929215732151069
     second: player_hit_5
+  - first:
+      213: -442362383876682517
+    second: player_hit_6
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -105,10 +108,10 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: player_hit_0
+      name: player_hit_7
       rect:
         serializedVersion: 2
-        x: 277
+        x: 0
         y: 0
         width: 277
         height: 190
@@ -129,7 +132,7 @@ TextureImporter:
       name: player_hit_1
       rect:
         serializedVersion: 2
-        x: 554
+        x: 277
         y: 0
         width: 277
         height: 190
@@ -150,7 +153,7 @@ TextureImporter:
       name: player_hit_2
       rect:
         serializedVersion: 2
-        x: 831
+        x: 554
         y: 0
         width: 277
         height: 190
@@ -171,7 +174,7 @@ TextureImporter:
       name: player_hit_3
       rect:
         serializedVersion: 2
-        x: 1108
+        x: 831
         y: 0
         width: 277
         height: 190
@@ -192,7 +195,7 @@ TextureImporter:
       name: player_hit_4
       rect:
         serializedVersion: 2
-        x: 1385
+        x: 1108
         y: 0
         width: 277
         height: 190
@@ -213,7 +216,7 @@ TextureImporter:
       name: player_hit_5
       rect:
         serializedVersion: 2
-        x: 1662
+        x: 1385
         y: 0
         width: 277
         height: 190
@@ -226,6 +229,27 @@ TextureImporter:
       bones: []
       spriteID: d13f6e64a2ca30550800000000000000
       internalID: 6125929215732151069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_hit_6
+      rect:
+        serializedVersion: 2
+        x: 1662
+        y: 0
+        width: 277
+        height: 190
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bec090f61c96cd9f0800000000000000
+      internalID: -442362383876682517
       vertices: []
       indices: 
       edges: []

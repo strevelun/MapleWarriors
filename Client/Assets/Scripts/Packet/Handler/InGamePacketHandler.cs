@@ -54,7 +54,7 @@ public static class InGamePacketHandler
 			if (connectionID == UserData.Inst.ConnectionID)
 			{
 				mpc = player.AddComponent<MyPlayerController>();
-				mpc.Init(i+1, 1);
+				mpc.Init(i + 1, 1);
 				mpc.Idx = idx;
 				mpc.SetNickname(nickname);
 				vcam1.Follow = player.transform;
@@ -63,7 +63,7 @@ public static class InGamePacketHandler
 			else
 			{
 				PlayerController pc = player.AddComponent<PlayerController>();
-				pc.Init(i+1, 1);
+				pc.Init(i + 1, 1);
 				pc.Idx = idx;
 				idxList.Add(idx);
 				pc.SetNickname(nickname);
@@ -72,7 +72,7 @@ public static class InGamePacketHandler
 				for (int j = 0; j < 4; ++j)
 				{
 					ip += _reader.GetByte();
-					if(j < 3) ip += ".";
+					if (j < 3) ip += ".";
 				}
 				UDPCommunicator.Inst.AddSendInfo(idx, ip, port);
 				InGameConsole.Inst.Log($"{nickname}, port : {port}, ip : {ip}");
@@ -85,7 +85,7 @@ public static class InGamePacketHandler
 		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
 
 		GameManager.Inst.SetOtherPlayerSlot(idxList);
-		GameManager.Inst.GameStart = true;
+		//GameManager.Inst.GameStart = true;
 	}
 
 	public static void BeginMove(PacketReader _reader)
@@ -103,14 +103,14 @@ public static class InGamePacketHandler
 
 	public static void Moving(PacketReader _reader)
 	{
-		long time = _reader.GetInt64();
+		//long time = _reader.GetInt64();
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
 		byte byteDir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc.Moving(xpos, ypos, byteDir, time);
+		pc.Moving(xpos, ypos, byteDir);
 	}
 
 	public static void EndMove(PacketReader _reader)
@@ -146,7 +146,7 @@ public static class InGamePacketHandler
 		int targetCnt = _reader.GetByte();
 
 		List<PlayerController> targets = new List<PlayerController>();
-		for(int i=0; i<targetCnt; ++i)
+		for (int i = 0; i < targetCnt; ++i)
 		{
 			PlayerController pc = ObjectManager.Inst.FindPlayer(_reader.GetByte());
 			targets.Add(pc);
@@ -155,7 +155,7 @@ public static class InGamePacketHandler
 		MonsterController mc = ObjectManager.Inst.FindMonster(_reader.GetByte(), _reader.GetByte());
 		mc.StartFlyingAttackCoroutine(targets);
 		mc.StartRangedAttackCoroutine(targets);
-		if(mc) mc.ChangeState(new MonsterAttackState(targets));
+		if (mc) mc.ChangeState(new MonsterAttackState(targets));
 	}
 
 	public static void InGameExit(PacketReader _reader)
@@ -172,7 +172,7 @@ public static class InGamePacketHandler
 
 		UserData.Inst.RoomOwnerSlot = nextRoomOwnerIdx;
 		GameManager.Inst.SubPlayerCnt();
-		GameManager.Inst.RemovePlayerSlot(leftUserIdx);
+		GameManager.Inst.RemoveOtherPlayerSlot(leftUserIdx);
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(leftUserIdx);
 		GameManager.Inst.RemovePlayer(pc.name);
@@ -202,9 +202,9 @@ public static class InGamePacketHandler
 			mc.Hit(hp);
 		}
 
-		if(roomSlot != UserData.Inst.MyRoomSlot)
+		if (roomSlot != UserData.Inst.MyRoomSlot)
 			pc.ChangeState(new PlayerAttackState(pc.CurSkill));
-	}	
+	}
 
 	public static void AttackReq(PacketReader _reader) // 방장이 받는다.
 	{
@@ -217,9 +217,9 @@ public static class InGamePacketHandler
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		pc.CurSkill.SetSkill(skill);
 		pc.CurSkill.SetDist(new Vector2Int(mouseCellPosX, mouseCellPosY), pc.CellPos, pc.LastDir);
-		pc.Attack(roomSlot, 0,0);
-	}	
-	
+		pc.Attack(roomSlot, 0, 0);
+	}
+
 	public static void RangedAttack(PacketReader _reader)
 	{
 		byte roomSlot = _reader.GetByte();
@@ -247,7 +247,7 @@ public static class InGamePacketHandler
 			pc.SetRangedSkillObjPos(new Vector2Int(x, y));
 		}
 	}
-	
+
 	public static void RangedAttackReq(PacketReader _reader)  // 방장이 받는다.
 	{
 		byte roomSlot = _reader.GetByte();
@@ -265,7 +265,7 @@ public static class InGamePacketHandler
 	}
 
 	public static void GameOver(PacketReader _reader)
-	{ 
+	{
 		InGameConsole.Inst.Log("GameOver");
 		GameManager.Inst.Clear();
 		ObjectManager.Inst.ClearPlayers();
@@ -274,10 +274,15 @@ public static class InGamePacketHandler
 		SceneManagerEx.Inst.LoadSceneWithFadeOut(eScene.Room);
 	}
 
+	public static void Awake(PacketReader _reader)
+	{
+		int slot = _reader.GetByte();
+
+		GameManager.Inst.Awake(slot);
+	}
+
 	public static void AllMonstersInfo(PacketReader _reader)
 	{
-		// 이미 죽어있는 상태인지 체크 후 상태변경 막기
-
 		ushort count = _reader.GetUShort();
 		MonsterController mc;
 		int idx, num;
@@ -292,7 +297,7 @@ public static class InGamePacketHandler
 
 			//InGameConsole.Inst.Log($"{idx}_{num} : HP[{hp}], IsDead[{mc.IsDead}]");
 		}
-		
+
 		ushort playerCnt = _reader.GetUShort();
 		PlayerController pc;
 
@@ -302,8 +307,45 @@ public static class InGamePacketHandler
 			pc = ObjectManager.Inst.FindPlayer(idx);
 			ushort hp = _reader.GetUShort();
 			pc.HP = hp;
-			if (pc.IsDead) pc.Die();
+			// Run에서 바로 Dead가 됨.
+			//if (pc.IsDead) pc.ChangeState(new PlayerDeadState());
 		}
-		
+	}
+
+	public static void Ready(PacketReader _reader)
+	{
+		int slot = _reader.GetByte();
+
+		GameManager.Inst.SetPlayerReady(slot);
+	}
+
+	public static void Start(PacketReader _reader)
+	{
+		long startTime = _reader.GetInt64();
+
+		GameManager.Inst.SetStartTime(startTime);
+	}
+
+	public static void NextStage(PacketReader _reader)
+	{
+		GameManager.Inst.OnChangeStage();
+	}
+
+	public static void MapClear(PacketReader _reader)
+	{
+		InGameScene scene = SceneManagerEx.Inst.CurScene as InGameScene;
+		scene.OnMapClear();
+	}
+
+	public static void StageClear(PacketReader _reader)
+	{
+		InGameScene scene = SceneManagerEx.Inst.CurScene as InGameScene;
+		scene.OnStageClear();
+	}
+
+	public static void Annihilated(PacketReader _reader)
+	{
+		InGameScene scene = SceneManagerEx.Inst.CurScene as InGameScene;
+		scene.OnAnnihilated();
 	}
 }

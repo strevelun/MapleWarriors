@@ -148,8 +148,29 @@ public static class PacketHandler
 				case PacketType.eServer.GameOver:
 					InGamePacketHandler.GameOver(_reader);
 					break;
+				case PacketType.eServer.Awake:
+					InGamePacketHandler.Awake(_reader);
+					break;
 				case PacketType.eServer.AllMonstersInfo:
 					InGamePacketHandler.AllMonstersInfo(_reader);
+					break;
+				case PacketType.eServer.Ready:
+					InGamePacketHandler.Ready(_reader);
+					break;
+				case PacketType.eServer.Start:
+					InGamePacketHandler.Start(_reader);
+					break;
+				case PacketType.eServer.NextStage:
+					InGamePacketHandler.NextStage(_reader);
+					break;
+				case PacketType.eServer.MapClear:
+					InGamePacketHandler.MapClear(_reader);
+					break;
+				case PacketType.eServer.StageClear:
+					InGamePacketHandler.StageClear(_reader);
+					break;
+				case PacketType.eServer.Annihilated:
+					InGamePacketHandler.Annihilated(_reader);
 					break;
 			}
 		}

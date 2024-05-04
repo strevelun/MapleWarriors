@@ -520,6 +520,8 @@ public class CreatureController : MonoBehaviour
 
 	public void SetByteDir(byte _byteDir) 
 	{
+		if (IsDead) return;
+
 		ByteDir = _byteDir;
 	}
 
