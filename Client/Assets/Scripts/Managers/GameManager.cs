@@ -97,7 +97,7 @@ public class GameManager
 		if (m_startTime == 0) return;
 
 		long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-		InGameConsole.Inst.Log($"{(m_startTime - time < 0 ? 0 : m_startTime - time)} ms 후 시작");
+		//InGameConsole.Inst.Log($"{(m_startTime - time < 0 ? 0 : m_startTime - time)} ms 후 시작");
 		if (m_startTime <= time)
 		{
 			GameStart = true;

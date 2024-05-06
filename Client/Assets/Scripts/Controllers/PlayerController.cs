@@ -87,7 +87,7 @@ public class PlayerController : CreatureController
 
 		MaxSpeed = 4f;
 		CurSpeed = MaxSpeed;
-		MaxHP = 10;
+		MaxHP = 70;
 		HP = MaxHP;
 		AttackDamage = 5;
 		AttackRange = 2;

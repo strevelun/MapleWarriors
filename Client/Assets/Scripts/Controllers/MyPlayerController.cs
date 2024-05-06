@@ -73,6 +73,8 @@ public class MyPlayerController : PlayerController
 		{
 			yield return new WaitForSeconds(0.2f);
 
+			if (IsDead) continue;
+
 			//if (LastByteDir == 0) 
 			{
 				Packet pkt = InGamePacketMaker.Moving(transform.position, ByteDir);

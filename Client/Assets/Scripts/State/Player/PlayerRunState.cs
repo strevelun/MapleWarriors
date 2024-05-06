@@ -9,6 +9,8 @@ public class PlayerRunState : ICreatureState
 
 	public bool CanEnter(CreatureController _cs)
 	{
+		if (_cs.CurState is PlayerHitState) return false;
+
 		return true;
 	}
 

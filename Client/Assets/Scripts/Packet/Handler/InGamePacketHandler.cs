@@ -25,9 +25,9 @@ public static class InGamePacketHandler
 		GameManager.Inst.SetPlayerCnt(numOfUsers);
 		GameManager.Inst.SetPlayerAliveCnt(numOfUsers);
 
-		GameObject connections = UIManager.Inst.FindUI(Define.eUI.Connections);
-		TextMeshProUGUI tmp = connections.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-		tmp.text = string.Empty;
+		//GameObject connections = UIManager.Inst.FindUI(Define.eUI.Connections);
+		//TextMeshProUGUI tmp = connections.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		//tmp.text = string.Empty;
 
 		GameObject monsters = Util.FindChild(mapObj, false, "Monsters");
 		int activeCnt = 0;
@@ -57,7 +57,7 @@ public static class InGamePacketHandler
 				if (j < 3) ip += ".";
 			}
 
-			tmp.text += $"{nickname} [{ip}, {port}]\n";
+		//	tmp.text += $"{nickname} [{ip}, {port}]\n";
 
 			player = ResourceManager.Inst.Instantiate($"Creature/Player_{characterChoice}"); // 플레이어 선택
 			player.name = $"Player_{characterChoice}_{idx}"; // slot 넘버로
@@ -82,7 +82,7 @@ public static class InGamePacketHandler
 				pc.SetNickname(nickname);
 
 				UDPCommunicator.Inst.AddSendInfo(idx, ip, port);
-				InGameConsole.Inst.Log($"{nickname}, port : {port}, ip : {ip}");
+				//InGameConsole.Inst.Log($"{nickname}, port : {port}, ip : {ip}");
 			}
 			ObjectManager.Inst.AddPlayer(idx, player);
 		}

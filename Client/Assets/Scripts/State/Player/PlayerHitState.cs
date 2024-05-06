@@ -16,8 +16,11 @@ public class PlayerHitState : ICreatureState
 		m_monster = _mc;
 	}
 
+	// Hit했는데 갑자기 Run으로 변경
+
 	public bool CanEnter(CreatureController _cs)
 	{
+		if (_cs.CurState is PlayerHitState) return false;
 		if (_cs.CurState is PlayerAttackState) return false;
 		if (_cs.CurState is PlayerDeadState) return false;
 

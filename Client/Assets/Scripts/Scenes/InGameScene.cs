@@ -18,8 +18,8 @@ public class InGameScene : BaseScene
 		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.eScene.InGame);
 		uiScene.AddUI("SkillPanel"); // room¿¡¼­µµ ¶È°°ÀÌ
 		GameObject ingameConsole = uiScene.AddUI("Ingame_Console");
-		GameObject connections = uiScene.AddUI("Connections");
-		UIManager.Inst.AddUI(Define.eUI.Connections, connections);
+		//GameObject connections = uiScene.AddUI("Connections");
+		//UIManager.Inst.AddUI(Define.eUI.Connections, connections);
 
 		InGameConsole.Inst.Init(ingameConsole);
 
@@ -105,7 +105,8 @@ public class InGameScene : BaseScene
 			{
 				OnStageClear();
 			}
-			else if (!m_wasted.activeSelf && !m_clear.activeSelf && GameManager.Inst.CheckGameOver()) // Àü¸ê
+			
+			if (!m_wasted.activeSelf && !m_clear.activeSelf && GameManager.Inst.CheckGameOver()) // Àü¸ê
 			{
 
 				OnAnnihilated();
