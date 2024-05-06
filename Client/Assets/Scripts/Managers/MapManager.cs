@@ -157,9 +157,12 @@ public class MapManager
 		
 		TileInit();
 
-		Debug.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
-		Debug.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
-		Debug.Log($"현재 스테이지 : {CurStage}");
+		InGameConsole.Inst.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
+		InGameConsole.Inst.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
+		InGameConsole.Inst.Log($"현재 스테이지 : {CurStage}");
+
+		GameManager.Inst.StageClear = false;
+		GameManager.Inst.StageLoading = false;
 	}
 
 	public bool IsBlocked(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight)

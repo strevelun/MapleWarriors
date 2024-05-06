@@ -75,6 +75,7 @@ public class Define
 
 		#region UIIngame
 		UIInGame_SkillPanel,
+		Connections,
 		#endregion
 	}
 

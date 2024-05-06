@@ -28,7 +28,7 @@
       "idx": 3,
       "name": "Dark_Stone_Golem",
       "HP": 20,
-      "attack": 7,
+      "attack": 5,
       "attackCellRange": 4,
       "speed": 1,
       "visionCellRange": 6,

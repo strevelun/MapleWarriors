@@ -30,7 +30,7 @@ public class PlayerIdleState : ICreatureState
 			m_mpc = _cs as MyPlayerController;
 		else if (_cs is PlayerController)
 			m_pc = _cs as PlayerController;
-		InGameConsole.Inst.Log("PlayerIdleState");
+	//	InGameConsole.Inst.Log("PlayerIdleState");
 	}
 
 	public void Update()

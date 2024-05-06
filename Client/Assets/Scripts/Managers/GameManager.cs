@@ -32,6 +32,8 @@ public class GameManager
 	public int PlayerAliveCnt { get; private set; } = 0;
 	public int MonsterCnt { get; private set; } = 0;
 	public bool AllClear { get; set; } = false;
+	public bool StageClear { get; set; } = false;
+	public bool GameOver { get; set; } = false;
 
 	public List<int> OtherPlayersSlot { get; private set; }
 	float[] m_observePlayersAwakeTimer = new float[Define.RoomUserSlot];
@@ -224,5 +226,8 @@ public class GameManager
 		m_playerReadyCnt = 0;
 		m_startTime = 0;
 		m_playerReady = null;
+		StageClear = false;
+		GameOver = false;
+		StageLoading = false;
 	}
 }

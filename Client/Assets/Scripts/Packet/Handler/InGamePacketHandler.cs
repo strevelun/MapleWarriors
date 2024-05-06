@@ -2,6 +2,7 @@ using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using static Define;
 
@@ -24,6 +25,10 @@ public static class InGamePacketHandler
 		GameManager.Inst.SetPlayerCnt(numOfUsers);
 		GameManager.Inst.SetPlayerAliveCnt(numOfUsers);
 
+		GameObject connections = UIManager.Inst.FindUI(Define.eUI.Connections);
+		TextMeshProUGUI tmp = connections.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		tmp.text = string.Empty;
+
 		GameObject monsters = Util.FindChild(mapObj, false, "Monsters");
 		int activeCnt = 0;
 		for (int i = 0; i < monsters.transform.childCount; i++)
@@ -45,6 +50,14 @@ public static class InGamePacketHandler
 			string nickname = _reader.GetString();
 			byte characterChoice = _reader.GetByte();
 			ushort port = _reader.GetUShort();
+			string ip = "";
+			for (int j = 0; j < 4; ++j)
+			{
+				ip += _reader.GetByte();
+				if (j < 3) ip += ".";
+			}
+
+			tmp.text += $"{nickname} [{ip}, {port}]\n";
 
 			player = ResourceManager.Inst.Instantiate($"Creature/Player_{characterChoice}"); // 플레이어 선택
 			player.name = $"Player_{characterChoice}_{idx}"; // slot 넘버로
@@ -68,12 +81,6 @@ public static class InGamePacketHandler
 				idxList.Add(idx);
 				pc.SetNickname(nickname);
 
-				string ip = "";
-				for (int j = 0; j < 4; ++j)
-				{
-					ip += _reader.GetByte();
-					if (j < 3) ip += ".";
-				}
 				UDPCommunicator.Inst.AddSendInfo(idx, ip, port);
 				InGameConsole.Inst.Log($"{nickname}, port : {port}, ip : {ip}");
 			}
@@ -168,7 +175,9 @@ public static class InGamePacketHandler
 		{
 			UserData.Inst.IsRoomOwner = true;
 		}
-		InGameConsole.Inst.Log($"방장이 바뀌었습니다 : {leftUserIdx} -> {nextRoomOwnerIdx}");
+
+		if(nextRoomOwnerIdx < Define.RoomUserSlot)
+			InGameConsole.Inst.Log($"방장이 바뀌었습니다 : {leftUserIdx} -> {nextRoomOwnerIdx}");
 
 		UserData.Inst.RoomOwnerSlot = nextRoomOwnerIdx;
 		GameManager.Inst.SubPlayerCnt();
@@ -274,9 +283,13 @@ public static class InGamePacketHandler
 		SceneManagerEx.Inst.LoadSceneWithFadeOut(eScene.Room);
 	}
 
+	//static int cnt = 0;
+
 	public static void Awake(PacketReader _reader)
 	{
 		int slot = _reader.GetByte();
+
+		//InGameConsole.Inst.Log($"Awake : {cnt++}");
 
 		GameManager.Inst.Awake(slot);
 	}
@@ -317,6 +330,7 @@ public static class InGamePacketHandler
 		int slot = _reader.GetByte();
 
 		GameManager.Inst.SetPlayerReady(slot);
+		InGameConsole.Inst.Log($"READY");
 	}
 
 	public static void Start(PacketReader _reader)
@@ -324,6 +338,7 @@ public static class InGamePacketHandler
 		long startTime = _reader.GetInt64();
 
 		GameManager.Inst.SetStartTime(startTime);
+		InGameConsole.Inst.Log($"Start");
 	}
 
 	public static void NextStage(PacketReader _reader)

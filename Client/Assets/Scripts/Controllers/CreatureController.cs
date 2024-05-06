@@ -598,12 +598,12 @@ public class CreatureController : MonoBehaviour
 		if (m_knockbackCoroutine != null)
 		{
 			StopCoroutine(m_knockbackCoroutine);
-			transform.position = m_knockbackOrigin;
+			m_spriteObject.transform.localPosition = m_knockbackOrigin;
 			m_knockbackCoroutine = null;
 		}
 		else
 		{
-			m_knockbackOrigin = transform.position;
+			m_knockbackOrigin = m_spriteObject.transform.localPosition;
 		}
 
 		//Debug.Log($"시간 : {_duration}");
@@ -612,16 +612,16 @@ public class CreatureController : MonoBehaviour
 
 	IEnumerator KnockbackCoroutine(float _duration)
 	{
-		Vector3 objDestPos = transform.position + new Vector3(m_bIsFacingLeft ? 0.2f : -0.2f, 0, 0);
+		Vector3 objDestPos = m_spriteObject.transform.localPosition + new Vector3(m_bIsFacingLeft ? 0.2f : -0.2f, 0, 0);
 		float elapsed = 0f;
 
 		while (elapsed <= _duration)
 		{
-			transform.position = Vector3.MoveTowards(transform.position, objDestPos, Time.deltaTime * 3);
+			m_spriteObject.transform.localPosition = Vector3.MoveTowards(m_spriteObject.transform.localPosition, objDestPos, Time.deltaTime * 3);
 			elapsed += Time.deltaTime;
 			yield return null;
 		}
-		transform.position = m_knockbackOrigin;
+		m_spriteObject.transform.localPosition = m_knockbackOrigin;
 		m_knockbackCoroutine = null;
 	}
 

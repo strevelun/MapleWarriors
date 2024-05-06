@@ -18,6 +18,8 @@ public class InGameScene : BaseScene
 		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.eScene.InGame);
 		uiScene.AddUI("SkillPanel"); // room에서도 똑같이
 		GameObject ingameConsole = uiScene.AddUI("Ingame_Console");
+		GameObject connections = uiScene.AddUI("Connections");
+		UIManager.Inst.AddUI(Define.eUI.Connections, connections);
 
 		InGameConsole.Inst.Init(ingameConsole);
 
@@ -54,6 +56,8 @@ public class InGameScene : BaseScene
 	{
 		//GameManager.Inst.ObservePlayers();
 
+		//InGameConsole.Inst.Log($"{GameManager.Inst.GameStart}, {GameManager.Inst.StageLoading}, {GameManager.Inst.AllClear}, {GameManager.Inst.PlayerAliveCnt}");
+
 		if (!GameManager.Inst.GameStart && !GameManager.Inst.StageLoading && !GameManager.Inst.AllClear && GameManager.Inst.PlayerAliveCnt != 0)
 		{
 			if (GameManager.Inst.IsTimerOn())
@@ -76,7 +80,7 @@ public class InGameScene : BaseScene
 				if(start)
 				{
 					long startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-					startTime += 1000;
+					startTime += 2000;
 					Packet pkt = InGamePacketMaker.Start(startTime);
 					UDPCommunicator.Inst.SendAll(pkt);
 					GameManager.Inst.SetStartTime(startTime);
@@ -94,27 +98,33 @@ public class InGameScene : BaseScene
 			{
 				if (GameManager.Inst.CheckMapClear())
 				{
-					Packet pkt = InGamePacketMaker.MapClear();
-					UDPCommunicator.Inst.SendAll(pkt);
-					StartCoroutine(GameAllClearCoroutine());
-					GameManager.Inst.GameStart = false;
-					GameManager.Inst.AllClear = true;
-					InGameConsole.Inst.Log($"{MapManager.Inst.CurStage} / {MapManager.Inst.MaxStage} : 클리어");
+					OnMapClear();
 				}
 			}
-
-			if (!m_clear.activeSelf && !m_wasted.activeSelf && GameManager.Inst.CheckMapClear()) // 스테이지 클리어
+			else if (!m_clear.activeSelf && !m_wasted.activeSelf && GameManager.Inst.CheckMapClear()) // 스테이지 클리어
 			{
-				Packet pkt = InGamePacketMaker.StageClear();
-				UDPCommunicator.Inst.SendAll(pkt);
-				SetClearImageVisible(true);
+				OnStageClear();
 			}
 			else if (!m_wasted.activeSelf && !m_clear.activeSelf && GameManager.Inst.CheckGameOver()) // 전멸
 			{
+
+				OnAnnihilated();
+			}
+
+			if(GameManager.Inst.AllClear)
+			{
+				Packet pkt = InGamePacketMaker.MapClear();
+				UDPCommunicator.Inst.SendAll(pkt);
+			}
+			else if(GameManager.Inst.StageClear)
+			{
+				Packet pkt = InGamePacketMaker.StageClear();
+				UDPCommunicator.Inst.SendAll(pkt);
+			}
+			else if(GameManager.Inst.GameOver)
+			{
 				Packet pkt = InGamePacketMaker.Annihilated();
 				UDPCommunicator.Inst.SendAll(pkt);
-				StartCoroutine(GameOverCoroutine());
-				GameManager.Inst.GameStart = false;
 			}
 		}
 	}
@@ -182,25 +192,34 @@ public class InGameScene : BaseScene
 
 	public void OnMapClear()
 	{
+		if (GameManager.Inst.AllClear) return;
+		if (!GameManager.Inst.GameStart) return;
+
 		StartCoroutine(GameAllClearCoroutine());
-		GameManager.Inst.GameStart = false;
+		//GameManager.Inst.GameStart = false;
 		GameManager.Inst.AllClear = true;
-		InGameConsole.Inst.Log($"{MapManager.Inst.CurStage} / {MapManager.Inst.MaxStage}, PlayerCnt : {GameManager.Inst.PlayerCnt}, PlayerAliveCnt : {GameManager.Inst.PlayerAliveCnt}, MonsterCnt : {GameManager.Inst.MonsterCnt}, allClear : {GameManager.Inst.AllClear}");
+		InGameConsole.Inst.Log($"OnMapClear : {MapManager.Inst.CurStage} / {MapManager.Inst.MaxStage}, PlayerCnt : {GameManager.Inst.PlayerCnt}, PlayerAliveCnt : {GameManager.Inst.PlayerAliveCnt}, MonsterCnt : {GameManager.Inst.MonsterCnt}, allClear : {GameManager.Inst.AllClear}");
 	}
 
 	public void OnStageClear()
 	{
-		SetClearImageVisible(true);
+		if (GameManager.Inst.StageLoading || GameManager.Inst.StageClear) return;
 
-		InGameConsole.Inst.Log($"{MapManager.Inst.CurStage} / {MapManager.Inst.MaxStage}, PlayerCnt : {GameManager.Inst.PlayerCnt}, PlayerAliveCnt : {GameManager.Inst.PlayerAliveCnt}, MonsterCnt : {GameManager.Inst.MonsterCnt}, allClear : {GameManager.Inst.AllClear}");
+		SetClearImageVisible(true);
+		GameManager.Inst.StageClear = true;
+
+		InGameConsole.Inst.Log($"OnStageClear : {MapManager.Inst.CurStage} / {MapManager.Inst.MaxStage}, PlayerCnt : {GameManager.Inst.PlayerCnt}, PlayerAliveCnt : {GameManager.Inst.PlayerAliveCnt}, MonsterCnt : {GameManager.Inst.MonsterCnt}, allClear : {GameManager.Inst.AllClear}");
 	}
 
 	public void OnAnnihilated()
 	{
+		if (GameManager.Inst.GameOver) return;
+		
 		StartCoroutine(GameOverCoroutine());
 		GameManager.Inst.GameStart = false;
+		GameManager.Inst.GameOver = true;
 
-		InGameConsole.Inst.Log($"{MapManager.Inst.CurStage} / {MapManager.Inst.MaxStage}, PlayerCnt : {GameManager.Inst.PlayerCnt}, PlayerAliveCnt : {GameManager.Inst.PlayerAliveCnt}, MonsterCnt : {GameManager.Inst.MonsterCnt}, allClear : {GameManager.Inst.AllClear}");
+		InGameConsole.Inst.Log($"OnAnnihilated : {MapManager.Inst.CurStage} / {MapManager.Inst.MaxStage}, PlayerCnt : {GameManager.Inst.PlayerCnt}, PlayerAliveCnt : {GameManager.Inst.PlayerAliveCnt}, MonsterCnt : {GameManager.Inst.MonsterCnt}, allClear : {GameManager.Inst.AllClear}");
 	}
 
 	void SendAwake()

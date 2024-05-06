@@ -5,11 +5,11 @@ using UnityEngine;
 public class Portal : MonoBehaviour
 {
 
-	int m_cntPlayer = 0;
+	int m_cntPlayer;
 
     void Start()
     {
-        
+        m_cntPlayer = 0;
     }
 
 
@@ -33,6 +33,7 @@ public class Portal : MonoBehaviour
         if (!GameManager.Inst.CheckMapClear()) return;
 
 		++m_cntPlayer;
+        InGameConsole.Inst.Log($"현재 포탈에 {m_cntPlayer} 명");
 	}
 
 	private void OnTriggerExit2D(Collider2D _collision)
@@ -41,5 +42,6 @@ public class Portal : MonoBehaviour
 		if (m_cntPlayer <= 0) return;
 
 		--m_cntPlayer;
+		InGameConsole.Inst.Log($"현재 포탈에 {m_cntPlayer} 명");
 	}
 }

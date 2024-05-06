@@ -27,7 +27,7 @@ public class PlayerDeadState : ICreatureState
 			m_pc.Anim.SetBool("Dead", true);
 		}
 
-		InGameConsole.Inst.Log("PlayerDeadState");
+		//InGameConsole.Inst.Log("PlayerDeadState");
 	}
 
 	public void Update()

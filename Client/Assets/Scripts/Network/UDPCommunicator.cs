@@ -19,6 +19,7 @@ public class UDPCommunicator
 	Socket m_socket;
 	SocketAsyncEventArgs m_recvArgs;
 	UDPBuffer m_udpBuffer;
+	bool m_isRecv;
 
 	public Dictionary<int, IPEndPoint> DicSendInfo { get; private set; } = new Dictionary<int, IPEndPoint>();
 
@@ -28,6 +29,7 @@ public class UDPCommunicator
 		m_socket.Bind(new IPEndPoint(IPAddress.Any, _port));
 
 		m_udpBuffer = _udpBuffer;
+		m_isRecv = true;
 
 		m_recvArgs = new SocketAsyncEventArgs();
 		m_recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
@@ -69,6 +71,8 @@ public class UDPCommunicator
 
 	public void OnRecvCompleted(object _sender, SocketAsyncEventArgs _args)
 	{
+		if (!m_isRecv) return;
+
 		if(_args.SocketError == SocketError.ConnectionReset)
 		{
 			InGameConsole.Inst.Log($"ConnectionReset : {_args.BytesTransferred}");
@@ -82,7 +86,7 @@ public class UDPCommunicator
 			return;
 		}
 
-		if (_args.BytesTransferred == 0 || _args.SocketError != SocketError.Success)
+		if (_args.SocketError != SocketError.Success)
 		{
 			InGameConsole.Inst.Log($"Error : {_args.SocketError}");
 			//Disconnect();
@@ -113,5 +117,6 @@ public class UDPCommunicator
 		m_recvArgs = null;
 		m_socket = null;
 		m_udpBuffer = null;
+		m_isRecv = false;
 	}
 }

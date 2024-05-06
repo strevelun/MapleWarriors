@@ -29,7 +29,7 @@ public class PlayerHitState : ICreatureState
 		m_player = _cs as PlayerController;
 		m_player.Anim.SetTrigger("Hit");
 
-		InGameConsole.Inst.Log("PlayerHitState");
+	//	InGameConsole.Inst.Log("PlayerHitState");
 	}
 
 	public void Update()

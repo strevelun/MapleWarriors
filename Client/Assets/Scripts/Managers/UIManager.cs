@@ -185,6 +185,15 @@ public class UIManager
 		return obj;
 	}
 
+	public GameObject AddUI(Define.eUI _eUI, GameObject _uiObj)
+	{
+		GameObject obj;
+		if (m_dicUI.TryGetValue(_eUI, out obj)) return null;
+
+		m_dicUI.Add(_eUI, _uiObj);
+		return obj;
+	}
+
 	public GameObject FindUI(Define.eUI _eUI)
 	{
 		GameObject obj;
