@@ -94,8 +94,8 @@ public class UDPCommunicator
 			return;
 		}
 
-		m_udpBuffer.OnRecv(this, _args.BytesTransferred);
-
+		m_udpBuffer.MoveWritePos(_args.BytesTransferred);
+		RegisterRecv();
 	}
 
 	public void AddSendInfo(int _slot, string _ip, int _port)

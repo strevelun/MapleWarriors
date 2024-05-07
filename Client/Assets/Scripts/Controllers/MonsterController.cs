@@ -654,7 +654,7 @@ public class MonsterController : CreatureController
 			m_flyingAttackObjAnimList[i].Play("MonsterFlyingAttack");
 		}
 
-		Debug.Log("코루틴 while 전");
+		//Debug.Log("코루틴 while 전");
 
 		TargetHit = true;
 
@@ -664,7 +664,7 @@ public class MonsterController : CreatureController
 			{
 				m_flyingAttackObjList[i].transform.position = new Vector2(_targets[i].transform.position.x + 0.5f, _targets[i].transform.position.y + 0.5f);
 			}
-			Debug.Log(info.normalizedTime);
+			//Debug.Log(info.normalizedTime);
 			info = m_flyingAttackObjAnimList[0].GetCurrentAnimatorStateInfo(0);
 			yield return null;
 		}
@@ -673,7 +673,7 @@ public class MonsterController : CreatureController
 		{
 			m_flyingAttackObjList[i].transform.position = _startPos;
 			m_flyingAttackObjList[i].SetActive(false);
-			Debug.Log($"{_startPos}로 리셋");
+			//Debug.Log($"{_startPos}로 리셋");
 		}
 	}
 

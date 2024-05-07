@@ -330,7 +330,7 @@ public static class InGamePacketHandler
 		int slot = _reader.GetByte();
 
 		GameManager.Inst.SetPlayerReady(slot);
-		InGameConsole.Inst.Log($"READY");
+		//InGameConsole.Inst.Log($"READY");
 	}
 
 	public static void Start(PacketReader _reader)

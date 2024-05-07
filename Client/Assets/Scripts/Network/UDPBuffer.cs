@@ -10,6 +10,7 @@ public class UDPBuffer : MonoBehaviour
 	byte[] m_buffer = new byte[Define.BufferMax];
 	int m_readPos = 0;
 	int m_writePos = 0;
+	bool m_readable = false;
 
 	public ArraySegment<byte> BufferSegment
 	{
@@ -27,47 +28,33 @@ public class UDPBuffer : MonoBehaviour
 
 	public void OnBufferReadable()
 	{
-		lock (m_lock)
+		if (m_readable)
 		{
-			while (m_writePos - m_readPos != 0)
+			lock (m_lock)
 			{
-				m_reader.SetBuffer(m_buffer, m_readPos);
-				PacketHandler.Handle(m_reader);
-				MoveReadPos(m_reader.Size);
+				while (m_writePos - m_readPos != 0)
+				{
+					m_reader.SetBuffer(m_buffer, m_readPos);
+					PacketHandler.Handle(m_reader);
+					MoveReadPos(m_reader.Size);
+				}
+				m_readable = false;
 			}
 		}
 	}
 
 	public void SetWriteSegment(out ArraySegment<byte> _seg)
 	{
-		lock (m_lock)
-		{
-			if (m_writePos > Define.BufferMax - Define.PacketBufferMax) m_writePos = 0;
+		if (m_writePos > Define.BufferMax - Define.PacketBufferMax) m_writePos = 0;
 
-			_seg = new ArraySegment<byte>(m_buffer, m_writePos, Define.BufferMax - m_writePos);
-		//	Debug.Log($"SetWriteSegment : {m_writePos}");
-		}
-	}
-
-	public void OnRecv(UDPCommunicator _comm, int _bytesTransferred)
-	{
-		lock(m_lock)
-		{
-			m_reader.SetBuffer(m_buffer, m_writePos);
-
-			MoveWritePos(_bytesTransferred);
-			_comm.RegisterRecv();
-		}
+		_seg = new ArraySegment<byte>(m_buffer, m_writePos, Define.BufferMax - m_writePos);
 	}
 
 	public void MoveReadPos(int _readBytes)
 	{
-		lock (m_lock)
-		{
-			m_readPos = (_readBytes + m_readPos) % Define.BufferMax;
-			if (m_readPos > Define.BufferMax - Define.PacketBufferMax) m_readPos = 0;
-			//Debug.Log($"MoveReadPos : {m_readPos}");
-		}
+		m_readPos = (_readBytes + m_readPos) % Define.BufferMax;
+		if (m_readPos > Define.BufferMax - Define.PacketBufferMax) m_readPos = 0;
+		//Debug.Log($"MoveReadPos : {m_readPos}");
 	}
 
 	public void MoveWritePos(int _recvBytes)
@@ -77,6 +64,7 @@ public class UDPBuffer : MonoBehaviour
 			m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
 			if (m_writePos > Define.BufferMax - Define.PacketBufferMax) m_writePos = 0;
 			//Debug.Log($"MoveWritePos : {m_writePos}");
+			if(!m_readable) m_readable = true;
 		}
 	}
 }
