@@ -41,12 +41,9 @@ public class RingBuffer : MonoBehaviour
 		get
 		{
 			int result = 0;
-			lock (m_lock)
+			if (m_writtenBytes < Define.BufferMax)
 			{
-				if (m_writtenBytes < Define.BufferMax)
-				{
-					result = (m_readPos <= m_writePos) ? Define.BufferMax - m_writePos : m_readPos - m_writePos;
-				}
+				result = (m_readPos <= m_writePos) ? Define.BufferMax - m_writePos : m_readPos - m_writePos;
 			}
 			return result;
 		}
@@ -127,14 +124,11 @@ public class RingBuffer : MonoBehaviour
 	public bool SetWriteSegment(out ArraySegment<byte> _seg)
 	{
 		int writableSize;
-		lock (m_lock)
-		{
-			writableSize = WritableSize;
-			while((writableSize = WritableSize) == 0) { Debug.Log("WritableSize°¡ 0"); }
-			//if (writableSize < Define.PacketHeaderSize) return false;
+		
+		while((writableSize = WritableSize) == 0) { Debug.Log("WritableSize°¡ 0"); }
 
-			_seg = new ArraySegment<byte>(m_buffer, m_writePos, writableSize);
-		}
+		_seg = new ArraySegment<byte>(m_buffer, m_writePos, writableSize);
+
 		return true;
 	}
 
@@ -143,9 +137,9 @@ public class RingBuffer : MonoBehaviour
 		lock (m_lock)
 		{
 			m_writtenBytes -= _readBytes;
-			m_readPos = (_readBytes + m_readPos) % Define.BufferMax;
 		}
-		//Debug.Log("ÀÐÀ½ : " + _readBytes);
+		m_readPos = (_readBytes + m_readPos) % Define.BufferMax;
+		Debug.Log("m_readPos : " + m_readPos);
 	}
 
 	public void MoveWritePos(int _recvBytes)
@@ -153,8 +147,8 @@ public class RingBuffer : MonoBehaviour
 		lock (m_lock)
 		{
 			m_writtenBytes += _recvBytes;
-			m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
 		}
+		m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
 		//Debug.Log("¾¸ : " + m_writtenBytes);
 		Debug.Log("writePos : " + m_writePos);
 	}

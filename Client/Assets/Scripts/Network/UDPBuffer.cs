@@ -54,11 +54,6 @@ public class UDPBuffer : MonoBehaviour
 		lock(m_lock)
 		{
 			m_reader.SetBuffer(m_buffer, m_writePos);
-			PacketType.eServer type = m_reader.GetPacketType(false);
-			if(PacketType.eServer.EndMove == type)
-			{
-				Debug.Log($"EndMove왓따!!! : {DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}");
-			}
 
 			MoveWritePos(_bytesTransferred);
 			_comm.RegisterRecv();

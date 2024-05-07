@@ -61,7 +61,6 @@ public class Connection
         }
 
 		m_ringBuffer.MoveWritePos(_args.BytesTransferred);
-
 		RegisterRecv();
     }
 
