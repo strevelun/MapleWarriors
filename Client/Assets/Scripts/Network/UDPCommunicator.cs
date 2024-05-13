@@ -23,16 +23,25 @@ public class UDPCommunicator
 
 	public Dictionary<int, IPEndPoint> DicSendInfo { get; private set; } = new Dictionary<int, IPEndPoint>();
 
-	public void Init(UDPBuffer _udpBuffer, int _port)
+	public void Init()
 	{
 		m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-		m_socket.Bind(new IPEndPoint(IPAddress.Any, _port));
+		m_socket.Bind(new IPEndPoint(IPAddress.Any, 0));
+	}
 
+	public int GetPort()
+	{
+		IPEndPoint localEndPoint = m_socket.LocalEndPoint as IPEndPoint;
+		return localEndPoint.Port;
+	}
+
+	public void Start(UDPBuffer _udpBuffer)
+	{
 		m_udpBuffer = _udpBuffer;
-		m_isRecv = true;
-
+		m_isRecv = true; 
 		m_recvArgs = new SocketAsyncEventArgs();
 		m_recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
+		InGameConsole.Inst.Log($"현재 저의 포트는 [{(m_socket.LocalEndPoint as IPEndPoint).Port}]");
 		RegisterRecv();
 	}
 
@@ -71,7 +80,13 @@ public class UDPCommunicator
 
 	public void OnRecvCompleted(object _sender, SocketAsyncEventArgs _args)
 	{
-		if (!m_isRecv) return;
+		InGameConsole.Inst.Log($"OnRecvCompleted : {_args.BytesTransferred}");
+
+		if (!m_isRecv)
+		{
+			RegisterRecv();
+			return;
+		}
 
 		if(_args.SocketError == SocketError.ConnectionReset)
 		{
@@ -109,14 +124,21 @@ public class UDPCommunicator
 		DicSendInfo.Remove(_slot);
 	}
 
+	public void ClearIngameInfo()
+	{
+		DicSendInfo.Clear();
+		m_isRecv = false;
+		m_udpBuffer = null;
+		m_recvArgs.Completed -= new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
+		m_recvArgs.Dispose();
+		m_recvArgs = null;
+	}
+
 	public void Disconnect()
 	{
 		InGameConsole.Inst.Log("UDP Disconnect");
+		ClearIngameInfo();
 		m_socket.Close();
-		DicSendInfo.Clear();
-		m_recvArgs = null;
 		m_socket = null;
-		m_udpBuffer = null;
-		m_isRecv = false;
 	}
 }

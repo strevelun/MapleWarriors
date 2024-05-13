@@ -67,4 +67,12 @@ public class UDPBuffer : MonoBehaviour
 			if(!m_readable) m_readable = true;
 		}
 	}
+	/*
+	public void Clear()
+	{
+		m_readable = false;
+		m_writePos = 0;
+		m_readPos = 0;
+	}
+	*/
 }

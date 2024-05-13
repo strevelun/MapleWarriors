@@ -44,7 +44,7 @@ public class InGameScene : BaseScene
 		SetClearImageVisible(false);
 		SetWastedImageVisible(false);
 
-		UDPCommunicator.Inst.Disconnect();
+		UDPCommunicator.Inst.ClearIngameInfo();
 	}
 
 	void Start()
@@ -75,7 +75,7 @@ public class InGameScene : BaseScene
 
 				Packet pkt = InGamePacketMaker.Ready();
 				UDPCommunicator.Inst.Send(pkt, UserData.Inst.RoomOwnerSlot);
-				InGameConsole.Inst.Log($"{UserData.Inst.RoomOwnerSlot}에게 ready 보냄");
+				//InGameConsole.Inst.Log($"{UserData.Inst.RoomOwnerSlot}에게 ready 보냄");
 			}
 			else
 			{
@@ -137,8 +137,6 @@ public class InGameScene : BaseScene
 	protected override void OnApplicationQuit()
 	{
 		base.OnApplicationQuit();
-
-		UDPCommunicator.Inst.Disconnect(); // 비정상 종료 대비
 	}
 
 	IEnumerator UpdateMonstersInfo()

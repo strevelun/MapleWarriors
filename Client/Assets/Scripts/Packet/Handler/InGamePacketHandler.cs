@@ -13,13 +13,15 @@ public static class InGamePacketHandler
 		// 몬스터 컨트롤러에서 타일맵 데이터에 접근할 수 있어야 함. (충돌 감지 및 경로 생성)
 		//long seed = _reader.GetInt64();
 		int mapID = _reader.GetByte();
-		long milli = _reader.GetInt64();
+		//long milli = _reader.GetInt64();
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
 		GameObject camObj = GameObject.Find("CM vcam1");
 		GameObject udpBufferObj = GameObject.Find("IngameUDPBuffer");
 		UDPBuffer udpBuffer = null;
 		if (udpBufferObj) udpBuffer = udpBufferObj.GetComponent<UDPBuffer>();
+		UDPCommunicator.Inst.Start(udpBuffer);
+
 		CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
 
 		GameObject mapObj = MapManager.Inst.Load(mapID, camObj); // TestMap : 1
@@ -72,7 +74,6 @@ public static class InGamePacketHandler
 				mpc.Idx = idx;
 				mpc.SetNickname(nickname);
 				vcam1.Follow = player.transform;
-				UDPCommunicator.Inst.Init(udpBuffer, port);
 			}
 			else
 			{
@@ -83,7 +84,7 @@ public static class InGamePacketHandler
 				pc.SetNickname(nickname);
 
 				UDPCommunicator.Inst.AddSendInfo(idx, ip, port);
-				//InGameConsole.Inst.Log($"{nickname}, port : {port}, ip : {ip}");
+				InGameConsole.Inst.Log($"{nickname}, port : {port}, ip : {ip}");
 			}
 			ObjectManager.Inst.AddPlayer(idx, player);
 		}
@@ -93,7 +94,7 @@ public static class InGamePacketHandler
 		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
 
 		GameManager.Inst.SetOtherPlayerSlot(idxList);
-		GameManager.Inst.SetTimer(milli);
+		//GameManager.Inst.SetTimer(milli);
 		//GameManager.Inst.GameStart = true;
 	}
 
@@ -380,11 +381,12 @@ public static class InGamePacketHandler
 		{
 			idx = _reader.GetByte();
 			hit = _reader.GetByte();
-			InGameConsole.Inst.Log($"PlayerHitChange : {hit}");
+			//InGameConsole.Inst.Log($"PlayerHitChange : {hit}");
 			if (hit == 1)
 			{
 				pc = ObjectManager.Inst.FindPlayer(idx);
 				pc.ChangeState(new PlayerHitState(mc));
+				pc.HitObj.SetActive(true);
 			}
 		}
 	}

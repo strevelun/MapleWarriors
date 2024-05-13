@@ -268,7 +268,7 @@ public static class InGamePacketMaker
 		{
 			pkt.Add((byte)pc.Idx);
 			pkt.Add((byte)(_targetHit[idx++] ? 1 : 0));
-			InGameConsole.Inst.Log($"PlayerHit º¸³¿ : {_targetHit[idx - 1]}");
+			//InGameConsole.Inst.Log($"PlayerHit º¸³¿ : {_targetHit[idx - 1]}");
 		}
 		
 		return pkt;

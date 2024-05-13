@@ -44,6 +44,7 @@ public abstract class BaseScene : MonoBehaviour
 	protected virtual void OnApplicationQuit()
 	{
 		UIManager.Inst.ClearAll();
+		UDPCommunicator.Inst.Disconnect();
 
 		Debug.Log("OnApplicationQuit");
 	}

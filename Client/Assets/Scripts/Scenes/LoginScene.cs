@@ -51,11 +51,13 @@ public class LoginScene : BaseScene
 			Quit();
 		});
 
-		//0NetworkManager.Inst.Init("119.67.216.164", 30001); // 포트포워딩
+		//NetworkManager.Inst.Init("119.67.216.164", 30001); // 포트포워딩
 		NetworkManager.Inst.Init("192.168.219.104", 30001);
 		//NetworkManager.Inst.Connect("118.32.36.41", 30001); // gpm
 
 		//InputManager.Inst.KeyAction += OnKeyboardEnter;
+
+		UDPCommunicator.Inst.Init();
 
 		InputManager.Inst.SetInputEnabled(false);
 		IsLoading = false;
@@ -87,7 +89,9 @@ public class LoginScene : BaseScene
 
 		UserData.Inst.Nickname = m_input.text;
 		//Debug.Log("just sent : " + UserData.Inst.Nickname);
-		Packet packet = LoginPacketMaker.CheckNickname();
+
+		int port = UDPCommunicator.Inst.GetPort();
+		Packet packet = LoginPacketMaker.LoginReq(port);
 		NetworkManager.Inst.Send(packet);
 	}
 
