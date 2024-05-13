@@ -20,7 +20,7 @@ public class PlayerHitState : ICreatureState
 
 	public bool CanEnter(CreatureController _cs)
 	{
-		if (_cs.CurState is PlayerHitState) return false;
+	//	if (_cs.CurState is PlayerHitState) return false;
 		if (_cs.CurState is PlayerAttackState) return false;
 		if (_cs.CurState is PlayerDeadState) return false;
 

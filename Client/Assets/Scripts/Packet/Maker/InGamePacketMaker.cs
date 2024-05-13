@@ -253,4 +253,24 @@ public static class InGamePacketMaker
 			.Add(PacketType.eServer.Annihilated);
 		return pkt;
 	}
+
+	public static Packet PlayerHit(MonsterController _mc, List<PlayerController> _targets, List<bool> _targetHit)
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.eServer.PlayerHit)
+			.Add((byte)_targets.Count)
+			.Add((byte)_mc.Idx)
+			.Add((byte)_mc.Num);
+
+		int idx = 0;
+		foreach (PlayerController pc in _targets)
+		{
+			pkt.Add((byte)pc.Idx);
+			pkt.Add((byte)(_targetHit[idx++] ? 1 : 0));
+			InGameConsole.Inst.Log($"PlayerHit º¸³¿ : {_targetHit[idx - 1]}");
+		}
+		
+		return pkt;
+	}
 }

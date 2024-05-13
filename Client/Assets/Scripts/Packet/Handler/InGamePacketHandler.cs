@@ -13,6 +13,7 @@ public static class InGamePacketHandler
 		// 몬스터 컨트롤러에서 타일맵 데이터에 접근할 수 있어야 함. (충돌 감지 및 경로 생성)
 		//long seed = _reader.GetInt64();
 		int mapID = _reader.GetByte();
+		long milli = _reader.GetInt64();
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
 		GameObject camObj = GameObject.Find("CM vcam1");
@@ -25,9 +26,9 @@ public static class InGamePacketHandler
 		GameManager.Inst.SetPlayerCnt(numOfUsers);
 		GameManager.Inst.SetPlayerAliveCnt(numOfUsers);
 
-		//GameObject connections = UIManager.Inst.FindUI(Define.eUI.Connections);
-		//TextMeshProUGUI tmp = connections.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-		//tmp.text = string.Empty;
+		GameObject connections = UIManager.Inst.FindUI(Define.eUI.Connections);
+		TextMeshProUGUI tmp = connections.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		tmp.text = string.Empty;
 
 		GameObject monsters = Util.FindChild(mapObj, false, "Monsters");
 		int activeCnt = 0;
@@ -57,7 +58,7 @@ public static class InGamePacketHandler
 				if (j < 3) ip += ".";
 			}
 
-		//	tmp.text += $"{nickname} [{ip}, {port}]\n";
+			tmp.text += $"{nickname} [{ip}, {port}]\n";
 
 			player = ResourceManager.Inst.Instantiate($"Creature/Player_{characterChoice}"); // 플레이어 선택
 			player.name = $"Player_{characterChoice}_{idx}"; // slot 넘버로
@@ -92,6 +93,7 @@ public static class InGamePacketHandler
 		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
 
 		GameManager.Inst.SetOtherPlayerSlot(idxList);
+		GameManager.Inst.SetTimer(milli);
 		//GameManager.Inst.GameStart = true;
 	}
 
@@ -362,5 +364,28 @@ public static class InGamePacketHandler
 	{
 		InGameScene scene = SceneManagerEx.Inst.CurScene as InGameScene;
 		scene.OnAnnihilated();
+	}
+
+	public static void PlayerHit(PacketReader _reader)
+	{
+		int playerCnt = _reader.GetByte();
+		int monsterIdx = _reader.GetByte();
+		int monsterNum = _reader.GetByte();
+		int idx;
+		byte hit;
+		PlayerController pc;
+		MonsterController mc = ObjectManager.Inst.FindMonster(monsterIdx, monsterNum);
+
+		for(int i=0; i<playerCnt; ++i)
+		{
+			idx = _reader.GetByte();
+			hit = _reader.GetByte();
+			InGameConsole.Inst.Log($"PlayerHitChange : {hit}");
+			if (hit == 1)
+			{
+				pc = ObjectManager.Inst.FindPlayer(idx);
+				pc.ChangeState(new PlayerHitState(mc));
+			}
+		}
 	}
 }

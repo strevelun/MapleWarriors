@@ -7,6 +7,7 @@ public class InGameScene : BaseScene
 {
 	[SerializeField]
 	GameObject m_allClear, m_clear, m_wasted;
+	long m_delayedTime;
 
 	protected override void Init()
 	{
@@ -18,11 +19,12 @@ public class InGameScene : BaseScene
 		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.eScene.InGame);
 		uiScene.AddUI("SkillPanel"); // room에서도 똑같이
 		GameObject ingameConsole = uiScene.AddUI("Ingame_Console");
-		//GameObject connections = uiScene.AddUI("Connections");
-		//UIManager.Inst.AddUI(Define.eUI.Connections, connections);
+		GameObject connections = uiScene.AddUI("Connections");
+		UIManager.Inst.AddUI(Define.eUI.Connections, connections);
 
 		InGameConsole.Inst.Init(ingameConsole);
 
+		m_delayedTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 		Packet pkt = InGamePacketMaker.ReqInitInfo();
 		NetworkManager.Inst.Send(pkt);
 		IsLoading = false;
@@ -57,6 +59,8 @@ public class InGameScene : BaseScene
 		//GameManager.Inst.ObservePlayers();
 
 		//InGameConsole.Inst.Log($"{GameManager.Inst.GameStart}, {GameManager.Inst.StageLoading}, {GameManager.Inst.AllClear}, {GameManager.Inst.PlayerAliveCnt}");
+
+		GameManager.Inst.UpdateTimer(Time.deltaTime);
 
 		if (!GameManager.Inst.GameStart && !GameManager.Inst.StageLoading && !GameManager.Inst.AllClear && GameManager.Inst.PlayerAliveCnt != 0)
 		{

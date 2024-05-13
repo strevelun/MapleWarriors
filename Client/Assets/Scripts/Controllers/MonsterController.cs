@@ -533,9 +533,16 @@ public class MonsterController : CreatureController
 
 		Packet pkt = InGamePacketMaker.MonsterAttack(finalTargets, Idx, Num);
 		UDPCommunicator.Inst.SendAll(pkt);
-
-		//MonsterController mc = ObjectManager.Inst.FindMonster(Idx, Num);
+		/*
+		if (UserData.Inst.IsRoomOwner)
+		{
+			Packet pkt = InGamePacketMaker.PlayerHit(this, finalTargets);
+			UDPCommunicator.Inst.SendAll(pkt);
+		}
+		*/
 		ChangeState(new MonsterAttackState(finalTargets));
+
+	
 	}
 
 	public override void Die()

@@ -41,6 +41,7 @@ public class GameManager
 	int m_playerReadyCnt = 0;
 
 	long m_startTime;
+	float m_timer;
 
 	InGameScene m_inGameScene;
 
@@ -86,6 +87,21 @@ public class GameManager
 	{
 		m_startTime = _startTime;
 	}
+
+	public void SetTimer(long _timer)
+	{
+		m_timer = _timer;
+	}
+
+	public void UpdateTimer(float _deltaTime)
+	{
+		m_timer += _deltaTime;
+	}
+
+	//public long GetCurTimer()
+	////{
+	//	return m_timer * 1000000;
+	//}
 
 	public bool IsTimerOn()
 	{

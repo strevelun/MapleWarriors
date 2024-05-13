@@ -172,6 +172,9 @@ public static class PacketHandler
 				case PacketType.eServer.Annihilated:
 					InGamePacketHandler.Annihilated(_reader);
 					break;
+				case PacketType.eServer.PlayerHit:
+					InGamePacketHandler.PlayerHit(_reader);
+					break;
 			}
 		}
 	}

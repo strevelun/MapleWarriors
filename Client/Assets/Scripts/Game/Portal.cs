@@ -21,8 +21,10 @@ public class Portal : MonoBehaviour
         {
             if(m_cntPlayer == GameManager.Inst.PlayerAliveCnt)
 			{
-                Packet pkt = InGamePacketMaker.NextStage();
-                UDPCommunicator.Inst.SendAll(pkt);
+                Packet pkt = InGamePacketMaker.NextStage(); // 다음이 어느 스테이지인지 보내기. OnChangeStage 함수에서 현재 스테이지 갱신 후 두 번째로 패킷이 들어오면 리턴. 
+				// 스테이지 바뀐 후 ready가 안된 유저가 몇 초 이상 지속되면 탈락
+
+				UDPCommunicator.Inst.SendAll(pkt);
 				GameManager.Inst.OnChangeStage();
             }
         }

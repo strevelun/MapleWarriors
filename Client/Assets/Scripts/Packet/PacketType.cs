@@ -53,6 +53,7 @@ public class PacketType
 		MapClear,
 		StageClear,
 		Annihilated,
+		PlayerHit,
 		Max,
 	}
 

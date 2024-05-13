@@ -76,26 +76,38 @@ public class MonsterAttackState : ICreatureState
 				m_mc.AttackObj.SetActive(true);
 		}
 
-		if (m_mc.FlyingAttack)
+		if (UserData.Inst.IsRoomOwner)
 		{
-			if (m_mc.TargetHit)
+			List<bool> targetHit = new List<bool>();
+			bool hit;
+
+			if (m_mc.FlyingAttack)
 			{
-				foreach (PlayerController pc in m_targets)
+				if (m_mc.TargetHit)
 				{
-					pc.ChangeState(new PlayerHitState(m_mc));
+					foreach (PlayerController pc in m_targets)
+					{
+						hit = pc.ChangeState(new PlayerHitState(m_mc));
+						targetHit.Add(hit);
+					}
+					Packet pkt = InGamePacketMaker.PlayerHit(m_mc, m_targets, targetHit);
+					UDPCommunicator.Inst.SendAll(pkt);
+					m_mc.TargetHit = false;
 				}
-				m_mc.TargetHit = false;
 			}
-		}
-		else
-		{
-			if (!m_hit && m_targets.Count > 0 && m_stateInfo.normalizedTime >= 0.3f)
+			else
 			{
-				m_hit = true;
-				foreach (PlayerController pc in m_targets)
+				if (!m_hit && m_targets.Count > 0 && m_stateInfo.normalizedTime >= 0.3f)
 				{
-					pc.ChangeState(new PlayerHitState(m_mc));
-					pc.HitObj.SetActive(true);
+					m_hit = true;
+					foreach (PlayerController pc in m_targets)
+					{
+						hit = pc.ChangeState(new PlayerHitState(m_mc));
+						targetHit.Add(hit);
+						pc.HitObj.SetActive(true);
+					}
+					Packet pkt = InGamePacketMaker.PlayerHit(m_mc, m_targets, targetHit);
+					UDPCommunicator.Inst.SendAll(pkt);
 				}
 			}
 		}
