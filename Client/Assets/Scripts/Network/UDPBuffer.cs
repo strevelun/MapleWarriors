@@ -10,7 +10,7 @@ public class UDPBuffer : MonoBehaviour
 	byte[] m_buffer = new byte[Define.BufferMax];
 	int m_readPos = 0;
 	int m_writePos = 0;
-	bool m_readable = false;
+	int m_writtenBytes = 0;
 
 	public ArraySegment<byte> BufferSegment
 	{
@@ -20,26 +20,28 @@ public class UDPBuffer : MonoBehaviour
 		}
 	}
 
+	private void Start()
+	{
+		DontDestroyOnLoad(this);
+	}
+
 	void Update()
     {
-		//Debug.Log("Update");
 		OnBufferReadable();
 	}
 
 	public void OnBufferReadable()
 	{
-		if (m_readable)
+		while (true)
 		{
-			lock (m_lock)
+			lock(m_lock)
 			{
-				while (m_writePos - m_readPos != 0)
-				{
-					m_reader.SetBuffer(m_buffer, m_readPos);
-					PacketHandler.Handle(m_reader);
-					MoveReadPos(m_reader.Size);
-				}
-				m_readable = false;
+				if (m_writtenBytes == 0) break;
 			}
+
+			m_reader.SetBuffer(m_buffer, m_readPos);
+			PacketHandler.Handle(m_reader);
+			MoveReadPos(m_reader.Size);
 		}
 	}
 
@@ -54,19 +56,25 @@ public class UDPBuffer : MonoBehaviour
 	{
 		m_readPos = (_readBytes + m_readPos) % Define.BufferMax;
 		if (m_readPos > Define.BufferMax - Define.PacketBufferMax) m_readPos = 0;
-		//Debug.Log($"MoveReadPos : {m_readPos}");
+
+		lock (m_lock)
+		{
+			m_writtenBytes -= _readBytes;
+		}
+		InGameConsole.Inst.Log($"MoveReadPos : {_readBytes}");
 	}
 
 	public void MoveWritePos(int _recvBytes)
 	{
+		m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
+		if (m_writePos > Define.BufferMax - Define.PacketBufferMax) m_writePos = 0;
+		Debug.Log($"UDPBuffer MoveWritePos : {m_writePos}");
+
 		lock (m_lock)
 		{
-			m_writePos = (_recvBytes + m_writePos) % Define.BufferMax;
-			if (m_writePos > Define.BufferMax - Define.PacketBufferMax) m_writePos = 0;
-			//Debug.Log($"MoveWritePos : {m_writePos}");
-			if(!m_readable) m_readable = true;
+			m_writtenBytes += _recvBytes;
 		}
-	}
+}
 	/*
 	public void Clear()
 	{

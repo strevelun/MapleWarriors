@@ -44,6 +44,7 @@ public class InGameScene : BaseScene
 		SetClearImageVisible(false);
 		SetWastedImageVisible(false);
 
+		GameManager.Inst.Clear();
 		UDPCommunicator.Inst.ClearIngameInfo();
 	}
 
@@ -112,7 +113,6 @@ public class InGameScene : BaseScene
 			
 			if (!m_wasted.activeSelf && !m_clear.activeSelf && GameManager.Inst.CheckGameOver()) // Àü¸ê
 			{
-
 				OnAnnihilated();
 			}
 
@@ -128,6 +128,7 @@ public class InGameScene : BaseScene
 			}
 			else if(GameManager.Inst.GameOver)
 			{
+				InGameConsole.Inst.Log("Annihilated º¸³¿");
 				Packet pkt = InGamePacketMaker.Annihilated();
 				UDPCommunicator.Inst.SendAll(pkt);
 			}
@@ -216,6 +217,7 @@ public class InGameScene : BaseScene
 
 	public void OnAnnihilated()
 	{
+		if (!GameManager.Inst.GameStart) return;
 		if (GameManager.Inst.GameOver) return;
 		
 		StartCoroutine(GameOverCoroutine());

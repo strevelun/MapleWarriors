@@ -17,10 +17,7 @@ public static class InGamePacketHandler
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
 		GameObject camObj = GameObject.Find("CM vcam1");
-		GameObject udpBufferObj = GameObject.Find("IngameUDPBuffer");
-		UDPBuffer udpBuffer = null;
-		if (udpBufferObj) udpBuffer = udpBufferObj.GetComponent<UDPBuffer>();
-		UDPCommunicator.Inst.Start(udpBuffer);
+		UDPCommunicator.Inst.Start();
 
 		CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
 
@@ -92,6 +89,8 @@ public static class InGamePacketHandler
 		InGameConsole.Inst.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
 		InGameConsole.Inst.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
 		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
+		InGameConsole.Inst.Log($"GameStart : {GameManager.Inst.GameStart}");
+		InGameConsole.Inst.Log($"GameOver : {GameManager.Inst.GameOver}");
 
 		GameManager.Inst.SetOtherPlayerSlot(idxList);
 		//GameManager.Inst.SetTimer(milli);
@@ -279,7 +278,6 @@ public static class InGamePacketHandler
 	public static void GameOver(PacketReader _reader)
 	{
 		InGameConsole.Inst.Log("GameOver");
-		GameManager.Inst.Clear();
 		ObjectManager.Inst.ClearPlayers();
 		ObjectManager.Inst.ClearMonsters();
 		MapManager.Inst.Destroy();
