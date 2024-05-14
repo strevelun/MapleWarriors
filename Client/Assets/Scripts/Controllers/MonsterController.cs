@@ -169,6 +169,7 @@ public class MonsterController : CreatureController
 		Idx = monsterData.idx;
 
 		ChangeState(new MonsterIdleState());
+		SetPosition(_cellXPos, _cellYPos);
 
 		GameObject monsterUI = ResourceManager.Inst.Instantiate("Creature/UI/MonsterUI", gameObject.transform);
 
@@ -430,6 +431,16 @@ public class MonsterController : CreatureController
 		return false;
 	}
 	*/
+
+	public override void SetPosition(int _cellXPos, int _cellYPos)
+	{
+		if (!(CurState is MonsterIdleState)) return;
+
+		//InGameConsole.Inst.Log($"SetPosition : {_cellXPos}, {_cellYPos}");
+
+		base.SetPosition(_cellXPos, _cellYPos);
+	}
+
 	public void Hit(Skill _skill)
 	{
 		if (!gameObject.activeSelf) return;
@@ -466,7 +477,7 @@ public class MonsterController : CreatureController
 		}
 	}
 
-	public void Hit(int _hp) // 이 함수가 실행될때 이미 gameObject가 inactive
+	public void Hit(int _hp)
 	{
 		if (!gameObject.activeSelf) return;
 

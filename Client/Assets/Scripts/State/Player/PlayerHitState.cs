@@ -5,15 +5,15 @@ using UnityEngine;
 public class PlayerHitState : ICreatureState
 {
 	PlayerController m_player;
-	MonsterController m_monster;
+	//MonsterController m_monster;
 	bool m_knockback = false;
 	bool m_animStart = false;
 
 	AnimatorStateInfo m_stateInfo;
 
-	public PlayerHitState(MonsterController _mc)
+	public PlayerHitState()
 	{
-		m_monster = _mc;
+		//m_monster = _mc;
 	}
 
 	// Hit했는데 갑자기 Run으로 변경
@@ -79,7 +79,6 @@ public class PlayerHitState : ICreatureState
 		{
 			if (m_player.IsDead)
 			{
-				m_monster.RemoveTarget(m_player);
 				m_player.ChangeState(new PlayerDeadState());
 			}
 			else

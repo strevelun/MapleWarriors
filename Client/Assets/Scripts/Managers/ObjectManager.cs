@@ -71,5 +71,6 @@ public class ObjectManager
 	public void ClearMonsters()
 	{
 		m_dicMonsterObj.Clear();
+		m_monsterNum = 0;
 	}
 }

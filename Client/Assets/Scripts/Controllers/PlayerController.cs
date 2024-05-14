@@ -85,6 +85,8 @@ public class PlayerController : CreatureController
 
 		//targetPos = new Vector2(transform.position.x, transform.position.y);
 
+		SetPosition(_cellXPos, _cellYPos);
+
 		MaxSpeed = 4f;
 		CurSpeed = MaxSpeed;
 		MaxHP = 10; // <= 65535
@@ -327,12 +329,16 @@ public void UpdateSecondMove()
 		}
 	}
 
-	public void Hit(int _damage)
+	public bool Hit(int _damage)
 	{
-		if (HP <= 0) return;
+		if (!gameObject.activeSelf) return false;
+		if (_damage <= 0) return false;
+		if (IsDead) return false;
 
 		HP -= _damage;
 		if (HP < 0) HP = 0;
+
+
 		m_hpbarText.text = HP.ToString();
 		m_hpBarSlider.value -= _damage;
 
@@ -350,6 +356,8 @@ public void UpdateSecondMove()
 		}
 
 		m_damamgeCoroutine = StartCoroutine(DamageCoroutine(1.0f));
+
+		return true;
 	}
 
 	public override void Die()

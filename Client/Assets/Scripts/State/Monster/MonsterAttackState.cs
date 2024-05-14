@@ -87,7 +87,11 @@ public class MonsterAttackState : ICreatureState
 				{
 					foreach (PlayerController pc in m_targets)
 					{
-						hit = pc.ChangeState(new PlayerHitState(m_mc));
+						hit = pc.ChangeState(new PlayerHitState());
+						if(pc.IsDead)
+						{
+							m_mc.RemoveTarget(pc);
+						}
 						targetHit.Add(hit);
 					}
 					Packet pkt = InGamePacketMaker.PlayerHit(m_mc, m_targets, targetHit);
@@ -102,7 +106,11 @@ public class MonsterAttackState : ICreatureState
 					m_hit = true;
 					foreach (PlayerController pc in m_targets)
 					{
-						hit = pc.ChangeState(new PlayerHitState(m_mc));
+						hit = pc.ChangeState(new PlayerHitState());
+						if (pc.IsDead)
+						{
+							m_mc.RemoveTarget(pc);
+						}
 						targetHit.Add(hit);
 						pc.HitObj.SetActive(true);
 					}

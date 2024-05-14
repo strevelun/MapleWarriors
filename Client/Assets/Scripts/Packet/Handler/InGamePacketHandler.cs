@@ -89,8 +89,8 @@ public static class InGamePacketHandler
 		InGameConsole.Inst.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
 		InGameConsole.Inst.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
 		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
-		InGameConsole.Inst.Log($"GameStart : {GameManager.Inst.GameStart}");
-		InGameConsole.Inst.Log($"GameOver : {GameManager.Inst.GameOver}");
+		//InGameConsole.Inst.Log($"GameStart : {GameManager.Inst.GameStart}");
+		//InGameConsole.Inst.Log($"GameOver : {GameManager.Inst.GameOver}");
 
 		GameManager.Inst.SetOtherPlayerSlot(idxList);
 		//GameManager.Inst.SetTimer(milli);
@@ -186,6 +186,8 @@ public static class InGamePacketHandler
 		GameManager.Inst.RemoveOtherPlayerSlot(leftUserIdx);
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(leftUserIdx);
+		if (!pc.IsDead) GameManager.Inst.SubPlayerAliveCnt();
+
 		GameManager.Inst.RemovePlayer(pc.name);
 		MapManager.Inst.RemoveAimTile(pc.CellPos.x, pc.CellPos.y);
 		ResourceManager.Inst.Destroy(pc.gameObject);
@@ -295,7 +297,7 @@ public static class InGamePacketHandler
 		GameManager.Inst.Awake(slot);
 	}
 
-	public static void AllMonstersInfo(PacketReader _reader)
+	public static void AllCreaturesInfo(PacketReader _reader)
 	{
 		ushort count = _reader.GetUShort();
 		MonsterController mc;
@@ -308,6 +310,7 @@ public static class InGamePacketHandler
 			mc = ObjectManager.Inst.FindMonster(idx, num);
 			ushort hp = _reader.GetUShort();
 			mc.Hit(hp);
+			//mc.SetPosition(cellXPos, cellYPos);
 
 			//InGameConsole.Inst.Log($"{idx}_{num} : HP[{hp}], IsDead[{mc.IsDead}]");
 		}
@@ -315,14 +318,14 @@ public static class InGamePacketHandler
 		ushort playerCnt = _reader.GetUShort();
 		PlayerController pc;
 
+		//InGameConsole.Inst.Log($"playerCnt : {playerCnt}");
 		for (int i = 0; i < playerCnt; ++i)
 		{
 			idx = _reader.GetByte();
 			pc = ObjectManager.Inst.FindPlayer(idx);
 			ushort hp = _reader.GetUShort();
-			pc.HP = hp;
-			// Run에서 바로 Dead가 됨.
-			//if (pc.IsDead) pc.ChangeState(new PlayerDeadState());
+
+			if(pc.Hit(pc.HP - hp))		pc.ChangeState(new PlayerHitState());
 		}
 	}
 
@@ -383,7 +386,11 @@ public static class InGamePacketHandler
 			if (hit == 1)
 			{
 				pc = ObjectManager.Inst.FindPlayer(idx);
-				pc.ChangeState(new PlayerHitState(mc));
+				pc.ChangeState(new PlayerHitState());
+				if (pc.IsDead)
+				{
+					mc.RemoveTarget(pc);
+				}
 				pc.HitObj.SetActive(true);
 			}
 		}

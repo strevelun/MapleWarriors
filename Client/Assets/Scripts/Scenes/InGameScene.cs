@@ -44,6 +44,7 @@ public class InGameScene : BaseScene
 		SetClearImageVisible(false);
 		SetWastedImageVisible(false);
 
+		InGameConsole.Inst.GameOver();
 		GameManager.Inst.Clear();
 		UDPCommunicator.Inst.ClearIngameInfo();
 	}

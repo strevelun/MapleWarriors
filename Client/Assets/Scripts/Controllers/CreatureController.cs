@@ -513,9 +513,6 @@ public class CreatureController : MonoBehaviour
 		Anim = m_spriteObject.GetComponent<Animator>();
 		m_spriteRenderer = m_spriteObject.GetComponent<SpriteRenderer>();
 		CenterPos = new Vector2(m_spriteObject.transform.position.x, m_spriteObject.transform.position.y - 0.5f);
-
-
-		SetPosition(_cellXPos, _cellYPos);
 	}
 
 	public void SetByteDir(byte _byteDir) 
@@ -548,7 +545,7 @@ public class CreatureController : MonoBehaviour
 		Dir &= ~_eDir;
 	}
 	*/
-	public void SetPosition(int _cellXPos, int _cellYPos) 
+	public virtual void SetPosition(int _cellXPos, int _cellYPos) 
 	{
 		if (_cellXPos < 0 || _cellYPos < 0 || _cellXPos >= MapManager.Inst.XSize || _cellYPos >= MapManager.Inst.YSize) return;
 

@@ -10,6 +10,7 @@ public class PlayerDeadState : ICreatureState
 
 	public bool CanEnter(CreatureController _cs)
 	{
+		if (_cs.CurState is PlayerDeadState) return false;
 
 		return true;
 	}

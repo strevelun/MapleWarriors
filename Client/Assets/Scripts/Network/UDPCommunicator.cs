@@ -34,6 +34,7 @@ public class UDPCommunicator
 		m_udpBuffer = udpBuffer.GetComponent<UDPBuffer>();
 		if (!m_udpBuffer) return false;
 
+
 		m_recvArgs = new SocketAsyncEventArgs();
 		m_recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
 		RegisterRecv();
@@ -49,7 +50,8 @@ public class UDPCommunicator
 
 	public void Start()
 	{
-		m_isRecv = true; 
+		m_isRecv = true;
+		m_udpBuffer.Active = true;
 		//InGameConsole.Inst.Log($"현재 저의 포트는 [{(m_socket.LocalEndPoint as IPEndPoint).Port}]");
 	}
 
@@ -136,11 +138,12 @@ public class UDPCommunicator
 	{
 		DicSendInfo.Clear();
 		m_isRecv = false;
+		m_udpBuffer.Active = false;
 	}
 
 	public void Disconnect()
 	{
-		InGameConsole.Inst.Log("UDP Disconnect");
+		InGameConsole.Inst?.Log("UDP Disconnect");
 		ClearIngameInfo();
 		m_recvArgs.Completed -= new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
 		m_recvArgs.Dispose();

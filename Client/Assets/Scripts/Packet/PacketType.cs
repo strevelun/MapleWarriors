@@ -46,7 +46,7 @@ public class PacketType
 		RangedAttackReq,
 		GameOver,
 		Awake,
-		AllMonstersInfo,
+		AllCreaturesInfo,
 		Ready,
 		Start,
 		NextStage,

@@ -72,8 +72,6 @@ public class MyPlayerController : PlayerController
 		while (true)
 		{
 			yield return new WaitForSeconds(0.2f);
-
-			if (IsDead) continue;
 		
 			Packet pkt = InGamePacketMaker.Moving(transform.position, ByteDir);
 			UDPCommunicator.Inst.SendAll(pkt);

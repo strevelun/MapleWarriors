@@ -151,8 +151,8 @@ public static class PacketHandler
 				case PacketType.eServer.Awake:
 					InGamePacketHandler.Awake(_reader);
 					break;
-				case PacketType.eServer.AllMonstersInfo:
-					InGamePacketHandler.AllMonstersInfo(_reader);
+				case PacketType.eServer.AllCreaturesInfo:
+					InGamePacketHandler.AllCreaturesInfo(_reader);
 					break;
 				case PacketType.eServer.Ready:
 					InGamePacketHandler.Ready(_reader);

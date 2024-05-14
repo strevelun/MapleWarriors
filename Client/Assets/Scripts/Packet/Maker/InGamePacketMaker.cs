@@ -177,7 +177,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.AllMonstersInfo)
+			.Add(PacketType.eServer.AllCreaturesInfo)
 			.Add((ushort)ObjectManager.Inst.Monsters.Count);
 
 		foreach (MonsterController info in ObjectManager.Inst.Monsters.Values)
@@ -194,8 +194,6 @@ public static class InGamePacketMaker
 
 		foreach (PlayerController info in ObjectManager.Inst.Players.Values)
 		{
-			//if (info.IsDead) continue;
-
 			pkt
 				.Add((byte)info.Idx)
 				.Add((ushort)info.HP);

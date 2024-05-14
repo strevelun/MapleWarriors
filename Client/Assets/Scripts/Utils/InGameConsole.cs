@@ -14,10 +14,12 @@ public class InGameConsole : MonoBehaviour
 	ScrollRect m_scrollRect;
 	Scrollbar m_scrollbar;
 
-	const int MaxLine = 200;
+	const int MaxLine = 150;
 	int curLineCnt = 0;
 
 	Coroutine m_scrollbarDownCoroutine = null;
+
+	bool m_inGame = false;
 
 	void Start()
 	{
@@ -31,10 +33,13 @@ public class InGameConsole : MonoBehaviour
 		m_scrollRect = _objInGameConsole.GetComponent<ScrollRect>();
 		//GameObject textObj.transform.parent;
 		m_text = textObj.GetComponent<TextMeshProUGUI>();
+		m_inGame = true;
 	}
 
 	public void Log(string _text)
 	{
+		if (!m_inGame) return;
+
 		if (curLineCnt >= MaxLine)
 		{
 			m_text.text = m_text.text.Substring(m_text.text.IndexOf('\n') + 1);
@@ -48,6 +53,11 @@ public class InGameConsole : MonoBehaviour
 			m_scrollRect.verticalNormalizedPosition = 0;
 
 		if(m_scrollbarDownCoroutine == null) m_scrollbarDownCoroutine = StartCoroutine(SetScrollbarDownCoroutine());
+	}
+
+	public void GameOver()
+	{
+		m_inGame = false;
 	}
 
 	IEnumerator SetScrollbarDownCoroutine()

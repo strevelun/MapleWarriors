@@ -139,8 +139,6 @@ public class GameManager
 		if (PlayerCnt <= 0) return;
 
 		--PlayerCnt;
-
-		if (PlayerCnt < PlayerAliveCnt) PlayerAliveCnt = PlayerCnt;
 	}
 
 	public void SubPlayerAliveCnt()
