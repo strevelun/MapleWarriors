@@ -20,7 +20,7 @@ public class NetworkManager
 		}
 	}
 
-	Connection m_connection = null;
+	public Connection MyConnection { get; private set; } = null;
 	bool m_shutdown = false;
 
 	public bool Init(string _serverIp, int _port)
@@ -36,11 +36,15 @@ public class NetworkManager
 		IPEndPoint endPoint = new IPEndPoint(ip, _port);
 
 		Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-		
+
 		try
 		{
 			socket.Connect(endPoint);
-			m_connection = new Connection(socket);
+			MyConnection = new Connection(socket);
+			IPEndPoint localEndPoint = socket.LocalEndPoint as IPEndPoint;
+			byte[] addrBytes = localEndPoint.Address.GetAddressBytes();
+			int internalPort = localEndPoint.Port;
+			MyConnection.LocalEndPoint = localEndPoint;
 		} 
 		catch (SocketException e)
 		{
@@ -52,7 +56,7 @@ public class NetworkManager
 
 	public void Send(Packet _packet)
 	{
-		m_connection?.Send(_packet);
+		MyConnection?.Send(_packet);
 
 		//Debug.Log($"send : {(DateTime.Now.Ticks - before) / 10000000.0}√ ");
 	}
@@ -61,7 +65,7 @@ public class NetworkManager
 	{
 		if (m_shutdown) return;
 
-		m_connection?.Shutdown();
+		MyConnection?.Shutdown();
 		m_shutdown = true;
 	}
 }

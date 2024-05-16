@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -12,6 +13,8 @@ public class Connection
 
     SocketAsyncEventArgs m_recvArgs = new SocketAsyncEventArgs();
     RingBuffer m_ringBuffer;
+
+    public IPEndPoint LocalEndPoint { get; set; }
 
 	public Connection(Socket _socket)
     {

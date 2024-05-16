@@ -74,3 +74,6 @@ public class ObjectManager
 		m_monsterNum = 0;
 	}
 }
+
+//gethostname
+//gethostbyname

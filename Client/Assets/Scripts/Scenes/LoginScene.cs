@@ -53,6 +53,7 @@ public class LoginScene : BaseScene
 
 		//NetworkManager.Inst.Init("119.67.216.164", 30001); // 포트포워딩
 		NetworkManager.Inst.Init("192.168.219.104", 30001);
+		//NetworkManager.Inst.Init("25.11.103.91", 30001);
 		//NetworkManager.Inst.Connect("118.32.36.41", 30001); // gpm
 
 		//InputManager.Inst.KeyAction += OnKeyboardEnter;
@@ -89,9 +90,8 @@ public class LoginScene : BaseScene
 
 		UserData.Inst.Nickname = m_input.text;
 		//Debug.Log("just sent : " + UserData.Inst.Nickname);
-
 		int port = UDPCommunicator.Inst.GetPort();
-		Packet packet = LoginPacketMaker.LoginReq(port);
+		Packet packet = LoginPacketMaker.LoginReq(port, NetworkManager.Inst.MyConnection.LocalEndPoint.Address.GetAddressBytes(), NetworkManager.Inst.MyConnection.LocalEndPoint.Port);
 		NetworkManager.Inst.Send(packet);
 	}
 
