@@ -43,7 +43,7 @@ public class UDPBuffer : MonoBehaviour
 				MoveReadPos(m_reader.Size);
 			}
 		}
-		InGameConsole.Inst?.Log($"MoveReadPos : {m_writtenBytes}, m_writePos : {m_writePos}, m_readPos : {m_readPos}");
+		//InGameConsole.Inst?.Log($"MoveReadPos : {m_writtenBytes}, m_writePos : {m_writePos}, m_readPos : {m_readPos}");
 	}
 
 	public void SetWriteSegment(out ArraySegment<byte> _seg)

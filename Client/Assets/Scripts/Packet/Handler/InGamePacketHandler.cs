@@ -339,9 +339,11 @@ public static class InGamePacketHandler
 
 	public static void Start(PacketReader _reader)
 	{
-		long startTime = _reader.GetInt64();
+		int startTime = _reader.GetInt32();
+		int timer = _reader.GetInt32();
 
-		GameManager.Inst.SetStartTime(startTime);
+		GameManager.Inst.StartTime = startTime / 1000000f;
+		GameManager.Inst.Timer = timer / 1000000f;
 		InGameConsole.Inst.Log($"Start");
 	}
 

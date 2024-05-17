@@ -211,12 +211,13 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet Start(long _startTime)
+	public static Packet Start(int _curTime, int _startTime)
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.eServer.Start)
-			.Add(_startTime);
+			.Add(_startTime)
+			.Add(_curTime);
 		return pkt;
 	}
 

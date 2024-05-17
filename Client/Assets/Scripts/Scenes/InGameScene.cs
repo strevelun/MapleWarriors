@@ -58,8 +58,6 @@ public class InGameScene : BaseScene
 
 	void Update()
 	{
-		//GameManager.Inst.ObservePlayers();
-
 		//InGameConsole.Inst.Log($"{GameManager.Inst.GameStart}, {GameManager.Inst.StageLoading}, {GameManager.Inst.AllClear}, {GameManager.Inst.PlayerAliveCnt}");
 
 		GameManager.Inst.UpdateTimer(Time.deltaTime);
@@ -68,7 +66,14 @@ public class InGameScene : BaseScene
 		{
 			if (GameManager.Inst.IsTimerOn())
 			{
-				GameManager.Inst.UpdateStartTimer();
+				if (GameManager.Inst.CheckStartTimer()) return;
+
+				if (UserData.Inst.IsRoomOwner)
+				{
+					int timer = (int)(GameManager.Inst.Timer * 1000000);
+					Packet pkt = InGamePacketMaker.Start(timer, (int)(GameManager.Inst.StartTime * 1000000));
+					UDPCommunicator.Inst.SendAll(pkt);
+				}
 				return;
 			}
 
@@ -85,11 +90,11 @@ public class InGameScene : BaseScene
 				bool start = GameManager.Inst.StartGame();
 				if(start)
 				{
-					long startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-					startTime += 2000;
-					Packet pkt = InGamePacketMaker.Start(startTime);
+					int timer = (int)(GameManager.Inst.Timer * 1000000); // 0.000123 -> 123
+					int startTime = timer + 5 * 1000000; // 5000000+123 = 5000123
+					Packet pkt = InGamePacketMaker.Start(timer, startTime);
 					UDPCommunicator.Inst.SendAll(pkt);
-					GameManager.Inst.SetStartTime(startTime);
+					GameManager.Inst.StartTime = startTime / 1000000f;
 					StartCoroutine(UpdateMonstersInfo());
 				}
 			}

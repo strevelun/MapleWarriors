@@ -40,13 +40,14 @@ public class GameManager
 	bool[] m_playerReady = null;
 	int m_playerReadyCnt = 0;
 
-	long m_startTime;
-	float m_timer;
+	public float StartTime { get; set; }
+	public float Timer { get; set; }
 
 	InGameScene m_inGameScene;
 
 	public void Init(InGameScene _inGameScene)
 	{
+		Timer = 0.0f;
 		m_inGameScene = _inGameScene;
 		m_playerReady = new bool[Define.RoomUserSlot];
 	}
@@ -83,19 +84,12 @@ public class GameManager
 		++m_playerReadyCnt;
 	}
 
-	public void SetStartTime(long _startTime)
-	{
-		m_startTime = _startTime;
-	}
-
-	public void SetTimer(long _timer)
-	{
-		m_timer = _timer;
-	}
-
 	public void UpdateTimer(float _deltaTime)
 	{
-		m_timer += _deltaTime;
+		if (!IsTimerOn()) return;
+
+		Timer += _deltaTime;
+		//InGameConsole.Inst.Log($"Timer : {Timer}, {StartTime}");
 	}
 
 	//public long GetCurTimer()
@@ -105,21 +99,18 @@ public class GameManager
 
 	public bool IsTimerOn()
 	{
-		return m_startTime != 0;
+		return StartTime != 0;
 	}
 
-	public void UpdateStartTimer()
+	public bool CheckStartTimer()
 	{
-		if (m_startTime == 0) return;
-
-		long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-		//InGameConsole.Inst.Log($"{(m_startTime - time < 0 ? 0 : m_startTime - time)} ms 후 시작");
-		if (m_startTime <= time)
-		{
-			GameStart = true;
-			m_startTime = 0;
-			InGameConsole.Inst.Log("********** 게임 시작! *********");
-		}
+		if (StartTime == 0) return false;
+		if (StartTime > Timer) return false;
+		
+		GameStart = true;
+		StartTime = 0;
+		InGameConsole.Inst.Log("********** 게임 시작! *********");
+		return true;
 	}
 
 	public bool StartGame()
@@ -238,7 +229,8 @@ public class GameManager
 		m_playerObj.Clear();
 		AllClear = false;
 		m_playerReadyCnt = 0;
-		m_startTime = 0;
+		StartTime = 0;
+		Timer = 0f;
 		m_playerReady = null;
 		StageClear = false;
 		GameOver = false;
