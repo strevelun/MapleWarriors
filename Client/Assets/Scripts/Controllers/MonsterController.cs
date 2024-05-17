@@ -160,6 +160,8 @@ public class MonsterController : CreatureController
 
 		base.Init(_cellXPos, _cellYPos);
 
+		SetPosition(_cellXPos, _cellYPos);
+
 		MonsterData monsterData = DataManager.Inst.FindMonsterData(gameObject.name);
 		SetMonsterData(monsterData);
 
@@ -169,7 +171,6 @@ public class MonsterController : CreatureController
 		Idx = monsterData.idx;
 
 		ChangeState(new MonsterIdleState());
-		SetPosition(_cellXPos, _cellYPos);
 
 		GameObject monsterUI = ResourceManager.Inst.Instantiate("Creature/UI/MonsterUI", gameObject.transform);
 
@@ -194,6 +195,8 @@ public class MonsterController : CreatureController
 		m_locationInfoObj = Util.FindChild(monsterUI, true, "LocationInfo");
 		m_locationInfoRect = m_locationInfoObj.transform.GetChild(0).gameObject.GetComponent<RectTransform>();
 		m_locationInfoText = m_locationInfoObj.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+
+		m_locationInfoText.text = $"{CellPos}, {DestPos}, dist : 0";
 
 		MapManager.Inst.SetMonsterCollision(_cellXPos, _cellYPos, HitboxWidth, HitboxHeight, true);
 
@@ -434,10 +437,6 @@ public class MonsterController : CreatureController
 
 	public override void SetPosition(int _cellXPos, int _cellYPos)
 	{
-		if (!(CurState is MonsterIdleState)) return;
-
-		//InGameConsole.Inst.Log($"SetPosition : {_cellXPos}, {_cellYPos}");
-
 		base.SetPosition(_cellXPos, _cellYPos);
 	}
 
