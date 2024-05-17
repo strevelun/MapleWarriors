@@ -89,7 +89,7 @@ public class GameManager
 		if (!IsTimerOn()) return;
 
 		Timer += _deltaTime;
-		//InGameConsole.Inst.Log($"Timer : {Timer}, {StartTime}");
+		InGameConsole.Inst.Log($"Timer : {Timer}, {StartTime}");
 	}
 
 	//public long GetCurTimer()

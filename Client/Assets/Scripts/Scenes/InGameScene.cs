@@ -34,6 +34,7 @@ public class InGameScene : BaseScene
 
 		GameManager.Inst.Init(this);
 
+		StartCoroutine(RoomOwnerLogic());
 	}
 
 	public override void Clear()
@@ -66,14 +67,7 @@ public class InGameScene : BaseScene
 		{
 			if (GameManager.Inst.IsTimerOn())
 			{
-				if (GameManager.Inst.CheckStartTimer()) return;
-
-				if (UserData.Inst.IsRoomOwner)
-				{
-					int timer = (int)(GameManager.Inst.Timer * 1000000);
-					Packet pkt = InGamePacketMaker.Start(timer, (int)(GameManager.Inst.StartTime * 1000000));
-					UDPCommunicator.Inst.SendAll(pkt);
-				}
+				GameManager.Inst.CheckStartTimer();	
 				return;
 			}
 
@@ -90,8 +84,8 @@ public class InGameScene : BaseScene
 				bool start = GameManager.Inst.StartGame();
 				if(start)
 				{
-					int timer = (int)(GameManager.Inst.Timer * 1000000); // 0.000123 -> 123
-					int startTime = timer + 5 * 1000000; // 5000000+123 = 5000123
+					int timer = (int)(GameManager.Inst.Timer * 1000000); 
+					int startTime = timer + 2 * 1000000; 
 					Packet pkt = InGamePacketMaker.Start(timer, startTime);
 					UDPCommunicator.Inst.SendAll(pkt);
 					GameManager.Inst.StartTime = startTime / 1000000f;
@@ -121,29 +115,50 @@ public class InGameScene : BaseScene
 			{
 				OnAnnihilated();
 			}
-
-			if(GameManager.Inst.AllClear)
-			{
-				Packet pkt = InGamePacketMaker.MapClear();
-				UDPCommunicator.Inst.SendAll(pkt);
-			}
-			else if(GameManager.Inst.StageClear)
-			{
-				Packet pkt = InGamePacketMaker.StageClear();
-				UDPCommunicator.Inst.SendAll(pkt);
-			}
-			else if(GameManager.Inst.GameOver)
-			{
-				InGameConsole.Inst.Log("Annihilated º¸³¿");
-				Packet pkt = InGamePacketMaker.Annihilated();
-				UDPCommunicator.Inst.SendAll(pkt);
-			}
 		}
 	}
 
 	protected override void OnApplicationQuit()
 	{
 		base.OnApplicationQuit();
+	}
+
+	IEnumerator RoomOwnerLogic()
+	{
+		while(true)
+		{
+			if (!UserData.Inst.IsRoomOwner)
+			{
+				yield return null;
+				continue;
+			}
+
+			if (GameManager.Inst.AllClear)
+			{
+				Packet pkt = InGamePacketMaker.MapClear();
+				UDPCommunicator.Inst.SendAll(pkt);
+			}
+			else if (GameManager.Inst.StageClear)
+			{
+				Packet pkt = InGamePacketMaker.StageClear();
+				UDPCommunicator.Inst.SendAll(pkt);
+			}
+			else if (GameManager.Inst.GameOver)
+			{
+				InGameConsole.Inst.Log("Annihilated º¸³¿");
+				Packet pkt = InGamePacketMaker.Annihilated();
+				UDPCommunicator.Inst.SendAll(pkt);
+			}
+
+			if (GameManager.Inst.IsTimerOn())
+			{
+				int timer = (int)(GameManager.Inst.Timer * 1000000);
+				Packet pkt = InGamePacketMaker.Start(timer, (int)(GameManager.Inst.StartTime * 1000000));
+				UDPCommunicator.Inst.SendAll(pkt);
+			}
+
+			yield return new WaitForSeconds(0.1f);
+		}
 	}
 
 	IEnumerator UpdateMonstersInfo()
