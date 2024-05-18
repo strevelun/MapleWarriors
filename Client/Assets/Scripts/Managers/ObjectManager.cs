@@ -15,18 +15,17 @@ public class ObjectManager
 		}
 	}
 
-	Dictionary<int, PlayerController> m_dicPlayerObj = new Dictionary<int, PlayerController>();
-	Dictionary<string, MonsterController> m_dicMonsterObj = new Dictionary<string, MonsterController>();
+	private readonly Dictionary<int, PlayerController> m_dicPlayerObj = new Dictionary<int, PlayerController>();
+	private readonly Dictionary<string, MonsterController> m_dicMonsterObj = new Dictionary<string, MonsterController>();
 
 	public IReadOnlyDictionary<int, PlayerController> Players => m_dicPlayerObj;
 	public IReadOnlyDictionary<string, MonsterController> Monsters => m_dicMonsterObj;
 
-	int m_monsterNum = 0;
+	private int m_monsterNum = 0;
 
 	public void AddPlayer(int _keyIdx, GameObject _obj)
 	{
 		PlayerController pc = _obj.GetComponent<PlayerController>();
-		//if (!pc) pc = _obj.AddComponent<PlayerController>();
 
 		m_dicPlayerObj.Add(_keyIdx, pc);
 	}
@@ -42,7 +41,7 @@ public class ObjectManager
 
 	public PlayerController FindPlayer(int _idx)
 	{
-		PlayerController pc = null;
+		PlayerController pc;
 		m_dicPlayerObj.TryGetValue(_idx, out pc);
 
 		return pc;
@@ -50,7 +49,7 @@ public class ObjectManager
 
 	public MonsterController FindMonster(int _idx, int _num)
 	{
-		MonsterController mc = null;
+		MonsterController mc;
 		m_dicMonsterObj.TryGetValue($"{_idx}_{_num}", out mc);
 
 		return mc;
@@ -74,6 +73,3 @@ public class ObjectManager
 		m_monsterNum = 0;
 	}
 }
-
-//gethostname
-//gethostbyname

@@ -5,17 +5,6 @@ using UnityEngine;
 
 public class Util
 {
-    public static GameObject Find(string _name)
-    {
-        GameObject go = GameObject.Find(_name);
-        if(!go)
-        {
-            Debug.Log("게임오브젝트 " + _name + "을 찾을 수 없음");
-            return null;
-        }
-        return go;
-	}
-
     public static GameObject FindChild(GameObject _parent, bool _recursive, string _name = null)
     {
         Transform child = FindChild<Transform>(_parent, _recursive, _name);
@@ -24,7 +13,7 @@ public class Util
         return child.gameObject;
     }
 
-    public static T FindChild<T>(GameObject _parent, bool _recursive = false, string _name = null) where T : UnityEngine.Object
+    public static T FindChild<T>(GameObject _parent, bool _recursive = false, string _name = null) where T : Component
     {
         if (_parent == null) return null;
 
@@ -49,14 +38,6 @@ public class Util
         }
         return null;
     }
-
-    public static GameObject[] FindChildren(GameObject _parent, bool _recursive = false, string _name = null)
-	{
-		Transform child = FindChild<Transform>(_parent, _recursive, _name);
-		if (child == null) return null;
-
-		return child.GetComponentsInChildren<GameObject>();
-	}
 
 	public static GameObject[] FindChildren(GameObject _parent)
 	{

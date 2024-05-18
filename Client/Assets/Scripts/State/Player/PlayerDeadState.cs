@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PlayerDeadState : ICreatureState
 {
-	PlayerController m_pc = null;
-	MyPlayerController m_mpc = null;
-	AnimatorStateInfo m_stateInfo;
+	private PlayerController m_pc = null;
+	private MyPlayerController m_mpc = null;
+	private AnimatorStateInfo m_stateInfo;
 
 	public bool CanEnter(CreatureController _cs)
 	{
@@ -27,8 +27,6 @@ public class PlayerDeadState : ICreatureState
 			m_pc = _cs as PlayerController;
 			m_pc.Anim.SetBool("Dead", true);
 		}
-
-		//InGameConsole.Inst.Log("PlayerDeadState");
 	}
 
 	public void Update()
@@ -50,7 +48,7 @@ public class PlayerDeadState : ICreatureState
 		}
 	}
 
-	void UpdateAnimation()
+	private void UpdateAnimation()
 	{
 		if(m_mpc) m_stateInfo = m_mpc.Anim.GetCurrentAnimatorStateInfo(0);
 		else if(m_pc) m_stateInfo = m_pc.Anim.GetCurrentAnimatorStateInfo(0);

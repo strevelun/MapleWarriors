@@ -11,9 +11,9 @@ public class DataManager : MonoBehaviour
 	private static DataManager s_inst = null;
 	public static DataManager Inst { get { return s_inst; } }
 
-	Dictionary<string, MonsterData> m_monsterData = new Dictionary<string, MonsterData>();
-	Dictionary<string, SkillData> m_skillData = new Dictionary<string, SkillData>();
-	Dictionary<byte, MapData> m_mapData = new Dictionary<byte, MapData>();
+	private readonly Dictionary<string, MonsterData> m_monsterData = new Dictionary<string, MonsterData>();
+	private readonly Dictionary<string, SkillData> m_skillData = new Dictionary<string, SkillData>();
+	private readonly Dictionary<byte, MapData> m_mapData = new Dictionary<byte, MapData>();
 
 	private void Awake()
 	{
@@ -55,7 +55,7 @@ public class DataManager : MonoBehaviour
 		return list;
 	}
 
-	void LoadAllData()
+	private void LoadAllData()
 	{
 		LoadMonsterData();
 		LoadSkillData();

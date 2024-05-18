@@ -13,15 +13,17 @@ public class UIChat : MonoBehaviour
 	private Scrollbar				m_scrollbar;
 	private UIButton				m_btn;
 	private GameObject				m_content;
-	string							m_curSceneType;
-	string							m_uiChat;
-	string							m_uiChatItemPath;
+	private string					m_curSceneType;
+	private string					m_uiChat;
+	private string					m_uiChatItemPath;
 
 	private const int m_chatLimit = 300;
 
 	public uint ChatCount { get; set; } = 0;
 
-	public void Init(Func<string, Packet> _sendBtnFunc, Define.eUIChat _uiChat)
+	private Coroutine m_scrollbarCoroutine = null;
+
+	public void Init(Func<string, Packet> _sendBtnFunc, Define.UIChatEnum _uiChat)
 	{
 		m_sendBtnFunc = _sendBtnFunc;
 		m_curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
@@ -32,56 +34,31 @@ public class UIChat : MonoBehaviour
 		m_input.onEndEdit.AddListener(OnEndEdit);
 
 		m_scrollbar = Util.FindChild<Scrollbar>(gameObject, true);
-		m_scrollbar.onValueChanged.AddListener(OnScrollbarValueChanged);
 
 		GameObject obj = Util.FindChild(gameObject, true, "SendBtn");
 		m_btn = obj.GetComponent<UIButton>();
 		m_btn.Init(() => OnSendButtonClicked());
 
 		m_content = Util.FindChild(gameObject, true, "Content");
-
-		
-		
 	}
 
-	void Start()
-    {
-    }
-
-    void Update()
+	private void Update()
 	{ 
 		if (m_chatLimit < ChatCount)
 		{
 			--ChatCount;
 		}
-
 	}
 
-	private void OnScrollbarValueChanged(float value)
+	private IEnumerator SetScrollbarDownCoroutine()
 	{
-		//Debug.Log("호출!! : " + value + ", " + m_scrollbar.value);
-
-		//if (value <= 0f) m_bReading = false;
-		//else if(value > 0f && !m_bReading) m_bReading = true;
-	}
-
-	public void SetScrollbarDown()
-	{
-		//Debug.Log(m_bReading);
-		//if (m_bReading) return;
-
-		//Debug.Log("스크롤바 : " + m_scrollbar.value);
-
-	}
-
-	IEnumerator SetScrollbarDownCoroutine()
-	{
-		//Canvas.ForceUpdateCanvases(); 
+		yield return null;
 		yield return null;
 		m_scrollbar.value = 0f;
+		m_scrollbarCoroutine = null;
 	}
 
-	void OnSendButtonClicked()
+	private void OnSendButtonClicked()
 	{
 		if (string.IsNullOrWhiteSpace(m_input.text))			return;
 		if (m_sendBtnFunc == null)								return;
@@ -91,8 +68,6 @@ public class UIChat : MonoBehaviour
 		m_input.text = string.Empty;
 		m_input.Select();
 		m_input.ActivateInputField();
-
-		//++m_inputEnterCount;
 	}
 
 	private void OnEndEdit(string _text)
@@ -127,6 +102,7 @@ public class UIChat : MonoBehaviour
 			tmp.text = "[" + _nickname + "] : " + _text;
 			t.SetAsLastSibling();
 		}
-		StartCoroutine(SetScrollbarDownCoroutine());
+		if(m_scrollbarCoroutine == null)
+			m_scrollbarCoroutine = StartCoroutine(SetScrollbarDownCoroutine());
 	}
 }

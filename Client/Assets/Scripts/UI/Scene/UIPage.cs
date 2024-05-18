@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UIPage : MonoBehaviour
 {
-	private List<GameObject> m_listContentItem = new List<GameObject>();
+	private readonly List<GameObject> m_listContentItem = new List<GameObject>();
 
 	public int ActiveItemCount { get; set; } = 0;
 
@@ -21,8 +21,7 @@ public class UIPage : MonoBehaviour
 	public byte MaxPage { get; private set; }	
 	public byte MaxItemInPage { get; private set; }	
 
-	// SceneType¿∏∑Œ
-	public void Init(byte _maxPage, byte _maxItemInPage, string _itemPath, Define.eUI _eItem, string _parentOfItemName)
+	public void Init(byte _maxPage, byte _maxItemInPage, string _itemPath, Define.UIEnum _eItem, string _parentOfItemName)
 	{
 		MaxPage = _maxPage;
 		MaxItemInPage = _maxItemInPage;

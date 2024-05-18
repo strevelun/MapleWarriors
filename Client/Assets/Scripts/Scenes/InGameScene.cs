@@ -6,25 +6,23 @@ using UnityEngine;
 public class InGameScene : BaseScene
 {
 	[SerializeField]
-	GameObject m_allClear, m_clear, m_wasted;
-	long m_delayedTime;
+	private GameObject m_allClear, m_clear, m_wasted;
 
 	protected override void Init()
 	{
 		base.Init();
 
 		Screen.SetResolution(1280, 720, false);
-		SceneType = Define.eScene.InGame;
+		SceneType = Define.SceneEnum.InGame;
 
-		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.eScene.InGame);
+		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.SceneEnum.InGame);
 		uiScene.AddUI("SkillPanel"); // room에서도 똑같이
 		GameObject ingameConsole = uiScene.AddUI("Ingame_Console");
 		GameObject connections = uiScene.AddUI("Connections");
-		UIManager.Inst.AddUI(Define.eUI.Connections, connections);
+		UIManager.Inst.AddUI(Define.UIEnum.Connections, connections);
 
 		InGameConsole.Inst.Init(ingameConsole);
 
-		m_delayedTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 		Packet pkt = InGamePacketMaker.ReqInitInfo();
 		NetworkManager.Inst.Send(pkt);
 		IsLoading = false;
@@ -40,7 +38,6 @@ public class InGameScene : BaseScene
 	public override void Clear()
 	{
 		base.Clear();
-		//MapManager.Inst.Destroy();
 		SetAllClearImageVisible(false);
 		SetClearImageVisible(false);
 		SetWastedImageVisible(false);
@@ -50,17 +47,13 @@ public class InGameScene : BaseScene
 		UDPCommunicator.Inst.ClearIngameInfo();
 	}
 
-	void Start()
+	private void Start()
 	{
 		Init();
-
-		//InvokeRepeating("SendAwake", 0f, 0.5f);
 	}
 
-	void Update()
+	private void Update()
 	{
-		//InGameConsole.Inst.Log($"{GameManager.Inst.GameStart}, {GameManager.Inst.StageLoading}, {GameManager.Inst.AllClear}, {GameManager.Inst.PlayerAliveCnt}");
-
 		GameManager.Inst.UpdateTimer(Time.deltaTime);
 
 		if (!GameManager.Inst.GameStart && !GameManager.Inst.StageLoading && !GameManager.Inst.AllClear && GameManager.Inst.PlayerAliveCnt != 0)
@@ -76,11 +69,9 @@ public class InGameScene : BaseScene
 
 				Packet pkt = InGamePacketMaker.Ready();
 				UDPCommunicator.Inst.Send(pkt, UserData.Inst.RoomOwnerSlot);
-				//InGameConsole.Inst.Log($"{UserData.Inst.RoomOwnerSlot}에게 ready 보냄");
 			}
 			else
 			{
-
 				bool start = GameManager.Inst.StartGame();
 				if(start)
 				{
@@ -92,8 +83,6 @@ public class InGameScene : BaseScene
 					StartCoroutine(UpdateMonstersInfo());
 				}
 			}
-
-
 			return;
 		}
 
@@ -123,7 +112,7 @@ public class InGameScene : BaseScene
 		base.OnApplicationQuit();
 	}
 
-	IEnumerator RoomOwnerLogic()
+	private IEnumerator RoomOwnerLogic()
 	{
 		while(true)
 		{
@@ -157,11 +146,17 @@ public class InGameScene : BaseScene
 				UDPCommunicator.Inst.SendAll(pkt);
 			}
 
+			if(GameManager.Inst.PlayersOnPortal)
+			{
+				Packet pkt = InGamePacketMaker.NextStage();
+				UDPCommunicator.Inst.SendAll(pkt);
+			}
+
 			yield return new WaitForSeconds(0.1f);
 		}
 	}
 
-	IEnumerator UpdateMonstersInfo()
+	private IEnumerator UpdateMonstersInfo()
 	{
 		while(true)
 		{
@@ -177,7 +172,7 @@ public class InGameScene : BaseScene
 		}
 	}
 
-	IEnumerator GameOverCoroutine()
+	private IEnumerator GameOverCoroutine()
 	{
 		m_wasted.SetActive(true);
 		yield return new WaitForSeconds(3f);
@@ -188,7 +183,7 @@ public class InGameScene : BaseScene
 		}
 	}
 
-	IEnumerator GameAllClearCoroutine()
+	private IEnumerator GameAllClearCoroutine()
 	{
 		m_allClear.SetActive(true);
 		yield return new WaitForSeconds(3f);
@@ -221,7 +216,6 @@ public class InGameScene : BaseScene
 		if (!GameManager.Inst.GameStart) return;
 
 		StartCoroutine(GameAllClearCoroutine());
-		//GameManager.Inst.GameStart = false;
 		GameManager.Inst.AllClear = true;
 		InGameConsole.Inst.Log($"OnMapClear : {MapManager.Inst.CurStage} / {MapManager.Inst.MaxStage}, PlayerCnt : {GameManager.Inst.PlayerCnt}, PlayerAliveCnt : {GameManager.Inst.PlayerAliveCnt}, MonsterCnt : {GameManager.Inst.MonsterCnt}, allClear : {GameManager.Inst.AllClear}");
 	}
@@ -246,11 +240,5 @@ public class InGameScene : BaseScene
 		GameManager.Inst.GameOver = true;
 
 		InGameConsole.Inst.Log($"OnAnnihilated : {MapManager.Inst.CurStage} / {MapManager.Inst.MaxStage}, PlayerCnt : {GameManager.Inst.PlayerCnt}, PlayerAliveCnt : {GameManager.Inst.PlayerAliveCnt}, MonsterCnt : {GameManager.Inst.MonsterCnt}, allClear : {GameManager.Inst.AllClear}");
-	}
-
-	void SendAwake()
-	{
-		Packet pkt = InGamePacketMaker.AwakePacket();
-		UDPCommunicator.Inst.SendAll(pkt);
 	}
 }

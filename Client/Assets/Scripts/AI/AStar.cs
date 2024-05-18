@@ -7,18 +7,16 @@ using System.Linq;
 
 public class AStar 
 {
-	const int DirLen = 8;
+	private const int DirLen = 8;
 
-	Vector2Int[] m_dir = new Vector2Int[DirLen];
-	int[] m_cost = { 10, 14, 10, 14, 10, 14, 10, 14 };
+	private readonly Vector2Int[] m_dir = new Vector2Int[DirLen];
+	private readonly int[] m_cost = { 10, 14, 10, 14, 10, 14, 10, 14 };
 
-	int[,] m_best;
-	bool[,] m_visited;
-	Dictionary<Vector2Int, Vector2Int> m_dicParent = new Dictionary<Vector2Int, Vector2Int>();
+	private int[,] m_best;
+	private bool[,] m_visited;
+	private readonly Dictionary<Vector2Int, Vector2Int> m_dicParent = new Dictionary<Vector2Int, Vector2Int>();
 
-	PriorityQueue<Node> m_pq = new PriorityQueue<Node>(true);
-
-
+	private readonly PriorityQueue<Node> m_pq = new PriorityQueue<Node>(true);
 
 	public AStar()
 	{
@@ -43,7 +41,6 @@ public class AStar
 
 		List<Vector2Int> path = new List<Vector2Int>();
 
-
 		if (XSize <= 0 || YSize <= 0) return null;
 
 		MapManager.Inst.SetMonsterCollision(_startCellPos.x, _startCellPos.y, _hitboxWidth, _hitboxHeight, false);
@@ -64,7 +61,7 @@ public class AStar
 		m_best[_startCellPos.y, _startCellPos.x] = g + h; 
 		m_dicParent[_startCellPos] = _startCellPos;
 
-		Node node = null;
+		Node node;
 		Node finalNode = null; 
 
 		while (m_pq.Count() > 0)
@@ -123,8 +120,6 @@ public class AStar
 
 		MapManager.Inst.SetMonsterCollision(_startCellPos.x, _startCellPos.y, _hitboxWidth, _hitboxHeight, true);
 
-		//Debug.Log($"크기 : {m_dicParent.Count}");
-
 		Vector2Int finalPosDist = finalNode.CurPos - _destCellPos;
 		if (Math.Abs(finalPosDist.x) >= _attackCellRange && Math.Abs(finalPosDist.y) >= _attackCellRange) return null;
 
@@ -144,7 +139,6 @@ public class AStar
 			path.Add(_startCellPos); 
 			path.Reverse();
 		}
-
 
 		return path;
 	}

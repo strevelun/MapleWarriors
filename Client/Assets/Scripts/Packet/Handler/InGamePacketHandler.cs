@@ -10,10 +10,7 @@ public static class InGamePacketHandler
 {
 	public static void ResInitInfo(PacketReader _reader)
 	{
-		// 몬스터 컨트롤러에서 타일맵 데이터에 접근할 수 있어야 함. (충돌 감지 및 경로 생성)
-		//long seed = _reader.GetInt64();
 		int mapID = _reader.GetByte();
-		//long milli = _reader.GetInt64();
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
 		GameObject camObj = GameObject.Find("CM vcam1");
@@ -25,7 +22,7 @@ public static class InGamePacketHandler
 		GameManager.Inst.SetPlayerCnt(numOfUsers);
 		GameManager.Inst.SetPlayerAliveCnt(numOfUsers);
 
-		GameObject connections = UIManager.Inst.FindUI(Define.eUI.Connections);
+		GameObject connections = UIManager.Inst.FindUI(Define.UIEnum.Connections);
 		TextMeshProUGUI tmp = connections.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 		tmp.text = string.Empty;
 
@@ -41,7 +38,7 @@ public static class InGamePacketHandler
 		GameManager.Inst.SetMonsterCnt(activeCnt);
 
 		List<int> idxList = new List<int>();
-		MyPlayerController mpc = null;
+		MyPlayerController mpc;
 
 		for (int i = 0; i < numOfUsers; ++i)
 		{
@@ -89,18 +86,12 @@ public static class InGamePacketHandler
 		InGameConsole.Inst.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
 		InGameConsole.Inst.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
 		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
-		//InGameConsole.Inst.Log($"GameStart : {GameManager.Inst.GameStart}");
-		//InGameConsole.Inst.Log($"GameOver : {GameManager.Inst.GameOver}");
 
 		GameManager.Inst.SetOtherPlayerSlot(idxList);
-		//GameManager.Inst.SetTimer(milli);
-		//GameManager.Inst.GameStart = true;
 	}
 
 	public static void BeginMove(PacketReader _reader)
 	{
-		//InGameConsole.Inst.Log("BeginMove");
-
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
@@ -112,7 +103,6 @@ public static class InGamePacketHandler
 
 	public static void Moving(PacketReader _reader)
 	{
-		//long time = _reader.GetInt64();
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
@@ -124,7 +114,6 @@ public static class InGamePacketHandler
 
 	public static void EndMove(PacketReader _reader)
 	{
-		//InGameConsole.Inst.Log("EndMove");
 		byte roomSlot = _reader.GetByte();
 		float xpos = _reader.GetInt32() / 1000000.0f;
 		float ypos = _reader.GetInt32() / 1000000.0f;
@@ -178,7 +167,7 @@ public static class InGamePacketHandler
 			UserData.Inst.IsRoomOwner = true;
 		}
 
-		if(nextRoomOwnerIdx < Define.RoomUserSlot)
+		if(nextRoomOwnerIdx < RoomUserSlot)
 			InGameConsole.Inst.Log($"방장이 바뀌었습니다 : {leftUserIdx} -> {nextRoomOwnerIdx}");
 
 		UserData.Inst.RoomOwnerSlot = nextRoomOwnerIdx;
@@ -200,7 +189,7 @@ public static class InGamePacketHandler
 	{
 		byte roomSlot = _reader.GetByte();
 		ushort count = _reader.GetUShort();
-		eSkill skill = (eSkill)_reader.GetByte();
+		SkillEnum skill = (SkillEnum)_reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		pc.CurSkill.SetSkill(skill);
@@ -224,7 +213,7 @@ public static class InGamePacketHandler
 		byte roomSlot = _reader.GetByte();
 		short mouseCellPosX = _reader.GetShort();
 		short mouseCellPosY = _reader.GetShort();
-		eSkill skill = (eSkill)_reader.GetByte();
+		SkillEnum skill = (SkillEnum)_reader.GetByte();
 
 		Debug.Log($"{roomSlot}이 공격함");
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
@@ -239,7 +228,7 @@ public static class InGamePacketHandler
 		ushort count = _reader.GetUShort();
 		short x = _reader.GetShort();
 		short y = _reader.GetShort();
-		eSkill skill = (eSkill)_reader.GetByte();
+		SkillEnum skill = (SkillEnum)_reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 		pc.CurSkill.SetSkill(skill);
@@ -271,30 +260,19 @@ public static class InGamePacketHandler
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
 
-		eSkill skill = (eSkill)_reader.GetByte();
+		SkillEnum skill = (SkillEnum)_reader.GetByte();
 		pc.CurSkill.SetSkill(skill);
 		pc.CurSkill.SetDist(new Vector2Int(mouseCellPosX, mouseCellPosY), pc.CellPos, pc.LastDir);
 		pc.Attack(roomSlot, x, y);
 	}
 
-	public static void GameOver(PacketReader _reader)
+	public static void GameOver()
 	{
 		InGameConsole.Inst.Log("GameOver");
 		ObjectManager.Inst.ClearPlayers();
 		ObjectManager.Inst.ClearMonsters();
 		MapManager.Inst.Destroy();
-		SceneManagerEx.Inst.LoadSceneWithFadeOut(eScene.Room);
-	}
-
-	//static int cnt = 0;
-
-	public static void Awake(PacketReader _reader)
-	{
-		int slot = _reader.GetByte();
-
-		//InGameConsole.Inst.Log($"Awake : {cnt++}");
-
-		GameManager.Inst.Awake(slot);
+		SceneManagerEx.Inst.LoadSceneWithFadeOut(SceneEnum.Room);
 	}
 
 	public static void AllCreaturesInfo(PacketReader _reader)
@@ -310,15 +288,11 @@ public static class InGamePacketHandler
 			mc = ObjectManager.Inst.FindMonster(idx, num);
 			ushort hp = _reader.GetUShort();
 			mc.Hit(hp);
-			//mc.SetPosition(cellXPos, cellYPos);
-
-			//InGameConsole.Inst.Log($"{idx}_{num} : HP[{hp}], IsDead[{mc.IsDead}]");
 		}
 
 		ushort playerCnt = _reader.GetUShort();
 		PlayerController pc;
 
-		//InGameConsole.Inst.Log($"playerCnt : {playerCnt}");
 		for (int i = 0; i < playerCnt; ++i)
 		{
 			idx = _reader.GetByte();
@@ -334,7 +308,6 @@ public static class InGamePacketHandler
 		int slot = _reader.GetByte();
 
 		GameManager.Inst.SetPlayerReady(slot);
-		//InGameConsole.Inst.Log($"READY");
 	}
 
 	public static void Start(PacketReader _reader)
@@ -344,27 +317,27 @@ public static class InGamePacketHandler
 
 		GameManager.Inst.StartTime = startTime / 1000000f;
 		GameManager.Inst.Timer = timer / 1000000f;
-		InGameConsole.Inst.Log($"Start");
 	}
 
-	public static void NextStage(PacketReader _reader)
+	public static void NextStage()
 	{
 		GameManager.Inst.OnChangeStage();
+		InGameConsole.Inst.Log("NextStage");
 	}
 
-	public static void MapClear(PacketReader _reader)
+	public static void MapClear()
 	{
 		InGameScene scene = SceneManagerEx.Inst.CurScene as InGameScene;
 		scene.OnMapClear();
 	}
 
-	public static void StageClear(PacketReader _reader)
+	public static void StageClear()
 	{
 		InGameScene scene = SceneManagerEx.Inst.CurScene as InGameScene;
 		scene.OnStageClear();
 	}
 
-	public static void Annihilated(PacketReader _reader)
+	public static void Annihilated()
 	{
 		InGameScene scene = SceneManagerEx.Inst.CurScene as InGameScene;
 		scene.OnAnnihilated();
@@ -384,7 +357,6 @@ public static class InGamePacketHandler
 		{
 			idx = _reader.GetByte();
 			hit = _reader.GetByte();
-			//InGameConsole.Inst.Log($"PlayerHitChange : {hit}");
 			if (hit == 1)
 			{
 				pc = ObjectManager.Inst.FindPlayer(idx);

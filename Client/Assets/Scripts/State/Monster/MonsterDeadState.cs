@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class MonsterDeadState : ICreatureState
 {
-	MonsterController m_mc;
-	//bool m_animStart = false;
-	AnimatorStateInfo m_stateInfo;
+	private MonsterController m_mc;
+	private AnimatorStateInfo m_stateInfo;
 
 	public bool CanEnter(CreatureController _cs)
 	{
@@ -38,11 +37,6 @@ public class MonsterDeadState : ICreatureState
 	{
 		m_stateInfo = m_mc.Anim.GetCurrentAnimatorStateInfo(0);
 
-		//if (!m_animStart && m_stateInfo.IsName("Dead"))
-		//	m_animStart = true;
-
-		//Debug.Log(m_stateInfo.normalizedTime);
-		//if (m_animStart &&
 		if(m_stateInfo.normalizedTime >= 1.0f)
 		{
 			m_mc.Die();

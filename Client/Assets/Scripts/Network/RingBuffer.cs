@@ -7,19 +7,14 @@ using UnityEngine;
 
 public class RingBuffer : MonoBehaviour
 {
-	//private static RingBuffer s_inst = null;
-	//public static RingBuffer Inst { get { return s_inst; } }
+	private readonly object m_lock = new object();
 
-	object m_lock = new object();
+	private readonly PacketReader m_reader = new PacketReader();
+	private readonly byte[] m_buffer = new byte[Define.BufferMax];
+	private int m_readPos = 0;
+	private int m_writePos = 0;
+	private int m_writtenBytes = 0;
 
-	PacketReader m_reader = new PacketReader();
-	byte[] m_buffer = new byte[Define.BufferMax];
-	int m_readPos = 0;
-	int m_writePos = 0;
-	int m_writtenBytes = 0;
-
-	//public byte[] ReadAddr { get { return m_bIsTempUsed ? m_tempBuffer : m_buffer.Skip(m_readPos).ToArray(); } }
-	//public byte[] WriteAddr { get { return m_buffer.Skip(m_writePos).ToArray(); } }
 	public ArraySegment<byte> BufferSegment
 	{
 		get
@@ -36,7 +31,7 @@ public class RingBuffer : MonoBehaviour
 		}
 	}
 
-	public int WritableSize // m_readPos를 가져오려고 하는데 BUFFERMAX를 넘어가서 
+	public int WritableSize 
 	{
 		get
 		{
@@ -74,7 +69,7 @@ public class RingBuffer : MonoBehaviour
 		DontDestroyOnLoad(this);
 	}
 
-	void Update()
+	private void Update()
 	{
 		while (IsBufferReadable())
 		{
@@ -121,15 +116,11 @@ public class RingBuffer : MonoBehaviour
 		return true;
 	}
 
-	public bool SetWriteSegment(out ArraySegment<byte> _seg)
+	public void SetWriteSegment(out ArraySegment<byte> _seg)
 	{
-		int writableSize;
-		
-		while((writableSize = WritableSize) == 0) { Debug.Log("WritableSize가 0"); }
+		int writableSize = WritableSize;
 
 		_seg = new ArraySegment<byte>(m_buffer, m_writePos, writableSize);
-
-		return true;
 	}
 
 	public void MoveReadPos(int _readBytes)

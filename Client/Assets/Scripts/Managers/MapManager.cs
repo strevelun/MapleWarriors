@@ -16,17 +16,17 @@ public class MapManager
 		} 
 	}
 
-	GameObject m_camObj;
+	private GameObject m_camObj;
 
-	MapData m_mapData = null;
-	int m_mapID;
+	private MapData m_mapData = null;
+	private int m_mapID;
 	public int MaxStage { get; private set; } = 0;
 	public int CurStage { get; private set; } = 0;
-	GameObject m_map = null;
+	private GameObject m_map = null;
 
 	public Grid CurMap { get; private set; }
-	Tilemap m_tmBase, m_tmCollision, m_tmAim, m_tmHitbox;
-	Tile m_aimTile, m_hitboxTile;
+	private Tilemap m_tmBase, m_tmCollision, m_tmAim, m_tmHitbox;
+	private Tile m_aimTile, m_hitboxTile;
 
 	public int MinX { get; private set; }
 	public int MaxX { get; private set; }
@@ -36,9 +36,9 @@ public class MapManager
 	public int XSize { get; private set; }
 	public int YSize { get; private set; }
 
-	bool[,] m_collisionMap;
-	bool[,] m_monsterCollision;
-	MonsterController[,] m_monsterMap;
+	private bool[,] m_collisionMap;
+	private bool[,] m_monsterCollision;
+	private MonsterController[,] m_monsterMap;
 
 	public GameObject Load(int _mapID, GameObject _camObj)
 	{
@@ -47,11 +47,10 @@ public class MapManager
 		m_mapID = _mapID;
 		m_camObj = _camObj;
 
-		string name = "Map_" + m_mapID;
+		string name;
 		m_mapData = DataManager.Inst.FindMapData((byte)m_mapID);
 		name = m_mapData.mapList[CurStage];
 		m_map = ResourceManager.Inst.Instantiate($"Map/{name}");
-		//go.name = "Map";
 		++CurStage;
 
 		MaxStage = m_mapData.mapList.Count;
@@ -61,7 +60,7 @@ public class MapManager
 		return m_map;
 	}
 
-	void TileInit()
+	private void TileInit()
 	{
 		m_tmBase = Util.FindChild<Tilemap>(m_map, true, "TM_Base");
 		m_tmBase.CompressBounds();
@@ -88,36 +87,26 @@ public class MapManager
 		m_hitboxTile.sprite = ResourceManager.Inst.LoadSprite("Etc/Hitbox");
 	}
 
-	void CreateCollisionMap(GameObject _prefabMap)
+	private void CreateCollisionMap(GameObject _prefabMap)
 	{
 		m_tmCollision = Util.FindChild<Tilemap>(_prefabMap, true, "TM_Collision");
 
 		m_collisionMap = new bool[YSize, XSize];
 		m_monsterCollision = new bool[YSize, XSize];
 		m_monsterMap = new MonsterController[YSize, XSize];
-		for (int i = 0; i < YSize; ++i)
-		{
-			for (int j = 0; j < XSize; ++j)
-			{
-				m_monsterMap[i, j] = new MonsterController();
-			}
-		}
 
 		for (int y = MinY, mapY = YSize-1; y < MaxY; ++y, --mapY)
 		{
 			for(int x = MinX, mapX = 0; x < MaxX; ++x, ++mapX)
 			{
 				TileBase t = m_tmCollision.GetTile(new Vector3Int(x, y, 0));
-				
 				m_collisionMap[mapY, mapX] = t ? true : false;
-				//Vector3 v = tmBase.CellToWorld(new Vector3Int(x, y, 0));
-				//Debug.Log(v);
 			}
 		}
 		m_tmCollision.gameObject.SetActive(false);
 	}
 
-	void CreateMapBound()
+	private void CreateMapBound()
 	{
 		CinemachineConfiner confiner = m_camObj.GetComponent<CinemachineConfiner>();
 		GameObject collider = ResourceManager.Inst.Instantiate("Map/MapBound");
@@ -181,7 +170,6 @@ public class MapManager
 				}
 			}
 		}
-
 		return false;
 	}
 
@@ -211,11 +199,8 @@ public class MapManager
 			for (int x = _mc.CellPos.x; x <= _mc.CellPos.x + hitboxWidth; ++x)
 			{
 				m_monsterMap[y, x] = _mc;
-				//m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), m_hitboxTile);
-				//Debug.Log($"AddMonster : {_mc.transform.position}, {x}, {y}");
 			}
 		}
-
 	}
 
 	public void RemoveMonster(int _cellXPos, int _cellYPos, int _hitboxWidth, int _hitboxHeight)
@@ -225,18 +210,13 @@ public class MapManager
 
 		int hitboxWidth = _hitboxWidth - 1;
 		int hitboxHeight = _hitboxHeight - 1;
-		// 3,6 3,7 3,8
-		// 5,6 5,7 5,8
 		for (int y = _cellYPos; y >= _cellYPos - hitboxHeight; --y)
 		{
 			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
 			{
 				if (m_monsterMap[y, x] != null)
 				{
-					MonsterController mc = m_monsterMap[y, x];
 					m_monsterMap[y, x] = null;
-					//m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), null);
-					//Debug.Log($"RemoveMonster : {mc.transform.position}, {x}, {y}, Remains : {m_monsterMap[y,x].Count}");
 				}
 			}
 		}
@@ -299,7 +279,6 @@ public class MapManager
 			for (int x = _cellXPos; x <= _cellXPos + hitboxWidth; ++x)
 			{
 				m_monsterCollision[y, x] = _flag;
-				//m_tmHitbox.SetTile(new Vector3Int(x, -y, 0), _flag ? m_hitboxTile : null);
 			}
 		}
 	}
@@ -324,8 +303,6 @@ public class MapManager
 
 	public void Destroy()
 	{
-		//Object.Destroy(CurMap.gameObject);
-		//Object.Destroy(m_map);
 		CurMap = null;
 		MinX = 0;
 		MaxX = 0;
@@ -337,10 +314,6 @@ public class MapManager
 		m_map = null;
 		CurStage = 0;
 		m_mapID = 0;
-		//m_tmBase = null;
-		//m_tmCollision = null;
-		//m_tmAim = null;
-		//m_tmHitbox = null;
 		MaxStage = 0;
 	}
 }

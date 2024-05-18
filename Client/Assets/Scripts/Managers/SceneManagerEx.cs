@@ -17,7 +17,7 @@ public class SceneManagerEx
 
 	public BaseScene CurScene { get; set; }
 
-	public void LoadScene(Define.eScene _type)
+	public void LoadScene(Define.SceneEnum _type)
     {
 		if(!CurScene.IsLoading)
 		{
@@ -27,15 +27,15 @@ public class SceneManagerEx
         SceneManager.LoadScene(GetSceneName(_type));
     }
 
-	public void LoadSceneWithFadeOut(Define.eScene _type)
+	public void LoadSceneWithFadeOut(Define.SceneEnum _type)
 	{
 		CurScene.IsLoading = true;
 		CurScene.Clear();
 		CurScene.StartFadeInOutCoroutine(() => LoadScene(_type));
 	}
 
-	private string GetSceneName(Define.eScene _type)
+	private string GetSceneName(Define.SceneEnum _type)
     {
-        return System.Enum.GetName(typeof(Define.eScene), _type);
+        return System.Enum.GetName(typeof(Define.SceneEnum), _type);
     }
 }

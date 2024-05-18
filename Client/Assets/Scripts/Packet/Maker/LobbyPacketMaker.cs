@@ -9,7 +9,7 @@ public static class LobbyPacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.Test);
+			.Add(PacketType.ClientPacketTypeEnum.Test);
 		return pkt;
 	}
 
@@ -17,7 +17,7 @@ public static class LobbyPacketMaker
 	{
 		Packet packet = new Packet();
 		packet
-			.Add(PacketType.eClient.LobbyChat)
+			.Add(PacketType.ClientPacketTypeEnum.LobbyChat)
 			.Add(_text);
 		return packet;
 	}
@@ -26,7 +26,7 @@ public static class LobbyPacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.LobbyUpdateInfo)
+			.Add(PacketType.ClientPacketTypeEnum.LobbyUpdateInfo)
 			.Add(_userListPage)
 			.Add(_roomListPage);
 		return pkt;
@@ -35,7 +35,7 @@ public static class LobbyPacketMaker
 	public static Packet UserListGetPageInfo(int _page)
 	{
 		Packet pkt = new Packet();
-		pkt.Add(PacketType.eClient.UserListGetPageInfo)
+		pkt.Add(PacketType.ClientPacketTypeEnum.UserListGetPageInfo)
 			.Add((byte)_page);
 		return pkt;
 	}
@@ -43,7 +43,7 @@ public static class LobbyPacketMaker
 	public static Packet RoomListGetPageInfo(int _page)
 	{
 		Packet pkt = new Packet();
-		pkt.Add(PacketType.eClient.RoomListGetPageInfo)
+		pkt.Add(PacketType.ClientPacketTypeEnum.RoomListGetPageInfo)
 			.Add((byte)_page);
 		return pkt;
 	}
@@ -51,7 +51,7 @@ public static class LobbyPacketMaker
 	public static Packet CreateRoom(string _title)
 	{
 		Packet pkt = new Packet();
-		pkt.Add(PacketType.eClient.CreateRoom)
+		pkt.Add(PacketType.ClientPacketTypeEnum.CreateRoom)
 			.Add(_title);
 		return pkt;
 	}
@@ -59,7 +59,7 @@ public static class LobbyPacketMaker
 	public static Packet EnterRoom(uint _id)
 	{
 		Packet pkt = new Packet();
-		pkt.Add(PacketType.eClient.EnterRoom)
+		pkt.Add(PacketType.ClientPacketTypeEnum.EnterRoom)
 			.Add(_id);
 		return pkt;
 	}

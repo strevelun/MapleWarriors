@@ -32,8 +32,6 @@ public class PacketReader
 
 	public void SetBuffer(RingBuffer _buffer, int _pos)
 	{
-		//m_buffer = _buffer.ReadAddr;
-		//m_getPos = (Define.PacketSize + m_buffer.Offset) % Define.BufferMax;
 		m_buffer = _buffer.BufferSegment;
 		m_getPos = (_pos + Define.PacketSize) % Define.BufferMax;
 		m_startOffset = _pos;
@@ -46,11 +44,11 @@ public class PacketReader
 		m_startOffset = _pos;
 	}
 
-	public PacketType.eServer GetPacketType(bool _moveGetPos = true)
+	public PacketType.ServerPacketTypeEnum GetPacketType(bool _moveGetPos = true)
 	{
 		int prevGetPos = 0;
 		if (!_moveGetPos) prevGetPos = m_getPos;
-		PacketType.eServer type = (PacketType.eServer)GetUShort();
+		PacketType.ServerPacketTypeEnum type = (PacketType.ServerPacketTypeEnum)GetUShort();
 		if(!_moveGetPos) m_getPos = prevGetPos;
 		return type;
 	}
@@ -188,8 +186,7 @@ public class PacketReader
 	}
 
 	public string GetString()
-	{
-		//m_errFlag = true;
+	{		
 		string result = "";
 
 		int i = m_getPos;
@@ -203,7 +200,6 @@ public class PacketReader
 			}
 			else
 			{
-				//result += ((char)m_buffer.Array[i]).ToString();
 				result += Encoding.Unicode.GetString(m_buffer.Array, i, sizeof(char));
 			}
 			i = (sizeof(char) + i) % Define.BufferMax;

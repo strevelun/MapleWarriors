@@ -17,14 +17,13 @@ public class GameManager
 		}
 	}
 
-	Vector3[] m_positions = new Vector3[] {
+	private readonly Vector3[] m_positions = new Vector3[] {
 	new Vector3(2, -1),
 	new Vector3(2, -3),
 	new Vector3(4, -1),
-	new Vector3(4, -3)
-};
+	new Vector3(4, -3) };
 
-	Dictionary<string, GameObject> m_playerObj = new Dictionary<string, GameObject>();
+	private readonly Dictionary<string, GameObject> m_playerObj = new Dictionary<string, GameObject>();
 
 	public bool GameStart { get; set; } = false;
 	public bool StageLoading { get; set; } = false;
@@ -34,16 +33,16 @@ public class GameManager
 	public bool AllClear { get; set; } = false;
 	public bool StageClear { get; set; } = false;
 	public bool GameOver { get; set; } = false;
+	public bool PlayersOnPortal { get; set; } = false;
 
 	public List<int> OtherPlayersSlot { get; private set; }
-	float[] m_observePlayersAwakeTimer = new float[Define.RoomUserSlot];
-	bool[] m_playerReady = null;
-	int m_playerReadyCnt = 0;
+	private bool[] m_playerReady = null;
+	private int m_playerReadyCnt = 0;
 
 	public float StartTime { get; set; }
 	public float Timer { get; set; }
 
-	InGameScene m_inGameScene;
+	private InGameScene m_inGameScene;
 
 	public void Init(InGameScene _inGameScene)
 	{
@@ -58,7 +57,6 @@ public class GameManager
 		if (PlayerCnt == 0) return true;
 		if (PlayerAliveCnt == 0) return true;
 
-		// 패배 UI 띄운 후 2초 후 대기실로 돌아감
 		return false;
 	}
 
@@ -73,8 +71,6 @@ public class GameManager
 	public void SetPlayerCnt(int _cnt) { PlayerCnt = _cnt; }
 	public void SetPlayerAliveCnt(int _cnt) { PlayerAliveCnt = _cnt; }
 	public void SetMonsterCnt(int _cnt) { MonsterCnt = _cnt; }
-	
-	public void AddPlayerAliveCnt() { ++PlayerAliveCnt; }
 
 	public void SetPlayerReady(int _slot)
 	{
@@ -84,6 +80,8 @@ public class GameManager
 		++m_playerReadyCnt;
 	}
 
+	public void AddPlayerAliveCnt() { ++PlayerAliveCnt; }
+
 	public void UpdateTimer(float _deltaTime)
 	{
 		if (!IsTimerOn()) return;
@@ -91,11 +89,6 @@ public class GameManager
 		Timer += _deltaTime;
 		InGameConsole.Inst.Log($"Timer : {Timer}, {StartTime}");
 	}
-
-	//public long GetCurTimer()
-	////{
-	//	return m_timer * 1000000;
-	//}
 
 	public bool IsTimerOn()
 	{
@@ -109,6 +102,7 @@ public class GameManager
 		
 		GameStart = true;
 		StartTime = 0;
+		PlayersOnPortal = false;
 		InGameConsole.Inst.Log("********** 게임 시작! *********");
 		return true;
 	}
@@ -122,8 +116,6 @@ public class GameManager
 		m_playerReadyCnt = 0;
 		return true;
 	}
-
-	//public void AddMonsterCnt() { ++MonsterCnt; }
 
 	public void SubPlayerCnt()
 	{
@@ -167,31 +159,10 @@ public class GameManager
 		m_playerObj.Remove(_playerObjName);
 	}
 
-	public void ObservePlayers()
-	{
-		if (PlayerCnt == 1) return;
-
-		foreach(int slot in OtherPlayersSlot)
-		{
-			m_observePlayersAwakeTimer[slot] += Time.deltaTime;
-			if (m_observePlayersAwakeTimer[slot] > Define.MaxExpelTime)
-			{
-				//Packet pkt = InGamePacketMaker.RequestExpel(slot);
-				//NetworkManager.Inst.Send(pkt);
-			}
-		}
-
-		// 5초 넘어가면 서버에 추방 요청 패킷 전송
-		
-	}
-
-	public void Awake(int _slot)
-	{ 
-		m_observePlayersAwakeTimer[_slot] = 0f;
-	}
-
 	public void OnChangeStage()
 	{
+		if (!GameStart) return;
+
 		m_inGameScene.SetClearImageVisible(false);
 		GameStart = false;
 		StageLoading = true;
@@ -235,5 +206,6 @@ public class GameManager
 		StageClear = false;
 		GameOver = false;
 		StageLoading = false;
+		PlayersOnPortal = false;
 	}
 }

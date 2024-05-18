@@ -5,32 +5,32 @@ using static Define;
 
 public class Skill
 {
-	SkillData m_skillData;
-	Vector2Int m_prevMouseCellPos = Vector2Int.zero;
-	Vector2Int m_dist;
-	Vector2Int m_mouseCellPos;
-	Vector2Int m_cellPos, m_lastCellPos;
-	eDir m_eDir;
-	public eSkill eCurSkill { get; private set; } = eSkill.Slash;
+	private SkillData m_skillData;
+	private Vector2Int m_prevMouseCellPos = Vector2Int.zero;
+	private Vector2Int m_dist;
+	private Vector2Int m_mouseCellPos;
+	private Vector2Int m_cellPos, m_lastCellPos = new Vector2Int(0,0);
+	private DirEnum m_eDir;
+	public SkillEnum CurSkill { get; private set; } = SkillEnum.Slash;
 
-	Queue<Vector2Int> m_aims = new Queue<Vector2Int>();
+	private readonly Queue<Vector2Int> m_aims = new Queue<Vector2Int>();
 
-	public Skill(eSkill _skill)
+	public Skill(SkillEnum _skill)
 	{
 		m_skillData = DataManager.Inst.FindSkillData(_skill.ToString());
 	}
 
-	public void SetSkill(eSkill _skill)
+	public void SetSkill(SkillEnum _skill)
 	{
-		eCurSkill = _skill;
+		CurSkill = _skill;
 		RemoveAimTiles();
 
-		m_skillData = DataManager.Inst.FindSkillData(eCurSkill.ToString());
-		if (m_skillData.type == eSkillType.Melee && m_skillData.attackRadius >= 2) 
+		m_skillData = DataManager.Inst.FindSkillData(CurSkill.ToString());
+		if (m_skillData.type == SkillTypeEnum.Melee && m_skillData.attackRadius >= 2) 
 			m_skillData.attackRadius = 2;
 	}
 
-	public eSkillType GetSkillType()
+	public SkillTypeEnum GetSkillType()
 	{
 		return m_skillData.type;
 	}
@@ -63,23 +63,23 @@ public class Skill
 		return m_skillData.attack;
 	}
 
-	void FindHitTargets(List<MonsterController> _targets)
+	private void FindHitTargets(List<MonsterController> _targets)
 	{
 		int cnt = 0;
-		MonsterController mc = null;
+		MonsterController mc;
 		int r = m_skillData.attackRadius - 1;
 		HashSet<MonsterController> hsMonsters = new HashSet<MonsterController>();
 
 		switch (m_skillData.type)
 		{
-			case eSkillType.Melee:
+			case SkillTypeEnum.Melee:
 				{
-					if (m_eDir == eDir.None) break;
+					if (m_eDir == DirEnum.None) break;
 
 					int startX = 0, endX = 0, startY = 0, endY = 0;
-					int pnt = 0;
+					int pnt;
 
-					if (m_eDir == eDir.Left || m_eDir == eDir.UpLeft)
+					if (m_eDir == DirEnum.Left || m_eDir == DirEnum.UpLeft)
 					{
 						pnt = m_cellPos.y;
 						startX = m_mouseCellPos.x;
@@ -87,7 +87,7 @@ public class Skill
 						startY = pnt - (m_skillData.attackRadius - 1);
 						endY = pnt + (m_skillData.attackRadius - 1);
 					}
-					else if (m_eDir == eDir.Right || m_eDir == eDir.DownRight)
+					else if (m_eDir == DirEnum.Right || m_eDir == DirEnum.DownRight)
 					{
 						pnt = m_cellPos.y;
 						startX = m_cellPos.x;
@@ -95,7 +95,7 @@ public class Skill
 						startY = pnt - (m_skillData.attackRadius - 1);
 						endY = pnt + (m_skillData.attackRadius - 1);
 					}
-					else if (m_eDir == eDir.Up || m_eDir == eDir.UpRight)
+					else if (m_eDir == DirEnum.Up || m_eDir == DirEnum.UpRight)
 					{
 						pnt = m_cellPos.x;
 						startY = m_mouseCellPos.y;
@@ -103,7 +103,7 @@ public class Skill
 						startX = pnt - (m_skillData.attackRadius - 1);
 						endX = pnt + (m_skillData.attackRadius - 1);
 					}
-					else if (m_eDir == eDir.Down || m_eDir == eDir.DownLeft)
+					else if (m_eDir == DirEnum.Down || m_eDir == DirEnum.DownLeft)
 					{
 						pnt = m_cellPos.x;
 						startY = m_cellPos.y;
@@ -131,7 +131,7 @@ public class Skill
 					}
 				}
 				break;
-			case eSkillType.Ranged:
+			case SkillTypeEnum.Ranged:
 				{
 					for (int i = m_mouseCellPos.y - r; i <= m_mouseCellPos.y + r; ++i)
 					{
@@ -152,12 +152,12 @@ public class Skill
 					}
 				}
 				break;
-			case eSkillType.Auto:
+			case SkillTypeEnum.Auto:
 				break;
 		}
 	}
 
-	public void SetDist(Vector2Int _mouseCellPos, Vector2Int _cellPos, Define.eDir _eDir)
+	public void SetDist(Vector2Int _mouseCellPos, Vector2Int _cellPos, Define.DirEnum _eDir)
 	{
 		m_eDir = _eDir;
 		m_cellPos = _cellPos;
@@ -165,8 +165,7 @@ public class Skill
 		m_mouseCellPos = _mouseCellPos;
 	}
 
-
-	public void Update(Vector2Int _cellPos, Define.eDir _eDir)
+	public void Update(Vector2Int _cellPos, Define.DirEnum _eDir)
 	{
 		Vector2 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
 		mousePos.y = -mousePos.y + 1.0f;
@@ -193,16 +192,16 @@ public class Skill
 		}
 	}
 
-	bool CheckAttackRange(int _distX, int _distY)
+	private bool CheckAttackRange(int _distX, int _distY)
 	{
-		if (GetSkillType() == eSkillType.Melee)
+		if (GetSkillType() == SkillTypeEnum.Melee)
 		{
-			if ((m_eDir == eDir.Left || m_eDir == eDir.UpLeft) && -m_skillData.attackCellRange <= _distX && _distX <= 0) return true;
-			if ((m_eDir == eDir.Right || m_eDir == eDir.DownRight) && 0 <= _distX && _distX <= m_skillData.attackCellRange) return true;
-			if ((m_eDir == eDir.Up || m_eDir == eDir.UpRight) && -m_skillData.attackCellRange <= _distY && _distY <= 0) return true;
-			if ((m_eDir == eDir.Down || m_eDir == eDir.DownLeft) && 0 <= _distY && _distY <= m_skillData.attackCellRange) return true;
+			if ((m_eDir == DirEnum.Left || m_eDir == DirEnum.UpLeft) && -m_skillData.attackCellRange <= _distX && _distX <= 0) return true;
+			if ((m_eDir == DirEnum.Right || m_eDir == DirEnum.DownRight) && 0 <= _distX && _distX <= m_skillData.attackCellRange) return true;
+			if ((m_eDir == DirEnum.Up || m_eDir == DirEnum.UpRight) && -m_skillData.attackCellRange <= _distY && _distY <= 0) return true;
+			if ((m_eDir == DirEnum.Down || m_eDir == DirEnum.DownLeft) && 0 <= _distY && _distY <= m_skillData.attackCellRange) return true;
 		}
-		else if (GetSkillType() == eSkillType.Ranged)
+		else if (GetSkillType() == SkillTypeEnum.Ranged)
 		{
 			if ((-m_skillData.attackCellRange <= _distX && _distX <= m_skillData.attackCellRange)
 				&& (-m_skillData.attackCellRange <= _distY && _distY <= m_skillData.attackCellRange)) return true;
@@ -214,7 +213,7 @@ public class Skill
 	{
 		switch(m_skillData.type)
 		{
-			case eSkillType.Melee:
+			case SkillTypeEnum.Melee:
 				{
 					while (m_aims.Count > 0)
 					{
@@ -224,7 +223,7 @@ public class Skill
 					}
 				}
 				break;
-			case eSkillType.Ranged:
+			case SkillTypeEnum.Ranged:
 				{
 					while (m_aims.Count > 0)
 					{
@@ -234,26 +233,25 @@ public class Skill
 					}
 				}
 				break;
-			case eSkillType.Auto:
+			case SkillTypeEnum.Auto:
 				break;
 		}
-		
 	}
 
-	void SetAimTiles()
+	private void SetAimTiles()
 	{
 		switch (m_skillData.type)
 		{
-			case eSkillType.Melee:
+			case SkillTypeEnum.Melee:
 				{
 					// FindDir();
 
-					if (m_eDir == eDir.None) break;
+					if (m_eDir == DirEnum.None) break;
 
-					int startX = 0, endX = 0, startY = 0, endY = 0;
-					int pnt = 0;
+					int startX, endX, startY, endY;
+					int pnt;
 
-					if (m_eDir == eDir.Left || m_eDir == eDir.UpLeft)
+					if (m_eDir == DirEnum.Left || m_eDir == DirEnum.UpLeft)
 					{
 						pnt = m_cellPos.y;
 						startX = m_cellPos.x;
@@ -273,7 +271,7 @@ public class Skill
 							}
 						}
 					}
-					else if(m_eDir == eDir.Right || m_eDir == eDir.DownRight)
+					else if(m_eDir == DirEnum.Right || m_eDir == DirEnum.DownRight)
 					{
 						pnt = m_cellPos.y;
 						startX = m_cellPos.x;
@@ -293,7 +291,7 @@ public class Skill
 							}
 						}
 					}
-					else if (m_eDir == eDir.Up || m_eDir == eDir.UpRight)
+					else if (m_eDir == DirEnum.Up || m_eDir == DirEnum.UpRight)
 					{
 						pnt = m_cellPos.x;
 						startY = m_cellPos.y;
@@ -313,7 +311,7 @@ public class Skill
 							}
 						}
 					}
-					else if (m_eDir == eDir.Down || m_eDir == eDir.DownLeft)
+					else if (m_eDir == DirEnum.Down || m_eDir == DirEnum.DownLeft)
 					{
 						pnt = m_cellPos.x;
 						startY = m_cellPos.y;
@@ -335,7 +333,7 @@ public class Skill
 					}
 				}
 				break;
-			case eSkillType.Ranged:
+			case SkillTypeEnum.Ranged:
 				{
 					int r = m_skillData.attackRadius - 1;
 					for (int i = m_mouseCellPos.y - r; i <= m_mouseCellPos.y + r; ++i)
@@ -346,27 +344,8 @@ public class Skill
 						}
 				}
 				break;
-			case eSkillType.Auto:
+			case SkillTypeEnum.Auto:
 				break;
 		}
-	}
-
-	void FindDir()
-	{
-		eDir dir;
-
-		if (m_dist.x <= -1 && -1 <= m_dist.y && m_dist.y <= 1) dir = eDir.Left;
-		else if (m_dist.x >= 1 && -1 <= m_dist.y && m_dist.y <= 1) dir = eDir.Right;
-		else if (m_dist.y <= -1 && -1 <= m_dist.x && m_dist.x <= 1) dir = eDir.Up;
-		else if (m_dist.y >= 1 && -1 <= m_dist.x && m_dist.x <= 1) dir = eDir.Down;
-		else dir = eDir.None;
-
-		if(dir != m_eDir)
-		{
-			//m_eLastDir = m_eDir;
-			m_eDir = dir;
-		}
-
-		//Debug.Log(m_eDir);
 	}
 }

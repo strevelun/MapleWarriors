@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MonsterIdleState : ICreatureState
 {
-	MonsterController m_mc = null;
+	private MonsterController m_mc = null;
 
 	public bool CanEnter(CreatureController _cs)
 	{
@@ -18,8 +18,6 @@ public class MonsterIdleState : ICreatureState
 	public void Enter(CreatureController _cs)
 	{
 		m_mc = _cs as MonsterController;
-		//if (m_mc.Dir != CreatureController.eDir.None)
-		//	m_mc.Dir = CreatureController.eDir.None;
 	}
 
 	public void Update()

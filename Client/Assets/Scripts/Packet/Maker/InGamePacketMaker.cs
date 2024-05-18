@@ -15,7 +15,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.ReqInitInfo);
+			.Add(PacketType.ClientPacketTypeEnum.ReqInitInfo);
 		return pkt;
 	}
 
@@ -23,7 +23,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.BeginMove) // Client로 바로 보냄
+			.Add(PacketType.ServerPacketTypeEnum.BeginMove)
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecStartPos.x * 1000000))
 			.Add((int)(_vecStartPos.y * 1000000))
@@ -36,8 +36,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.Moving)
-			//.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+			.Add(PacketType.ServerPacketTypeEnum.Moving)
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecStartPos.x * 1000000))
 			.Add((int)(_vecStartPos.y * 1000000))
@@ -49,19 +48,18 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.EndMove)
+			.Add(PacketType.ServerPacketTypeEnum.EndMove)
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecEndPos.x * 1000000)) // 소수점 6자리 정밀도
 			.Add((int)(_vecEndPos.y * 1000000));
 		return pkt;
 	}
 
-	// 패킷을 받은 후에 몬스터 AttackState로 전환
 	public static Packet MonsterAttack(List<PlayerController> _finalTargets, int _monsterIdx, int _monsterNum)
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.MonsterAttack)
+			.Add(PacketType.ServerPacketTypeEnum.MonsterAttack)
 			.Add((byte)_finalTargets.Count);
 
 		foreach(PlayerController pc in _finalTargets)
@@ -78,7 +76,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.BeginMoveMonster)
+			.Add(PacketType.ServerPacketTypeEnum.BeginMoveMonster)
 			.Add((byte)_monsterIdx)
 			.Add((byte)_monsterNum)
 			.Add((ushort)_cellXPos)
@@ -86,11 +84,11 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet Attack(byte _who, List<MonsterController> _targets, eSkill _skill) // 매개변수 : Attack 번호
+	public static Packet Attack(byte _who, List<MonsterController> _targets, SkillEnum _skill) // 매개변수 : Attack 번호
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.Attack)
+			.Add(PacketType.ServerPacketTypeEnum.Attack)
 			.Add((byte)_who)
 			.Add((ushort)_targets.Count)
 			.Add((byte)_skill);
@@ -106,11 +104,11 @@ public static class InGamePacketMaker
 		return pkt;
 	}	
 
-	public static Packet AttackReq(Vector2Int _mouseCellPos, eSkill _skill) // 매개변수 : Attack 번호
+	public static Packet AttackReq(Vector2Int _mouseCellPos, SkillEnum _skill) // 매개변수 : Attack 번호
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.AttackReq)
+			.Add(PacketType.ServerPacketTypeEnum.AttackReq)
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((short)_mouseCellPos.x)
 			.Add((short)_mouseCellPos.y)
@@ -119,11 +117,11 @@ public static class InGamePacketMaker
 		return pkt;
 	}	
 	
-	public static Packet RangedAttack(byte _who, List<MonsterController> _targets, eSkill _skill, Vector2Int _where) // 매개변수 : Attack 번호
+	public static Packet RangedAttack(byte _who, List<MonsterController> _targets, SkillEnum _skill, Vector2Int _where) // 매개변수 : Attack 번호
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.RangedAttack)
+			.Add(PacketType.ServerPacketTypeEnum.RangedAttack)
 			.Add(_who)
 			.Add((ushort)_targets.Count)
 			.Add((short)_where.x) // 음수
@@ -141,11 +139,11 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 	
-	public static Packet RangedAttackReq(Vector2Int _mouseCellPos, eSkill _skill, Vector2Int _where)
+	public static Packet RangedAttackReq(Vector2Int _mouseCellPos, SkillEnum _skill, Vector2Int _where)
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.RangedAttackReq)
+			.Add(PacketType.ServerPacketTypeEnum.RangedAttackReq)
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((short)_mouseCellPos.x)
 			.Add((short)_mouseCellPos.y)
@@ -160,16 +158,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.GameOver);
-		return pkt;
-	}
-
-	public static Packet AwakePacket()
-	{
-		Packet pkt = new Packet();
-		pkt
-			.Add(PacketType.eServer.Awake)
-			.Add((byte)UserData.Inst.MyRoomSlot);
+			.Add(PacketType.ClientPacketTypeEnum.GameOver);
 		return pkt;
 	}
 
@@ -177,13 +166,11 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.AllCreaturesInfo)
+			.Add(PacketType.ServerPacketTypeEnum.AllCreaturesInfo)
 			.Add((ushort)ObjectManager.Inst.Monsters.Count);
 
 		foreach (MonsterController info in ObjectManager.Inst.Monsters.Values)
 		{
-			//if (info.IsDead) continue;
-
 			pkt
 				.Add((byte)info.Idx)
 				.Add((byte)info.Num)
@@ -206,7 +193,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.Ready)
+			.Add(PacketType.ServerPacketTypeEnum.Ready)
 			.Add((byte)UserData.Inst.MyRoomSlot);
 		return pkt;
 	}
@@ -215,7 +202,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.Start)
+			.Add(PacketType.ServerPacketTypeEnum.Start)
 			.Add(_startTime)
 			.Add(_curTime);
 		return pkt;
@@ -225,7 +212,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.NextStage);
+			.Add(PacketType.ServerPacketTypeEnum.NextStage);
 		return pkt;
 	}
 
@@ -233,7 +220,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.MapClear);
+			.Add(PacketType.ServerPacketTypeEnum.MapClear);
 		return pkt;
 	}
 
@@ -241,7 +228,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.StageClear);
+			.Add(PacketType.ServerPacketTypeEnum.StageClear);
 		return pkt;
 	}
 
@@ -249,7 +236,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.Annihilated);
+			.Add(PacketType.ServerPacketTypeEnum.Annihilated);
 		return pkt;
 	}
 
@@ -257,7 +244,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eServer.PlayerHit)
+			.Add(PacketType.ServerPacketTypeEnum.PlayerHit)
 			.Add((byte)_targets.Count)
 			.Add((byte)_mc.Idx)
 			.Add((byte)_mc.Num);
@@ -267,7 +254,6 @@ public static class InGamePacketMaker
 		{
 			pkt.Add((byte)pc.Idx);
 			pkt.Add((byte)(_targetHit[idx++] ? 1 : 0));
-			//InGameConsole.Inst.Log($"PlayerHit 보냄 : {_targetHit[idx - 1]}");
 		}
 		
 		return pkt;

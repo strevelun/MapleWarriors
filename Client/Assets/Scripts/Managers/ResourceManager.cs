@@ -12,7 +12,7 @@ public class ResourceManager
         } 
     }
 
-    T Load<T>(string _path) where T : Object
+	private T Load<T>(string _path) where T : Object
     {
         return Resources.Load<T>(_path);
     }

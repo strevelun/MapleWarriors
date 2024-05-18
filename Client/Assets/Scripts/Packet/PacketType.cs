@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PacketType
 {
-	public enum eServer : ushort
+	public enum ServerPacketTypeEnum : ushort
 	{
 		None = 0,
 		Test,
@@ -45,7 +45,6 @@ public class PacketType
 		RangedAttack,
 		RangedAttackReq,
 		GameOver,
-		Awake,
 		AllCreaturesInfo,
 		Ready,
 		Start,
@@ -57,7 +56,7 @@ public class PacketType
 		Max,
 	}
 
-	public enum eClient : ushort
+	public enum ClientPacketTypeEnum : ushort
 	{
 		None = 0,
 		Test,

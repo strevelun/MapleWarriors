@@ -9,14 +9,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using static Define;
 
-// 1. 플레이어 발견하면 경로 생성
-// 2. 경로의 첫번째 도착지점을 자신 포함 모두에게 보냄
-// 3. 패킷 받은 정보를 토대로 한 칸 씩 이동
-
-
 public class MonsterController : CreatureController
 {
-	enum eState
+	private enum StateEnum
 	{
 		None,
 		Chase,
@@ -24,108 +19,62 @@ public class MonsterController : CreatureController
 		Attack
 	}
 
-	bool[] m_playerEnter = new bool[4];
+	[SerializeField]
+	private Vector2 m_hpBarUIOffset;
+	private readonly Vector2 m_locationInfoUIOffset = new Vector2(0.5f, -0.6f);
 
 	public int Num { get; set; }
-
 	public bool AttackReady { get; set; } = true;
 	public int VisionCellRange { get; set; }
-
-	AStar m_astar = new AStar();
-
-	List<Vector2Int> m_path = null;
-	List<PlayerController> m_targets = new List<PlayerController>();
-	PlayerController m_target = null;
-
-	Vector2Int m_prevTargetPos = new Vector2Int(-1,-1);
-	bool m_targetMoved = false;
-	//eState m_eState = eState.None;
+	public bool TargetHit { get; set; } = false;
+	public bool FlyingAttack { get; private set; } = false;
+	public bool RangedAttack { get; private set; } = false;
+	public bool AttackEffect { get; private set; } = false;
 	public int PathIdx { get; set; } = 0;
 	public Vector2Int DestPos { get; set; } = new Vector2Int(0, 0);
 	public bool CellArrived { get; private set; } = true;
 	public int MaxHitPlayer { get; private set; }
 
+	private readonly bool[] m_playerEnter = new bool[4];
 
+	private readonly AStar m_astar = new AStar();
 
-	GameObject m_hpbarObj;
-	Slider m_hpBarSlider;
-	RectTransform m_sliderRect;
+	private List<Vector2Int> m_path = null;
+	private readonly List<PlayerController> m_targets = new List<PlayerController>();
+	private PlayerController m_target = null;
 
-	TextMeshProUGUI m_hpbarText;
+	private Vector2Int m_prevTargetPos = new Vector2Int(-1,-1);
+	private bool m_targetMoved = false;
 
-	// 3칸이면 1.5
-	// 2칸이면 1
-	[SerializeField]
-	Vector2 m_hpBarUIOffset;
-	[SerializeField]
-	Vector2 m_locationInfoUIOffset = new Vector2(0.5f, -0.6f);
+	private GameObject m_hpbarObj;
+	private Slider m_hpBarSlider;
+	private RectTransform m_sliderRect;
 
-	GameObject m_locationInfoObj;
-	RectTransform m_locationInfoRect;
-	TextMeshProUGUI m_locationInfoText;
+	private TextMeshProUGUI m_hpbarText;
 
-	bool m_beginMove = false;
-	Vector2Int m_destReserved = new Vector2Int(0, 0);
+	private GameObject m_locationInfoObj;
+	private RectTransform m_locationInfoRect;
+	private TextMeshProUGUI m_locationInfoText;
 
-	List<GameObject> m_flyingAttackObjList = new List<GameObject>();
-	List<Animator> m_flyingAttackObjAnimList = new List<Animator>();
-	public bool TargetHit { get; set; } = false;
-	public bool FlyingAttack { get; private set; } = false;
+	private bool m_beginMove = false;
+	private Vector2Int m_destReserved = new Vector2Int(0, 0);
 
-	//GameObject m_horizontalSplashAttack = null;
-	//Vector2 m_hsaLeftPos = new Vector2(-2.5f, 0.5f);
-	//Vector2 m_hsaRightPos = new Vector2(3.5f, 0.5f);
+	private List<GameObject> m_flyingAttackObjList;
+	private readonly List<Animator> m_flyingAttackObjAnimList = new List<Animator>();
 
-	List<GameObject> m_rangedAttackObjList = new List<GameObject>();
-	List<Animator> m_rangedAttackObjAnimList = new List<Animator>();
-	public bool RangedAttack { get; private set; } = false;
+	private List<GameObject> m_rangedAttackObjList = null;
+	private readonly List<Animator> m_rangedAttackObjAnimList = new List<Animator>();
 
 	public GameObject AttackObj { get; private set; } = null;
-	public bool AttackEffect { get; private set; } = false;
 
-	void Start()
+	private void Start()
 	{
-		
 		Init((int)transform.position.x, (int)transform.position.y);
-
-		GameObject attack = Util.FindChild(gameObject, true, "FlyingAttack");
-		if (attack)
-		{
-			m_flyingAttackObjList = new List<GameObject>(Util.FindChildren(attack));
-			foreach(GameObject obj in m_flyingAttackObjList)
-			{
-				m_flyingAttackObjAnimList.Add(obj.GetComponent<Animator>());
-			}
-			FlyingAttack = true;
-		}
-
-		attack = Util.FindChild(gameObject, true, "RangedAttack");
-		if (attack)
-		{
-			m_rangedAttackObjList = new List<GameObject>(Util.FindChildren(attack));
-
-			foreach(GameObject obj in m_rangedAttackObjList)
-			{
-				m_rangedAttackObjAnimList.Add(obj.GetComponent<Animator>());
-			}
-
-			RangedAttack = true;
-		}
-
-		attack = Util.FindChild(gameObject, true, "Attack");
-		if (attack)
-		{
-			AttackObj = attack;
-			AttackObj.SetActive(false);
-			AttackEffect = true;
-		}
 	}
 
 	protected override void Update()
 	{
 		base.Update();
-
-	
 
 		if (UserData.Inst.IsRoomOwner)
 		{
@@ -133,25 +82,17 @@ public class MonsterController : CreatureController
 			CheckTargetPosChanged();
 			BeginSearch();
 		}
-		
 
 		m_sliderRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_hpBarUIOffset);
 		m_locationInfoRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_locationInfoUIOffset);
-
-		//if(m_dest.Count != 0)
-		//	Debug.Log($"{CellPos} -> {m_dest.Peek()}");
 	}
-
 
 	protected override void FixedUpdate()
 	{
 		base.FixedUpdate();
 
-
 		BeginMove();
 		UpdateMonsterMove();
-
-
 	}
 
 	public override void Init(int _cellXPos, int _cellYPos)
@@ -203,7 +144,7 @@ public class MonsterController : CreatureController
 		DestPos = CellPos;
 
 		CircleCollider2D collider = GetComponent<CircleCollider2D>();
-		if (collider == null) collider = gameObject.AddComponent<CircleCollider2D>();
+		if (!collider) collider = gameObject.AddComponent<CircleCollider2D>();
 
 		collider.offset = new Vector2(0.5f, 0.5f);
 		collider.radius = VisionCellRange;
@@ -215,6 +156,38 @@ public class MonsterController : CreatureController
 		m_hpBarUIOffset = new Vector2(HitboxWidth / 2f, -0.3f);
 
 		StartCoroutine(ReadyForAttack());
+
+		GameObject attack = Util.FindChild(gameObject, true, "FlyingAttack");
+		if (attack)
+		{
+			m_flyingAttackObjList = new List<GameObject>(Util.FindChildren(attack));
+			foreach (GameObject obj in m_flyingAttackObjList)
+			{
+				m_flyingAttackObjAnimList.Add(obj.GetComponent<Animator>());
+			}
+			FlyingAttack = true;
+		}
+
+		attack = Util.FindChild(gameObject, true, "RangedAttack");
+		if (attack)
+		{
+			m_rangedAttackObjList = new List<GameObject>(Util.FindChildren(attack));
+
+			foreach (GameObject obj in m_rangedAttackObjList)
+			{
+				m_rangedAttackObjAnimList.Add(obj.GetComponent<Animator>());
+			}
+
+			RangedAttack = true;
+		}
+
+		attack = Util.FindChild(gameObject, true, "Attack");
+		if (attack)
+		{
+			AttackObj = attack;
+			AttackObj.SetActive(false);
+			AttackEffect = true;
+		}
 	}
 
 	public void SetMonsterData(MonsterData _data)
@@ -235,23 +208,22 @@ public class MonsterController : CreatureController
 	{
 		if (CurState is MonsterIdleState)
 		{
-			if (Dir != eDir.None)
+			if (Dir != DirEnum.None)
 				ChangeState(new MonsterRunState());
 			return;
 		}
 		if (CurState is MonsterRunState)
 		{
-			if (Dir == eDir.None)
+			if (Dir == DirEnum.None)
 				ChangeState(new MonsterIdleState());
 			return;
 		}
 	}
 
-	void PeekTarget()
+	private void PeekTarget()
 	{
 		if (m_targets.Count == 0)
 		{
-			//ByteDir = 0;
 			m_target = null;
 			return;
 		}
@@ -272,7 +244,7 @@ public class MonsterController : CreatureController
 		m_target = m_targets[distIdx];
 	}
 
-	void CheckTargetPosChanged()
+	private void CheckTargetPosChanged()
 	{
 		if (m_targets.Count == 0) return;
 		
@@ -283,7 +255,7 @@ public class MonsterController : CreatureController
 		}
 	}
 
-	void BeginSearch()
+	private void BeginSearch()
 	{
 		if (m_targets.Count == 0) return;
 		if (!m_targetMoved) return;
@@ -326,9 +298,6 @@ public class MonsterController : CreatureController
 
 		MapManager.Inst.SetMonsterCollision(m_path[PathIdx].x, m_path[PathIdx].y, HitboxWidth, HitboxHeight, true);
 
-		//Debug.Log($"SetMonsterCollision : {m_path[PathIdx].x}, {m_path[PathIdx].y}에 찜!");
-		//Debug.Log($"Search : {m_path[PathIdx]}");
-
 		Packet pkt = InGamePacketMaker.BeginMoveMonster(Idx, Num, m_path[PathIdx].x, m_path[PathIdx].y);
 		UDPCommunicator.Inst.SendAll(pkt);
 		ReserveBeginMove(m_path[PathIdx].x, m_path[PathIdx].y);
@@ -336,7 +305,7 @@ public class MonsterController : CreatureController
 		m_targetMoved = false;
 	}
 
-	void UpdateMonsterMove()
+	private void UpdateMonsterMove()
 	{
 		if (CellArrived) return;
 
@@ -347,24 +316,18 @@ public class MonsterController : CreatureController
 		MapManager.Inst.RemoveMonster(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
 		MapManager.Inst.AddMonster(this);
 
-		if (dist > MaxSpeed * Time.fixedDeltaTime)
-		{
-			//if(dist > 1.5f)
-				//Debug.Log($"dist : {dist}, DestPos : {DestPos}");
-			return;
-		}
+		if (dist > MaxSpeed * Time.fixedDeltaTime) return;
 
-		//Debug.Log($"{DestPos}로 바뀜");
 		transform.position = new Vector3(DestPos.x, -DestPos.y);
 		ByteDir = 0;
 		CellArrived = true;
 
 		Vector2 dir = CellPos - new Vector2(DestPos.x, DestPos.y);
 
-		if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
-		if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
-		if (dir.y <= -1) ByteDir |= (byte)eDir.Down;
-		if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
+		if (dir.x <= -1) ByteDir |= (byte)DirEnum.Right;
+		if (dir.x >= 1) ByteDir |= (byte)DirEnum.Left;
+		if (dir.y <= -1) ByteDir |= (byte)DirEnum.Down;
+		if (dir.y >= 1) ByteDir |= (byte)DirEnum.Up;
 
 		if (UserData.Inst.IsRoomOwner)
 		{
@@ -404,36 +367,24 @@ public class MonsterController : CreatureController
 		transform.position = new Vector3(DestPos.x, -DestPos.y);
 		ByteDir = 0;
 		CellArrived = true;
-		//Debug.Log($"ReserveBeginMove : {DestPos}. {m_destReserved}");
 		m_beginMove = true;
 	}
 
-	void BeginMove()
+	private void BeginMove()
 	{
 		if (!m_beginMove) return;
-
-		//Debug.Log($"BeginMove : {CellPos}, {m_destReserved}, {DestPos}");
 		
 		Vector2 dir = CellPos - m_destReserved;
 
-		if (dir.x <= -1) ByteDir |= (byte)eDir.Right;
-		if (dir.x >= 1) ByteDir |= (byte)eDir.Left;
-		if (dir.y <= -1) ByteDir |= (byte)eDir.Down;
-		if (dir.y >= 1) ByteDir |= (byte)eDir.Up;
+		if (dir.x <= -1) ByteDir |= (byte)DirEnum.Right;
+		if (dir.x >= 1) ByteDir |= (byte)DirEnum.Left;
+		if (dir.y <= -1) ByteDir |= (byte)DirEnum.Down;
+		if (dir.y >= 1) ByteDir |= (byte)DirEnum.Up;
 
 		CellArrived = false;
 		DestPos = m_destReserved;
 		m_beginMove = false;
 	}
-
-	/*
-	bool CanGo(Vector2Int _from, Vector2Int _to)
-	{
-		if (_from.x == _to.x && _from.y == _to.y) return false;
-		if (Math.Abs(_from.x - _to.x) <= 1 && Math.Abs(_from.y - _to.y) <= 1) return true;
-		return false;
-	}
-	*/
 
 	public override void SetPosition(int _cellXPos, int _cellYPos)
 	{
@@ -444,8 +395,6 @@ public class MonsterController : CreatureController
 	{
 		if (!gameObject.activeSelf) return;
 		if (HP <= 0) return;
-
-		//m_dest.Clear();
 
 		int damage = _skill.GetDamage();
 
@@ -514,9 +463,6 @@ public class MonsterController : CreatureController
 		if (!AttackReady) return;
 		if (m_targets.Count == 0) return;
 
-		// 음수면 오른쪽, 양수면 왼쪽 (나 - 상대)
-
-
 		Queue<PlayerController> targets = new Queue<PlayerController>(m_targets);
 		List<PlayerController> finalTargets = new List<PlayerController>();
 
@@ -543,16 +489,8 @@ public class MonsterController : CreatureController
 
 		Packet pkt = InGamePacketMaker.MonsterAttack(finalTargets, Idx, Num);
 		UDPCommunicator.Inst.SendAll(pkt);
-		/*
-		if (UserData.Inst.IsRoomOwner)
-		{
-			Packet pkt = InGamePacketMaker.PlayerHit(this, finalTargets);
-			UDPCommunicator.Inst.SendAll(pkt);
-		}
-		*/
+		
 		ChangeState(new MonsterAttackState(finalTargets));
-
-	
 	}
 
 	public override void Die()
@@ -562,7 +500,7 @@ public class MonsterController : CreatureController
 		gameObject.SetActive(false);
 		GameManager.Inst.SubMonsterCnt();
 
-		if(Dir == eDir.None)
+		if(Dir == DirEnum.None)
 			MapManager.Inst.SetMonsterCollision(CellPos.x, CellPos.y, HitboxWidth, HitboxHeight, false);
 		else
 			MapManager.Inst.SetMonsterCollision(DestPos.x, DestPos.y, HitboxWidth, HitboxHeight, false);
@@ -575,7 +513,7 @@ public class MonsterController : CreatureController
 		m_targets.Remove(_target);
 	}
 
-	IEnumerator ReadyForAttack()
+	private IEnumerator ReadyForAttack()
 	{
 		while (true)
 		{
@@ -607,7 +545,7 @@ public class MonsterController : CreatureController
 		if (RangedAttack) StartCoroutine(RangedAttackObjCoroutine(_targets));
 	}
 
-	IEnumerator RangedAttackObjCoroutine(List<PlayerController> _targets)
+	private IEnumerator RangedAttackObjCoroutine(List<PlayerController> _targets)
 	{
 		AnimatorStateInfo info = m_rangedAttackObjAnimList[0].GetCurrentAnimatorStateInfo(0);
 
@@ -629,7 +567,7 @@ public class MonsterController : CreatureController
 			obj.SetActive(false);
 	}
 
-	IEnumerator FlyingAttackObjCoroutine(List<PlayerController> _targets)
+	private IEnumerator FlyingAttackObjCoroutine(List<PlayerController> _targets)
 	{
 		Vector2 startPos = m_flyingAttackObjList[0].transform.position;
 		float elapsedTime = 0;
@@ -644,11 +582,8 @@ public class MonsterController : CreatureController
 		{
 			for (int i = 0; i < _targets.Count; ++i)
 			{
-				//Vector2 curPos = m_flyingAttackObjList[i].transform.position;
 				float totalDist = Vector3.Distance(startPos, new Vector2(_targets[i].transform.position.x + 0.5f, _targets[i].transform.position.y + 0.5f));
 				float curDist = totalDist * (elapsedTime / 0.5f);
-
-				Debug.Log($"{startPos}, {_targets[i].transform.position}, {curDist / totalDist}");
 
 				m_flyingAttackObjList[i].transform.position = Vector3.Lerp(startPos, new Vector2(_targets[i].transform.position.x + 0.5f, _targets[i].transform.position.y + 0.5f), curDist / totalDist);
 
@@ -656,12 +591,10 @@ public class MonsterController : CreatureController
 			}
 			yield return null;
 		}
-		Debug.Log("1초 지남");
 		yield return StartCoroutine(FlyingAttackObjAnimCoroutine(_targets.Count, startPos, _targets));
-
 	}
 
-	IEnumerator FlyingAttackObjAnimCoroutine(int _cnt, Vector2 _startPos, List<PlayerController> _targets)
+	private IEnumerator FlyingAttackObjAnimCoroutine(int _cnt, Vector2 _startPos, List<PlayerController> _targets)
 	{
 		AnimatorStateInfo info = m_flyingAttackObjAnimList[0].GetCurrentAnimatorStateInfo(0);
 
@@ -671,8 +604,6 @@ public class MonsterController : CreatureController
 			m_flyingAttackObjAnimList[i].Play("MonsterFlyingAttack");
 		}
 
-		//Debug.Log("코루틴 while 전");
-
 		TargetHit = true;
 
 		while (info.normalizedTime < 1.0f)
@@ -681,7 +612,6 @@ public class MonsterController : CreatureController
 			{
 				m_flyingAttackObjList[i].transform.position = new Vector2(_targets[i].transform.position.x + 0.5f, _targets[i].transform.position.y + 0.5f);
 			}
-			//Debug.Log(info.normalizedTime);
 			info = m_flyingAttackObjAnimList[0].GetCurrentAnimatorStateInfo(0);
 			yield return null;
 		}
@@ -690,14 +620,13 @@ public class MonsterController : CreatureController
 		{
 			m_flyingAttackObjList[i].transform.position = _startPos;
 			m_flyingAttackObjList[i].SetActive(false);
-			//Debug.Log($"{_startPos}로 리셋");
 		}
 	}
 
-	void OnTriggerEnter2D(Collider2D _other)
+	private void OnTriggerEnter2D(Collider2D _other)
 	{
 		if (!UserData.Inst.IsRoomOwner) return;
-		if (_other.gameObject.tag != "Player") return;
+		if (!_other.gameObject.CompareTag("Player")) return;
 
 		PlayerController pc = _other.gameObject.GetComponent<PlayerController>();
 		if (pc.IsDead) return;
@@ -706,10 +635,10 @@ public class MonsterController : CreatureController
 		m_targets.Add(pc);
 	}
 
-	void OnTriggerStay2D(Collider2D _other)
+	private void OnTriggerStay2D(Collider2D _other)
 	{
 		if (!UserData.Inst.IsRoomOwner) return;
-		if (_other.gameObject.tag != "Player") return;
+		if (!_other.gameObject.CompareTag("Player")) return;
 		
 		PlayerController pc = _other.gameObject.GetComponent<PlayerController>();
 		if (m_playerEnter[pc.Idx] == true && pc.IsDead)
@@ -725,13 +654,12 @@ public class MonsterController : CreatureController
 		m_targets.Add(pc);
 	}
 
-	// 몬스터가 셀과 셀 사이에 있을 때 플레이어가 exit하면 거기서 멈추게 하지 말것
-	void OnTriggerExit2D(Collider2D _other)
+	private void OnTriggerExit2D(Collider2D _other)
 	{
 		if (!UserData.Inst.IsRoomOwner) return;
-		if (_other.gameObject.tag != "Player") return;
+		if (!_other.gameObject.CompareTag("Player")) return;
 
-		foreach(PlayerController pc in m_targets)
+		foreach (PlayerController pc in m_targets)
 		{
 			if(pc.name == _other.gameObject.name)
 			{

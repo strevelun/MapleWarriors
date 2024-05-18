@@ -4,19 +4,7 @@ using UnityEngine;
 
 public class UIScene : MonoBehaviour
 {
-    Dictionary<string, GameObject> m_dicUI = new Dictionary<string, GameObject>();
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	private readonly Dictionary<string, GameObject> m_dicUI = new Dictionary<string, GameObject>();
 
     public GameObject AddUI(string _uiName)
     {
@@ -27,8 +15,7 @@ public class UIScene : MonoBehaviour
 
     public GameObject FindUI(string _uiName)
     {
-        GameObject ui = null;
-        m_dicUI.TryGetValue(_uiName, out ui);
-        return ui;
-    }
+		m_dicUI.TryGetValue(_uiName, out GameObject ui);
+		return ui;
+	}
 }

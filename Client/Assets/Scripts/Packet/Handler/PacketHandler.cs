@@ -6,177 +6,171 @@ public static class PacketHandler
 {
     public static void Handle(PacketReader _reader)
     {
-		Define.eScene eSceneType = SceneManagerEx.Inst.CurScene.SceneType;
-		PacketType.eServer type = _reader.GetPacketType();
+		Define.SceneEnum eSceneType = SceneManagerEx.Inst.CurScene.SceneType;
+		PacketType.ServerPacketTypeEnum type = _reader.GetPacketType();
 		
-		//if(eSceneType == Define.eScene.InGame) InGameConsole.Inst.Log(type.ToString());
-
-		if (eSceneType == Define.eScene.Login)
+		if (eSceneType == Define.SceneEnum.Login)
 		{
 			switch (type)
 			{
 		
-				case PacketType.eServer.LoginFailure_AlreadyLoggedIn:
+				case PacketType.ServerPacketTypeEnum.LoginFailure_AlreadyLoggedIn:
 					LoginPacketHandler.LoginFailure_AlreadyLoggedIn(_reader);
 					break;
-				case PacketType.eServer.LoginFailure_Full:
+				case PacketType.ServerPacketTypeEnum.LoginFailure_Full:
 					LoginPacketHandler.LoginFailure_Full(_reader);
 					break;
-				case PacketType.eServer.LoginSuccess:
+				case PacketType.ServerPacketTypeEnum.LoginSuccess:
 					LoginPacketHandler.LoginSuccess(_reader);
 					break;
 			}
 		}
-		else if (eSceneType == Define.eScene.Lobby)
+		else if (eSceneType == Define.SceneEnum.Lobby)
 		{
 			switch (type)
 			{
-				case PacketType.eServer.Test:
-					LobbyPacketHandler.Test(_reader);
+				case PacketType.ServerPacketTypeEnum.Test:
+					LobbyPacketHandler.Test();
 					break;
-				case PacketType.eServer.LobbyChat:
+				case PacketType.ServerPacketTypeEnum.LobbyChat:
 					LobbyPacketHandler.LobbyChat(_reader);
 					break;
-				case PacketType.eServer.LobbyUpdateInfo_UserList:
+				case PacketType.ServerPacketTypeEnum.LobbyUpdateInfo_UserList:
 					LobbyPacketHandler.LobbyUpdateInfo_UserList(_reader);
 					break;
-				case PacketType.eServer.LobbyUpdateInfo_RoomList:
+				case PacketType.ServerPacketTypeEnum.LobbyUpdateInfo_RoomList:
 					LobbyPacketHandler.LobbyUpdateInfo_RoomList(_reader);
 					break;
-				case PacketType.eServer.CreateRoom_Success:
-					LobbyPacketHandler.CreateRoom_Success(_reader);
+				case PacketType.ServerPacketTypeEnum.CreateRoom_Success:
+					LobbyPacketHandler.CreateRoom_Success();
 					break;
-				case PacketType.eServer.CreateRoom_Fail:
-					LobbyPacketHandler.CreateRoom_Fail(_reader);
+				case PacketType.ServerPacketTypeEnum.CreateRoom_Fail:
+					LobbyPacketHandler.CreateRoom_Fail();
 					break;
-				case PacketType.eServer.EnterRoom_Success:
-					LobbyPacketHandler.EnterRoom_Success(_reader);
+				case PacketType.ServerPacketTypeEnum.EnterRoom_Success:
+					LobbyPacketHandler.EnterRoom_Success();
 					break;
-				case PacketType.eServer.EnterRoom_Full:
-					LobbyPacketHandler.EnterRoom_Full(_reader);
+				case PacketType.ServerPacketTypeEnum.EnterRoom_Full:
+					LobbyPacketHandler.EnterRoom_Full();
 					break;
-				case PacketType.eServer.EnterRoom_InGame:
-					LobbyPacketHandler.EnterRoom_InGame(_reader);
+				case PacketType.ServerPacketTypeEnum.EnterRoom_InGame:
+					LobbyPacketHandler.EnterRoom_InGame();
 					break;
-				case PacketType.eServer.EnterRoom_NoRoom:
-					LobbyPacketHandler.EnterRoom_NoRoom(_reader);
+				case PacketType.ServerPacketTypeEnum.EnterRoom_NoRoom:
+					LobbyPacketHandler.EnterRoom_NoRoom();
 					break;
 			}
 		}
-		else if (eSceneType == Define.eScene.Room)
+		else if (eSceneType == Define.SceneEnum.Room)
 		{
 			switch (type)
 			{
-				case PacketType.eServer.RoomChat:
+				case PacketType.ServerPacketTypeEnum.RoomChat:
 					RoomPacketHandler.RoomChat(_reader);
 					break;
-				case PacketType.eServer.ExitRoom:
-					RoomPacketHandler.ExitRoom(_reader);
+				case PacketType.ServerPacketTypeEnum.ExitRoom:
+					RoomPacketHandler.ExitRoom();
 					break;
-				case PacketType.eServer.NotifyRoomUserExit:
+				case PacketType.ServerPacketTypeEnum.NotifyRoomUserExit:
 					RoomPacketHandler.NotifyRoomUserExit(_reader);
 					break;
-				case PacketType.eServer.NotifyRoomUserEnter:
+				case PacketType.ServerPacketTypeEnum.NotifyRoomUserEnter:
 					RoomPacketHandler.NotifyRoomUserEnter(_reader);
 					break;
-				case PacketType.eServer.RoomUsersInfo:
+				case PacketType.ServerPacketTypeEnum.RoomUsersInfo:
 					RoomPacketHandler.RoomUsersInfo(_reader);
 					break;
-				case PacketType.eServer.StartGame_Success:
-					RoomPacketHandler.StartGame_Success(_reader);
+				case PacketType.ServerPacketTypeEnum.StartGame_Success:
+					RoomPacketHandler.StartGame_Success();
 					break;
-				case PacketType.eServer.StartGame_Fail:
-					RoomPacketHandler.StartGame_Fail(_reader);
+				case PacketType.ServerPacketTypeEnum.StartGame_Fail:
+					RoomPacketHandler.StartGame_Fail();
 					break;
-				case PacketType.eServer.RoomReady:
+				case PacketType.ServerPacketTypeEnum.RoomReady:
 					RoomPacketHandler.RoomReady(_reader);
 					break;
-				case PacketType.eServer.RoomReady_Fail:
-					RoomPacketHandler.RoomReady_Fail(_reader);
+				case PacketType.ServerPacketTypeEnum.RoomReady_Fail:
+					RoomPacketHandler.RoomReady_Fail();
 					break;
-				case PacketType.eServer.RoomStandby:
+				case PacketType.ServerPacketTypeEnum.RoomStandby:
 					RoomPacketHandler.RoomStandby(_reader);
 					break;
-				case PacketType.eServer.RoomStandby_Fail:
-					RoomPacketHandler.RoomStandby_Fail(_reader);
+				case PacketType.ServerPacketTypeEnum.RoomStandby_Fail:
+					RoomPacketHandler.RoomStandby_Fail();
 					break;
-				case PacketType.eServer.RoomMapChoice:
+				case PacketType.ServerPacketTypeEnum.RoomMapChoice:
 					RoomPacketHandler.RoomMapChoice(_reader);
 					break;
-				case PacketType.eServer.RoomCharacterChoice:
+				case PacketType.ServerPacketTypeEnum.RoomCharacterChoice:
 					RoomPacketHandler.RoomCharacterChoice(_reader);
 					break;
 			}
 		}
-		else if (eSceneType == Define.eScene.InGame)
+		else if (eSceneType == Define.SceneEnum.InGame)
 		{
 			switch (type)
 			{
-				case PacketType.eServer.ResInitInfo:
+				case PacketType.ServerPacketTypeEnum.ResInitInfo:
 					InGamePacketHandler.ResInitInfo(_reader);
 					break;
-				case PacketType.eServer.BeginMove:
+				case PacketType.ServerPacketTypeEnum.BeginMove:
 					InGamePacketHandler.BeginMove(_reader);
 					break;
-				case PacketType.eServer.Moving:
+				case PacketType.ServerPacketTypeEnum.Moving:
 					InGamePacketHandler.Moving(_reader);
 					break;
-				case PacketType.eServer.EndMove:
+				case PacketType.ServerPacketTypeEnum.EndMove:
 					InGamePacketHandler.EndMove(_reader);
 					break;
-				case PacketType.eServer.MonsterAttack:
+				case PacketType.ServerPacketTypeEnum.MonsterAttack:
 					InGamePacketHandler.MonsterAttack(_reader);
 					break;
-				case PacketType.eServer.BeginMoveMonster:
+				case PacketType.ServerPacketTypeEnum.BeginMoveMonster:
 					InGamePacketHandler.BeginMoveMonster(_reader);
 					break;	
-				case PacketType.eServer.InGameExit:
+				case PacketType.ServerPacketTypeEnum.InGameExit:
 					InGamePacketHandler.InGameExit(_reader);
 					break;
-				case PacketType.eServer.Attack:
+				case PacketType.ServerPacketTypeEnum.Attack:
 					InGamePacketHandler.Attack(_reader);
 					break;	
-				case PacketType.eServer.AttackReq:
+				case PacketType.ServerPacketTypeEnum.AttackReq:
 					InGamePacketHandler.AttackReq(_reader);
 					break;	
-				case PacketType.eServer.RangedAttack:
+				case PacketType.ServerPacketTypeEnum.RangedAttack:
 					InGamePacketHandler.RangedAttack(_reader);
 					break;
-				case PacketType.eServer.RangedAttackReq:
+				case PacketType.ServerPacketTypeEnum.RangedAttackReq:
 					InGamePacketHandler.RangedAttackReq(_reader);
 					break;
-				case PacketType.eServer.GameOver:
-					InGamePacketHandler.GameOver(_reader);
+				case PacketType.ServerPacketTypeEnum.GameOver:
+					InGamePacketHandler.GameOver();
 					break;
-				case PacketType.eServer.Awake:
-					InGamePacketHandler.Awake(_reader);
-					break;
-				case PacketType.eServer.AllCreaturesInfo:
+				case PacketType.ServerPacketTypeEnum.AllCreaturesInfo:
 					InGamePacketHandler.AllCreaturesInfo(_reader);
 					break;
-				case PacketType.eServer.Ready:
+				case PacketType.ServerPacketTypeEnum.Ready:
 					InGamePacketHandler.Ready(_reader);
 					break;
-				case PacketType.eServer.Start:
+				case PacketType.ServerPacketTypeEnum.Start:
 					InGamePacketHandler.Start(_reader);
 					break;
-				case PacketType.eServer.NextStage:
-					InGamePacketHandler.NextStage(_reader);
+				case PacketType.ServerPacketTypeEnum.NextStage:
+					InGamePacketHandler.NextStage();
 					break;
-				case PacketType.eServer.MapClear:
-					InGamePacketHandler.MapClear(_reader);
+				case PacketType.ServerPacketTypeEnum.MapClear:
+					InGamePacketHandler.MapClear();
 					break;
-				case PacketType.eServer.StageClear:
-					InGamePacketHandler.StageClear(_reader);
+				case PacketType.ServerPacketTypeEnum.StageClear:
+					InGamePacketHandler.StageClear();
 					break;
-				case PacketType.eServer.Annihilated:
-					InGamePacketHandler.Annihilated(_reader);
+				case PacketType.ServerPacketTypeEnum.Annihilated:
+					InGamePacketHandler.Annihilated();
 					break;
-				case PacketType.eServer.PlayerHit:
+				case PacketType.ServerPacketTypeEnum.PlayerHit:
 					InGamePacketHandler.PlayerHit(_reader);
 					break;
 			}
 		}
 	}
-
 }

@@ -8,8 +8,8 @@ using UnityEngine.XR;
 
 public class Packet
 {
-    private byte[] m_buffer = new byte[Define.PacketBufferMax];
-    private int m_addPos = 2;
+    private readonly byte[] m_buffer = new byte[Define.PacketBufferMax];
+    private int m_addPos = Define.PacketSize;
 
 	public byte[] GetBuffer() { return m_buffer; }
 	public int Size
@@ -18,12 +18,11 @@ public class Packet
 		get { return m_addPos; }
 	}
 
-	public PacketType.eClient GetPacketType()
+	public PacketType.ClientPacketTypeEnum GetPacketType()
 	{
-		return (PacketType.eClient)m_buffer[2];
+		return (PacketType.ClientPacketTypeEnum)m_buffer[2];
 	}
 
-	//public Packet Add(bool _type) { return Add(GetBytes(_type)); }
 	public Packet Add(byte _type) { return Add(new byte[1] { _type }); }
 	//public Packet Add(char _type) { return Add(GetBytes(_type)); }
 	public Packet Add(short _type) { return Add(GetBytes(_type)); }
@@ -31,8 +30,8 @@ public class Packet
 	public Packet Add(int _type) { return Add(GetBytes(_type)); }
 	public Packet Add(uint _type) { return Add(GetBytes(_type)); }
 	public Packet Add(long _type) { return Add(GetBytes(_type)); }
-	public Packet Add(PacketType.eClient _type) { return Add(GetBytes(_type)); }
-	public Packet Add(PacketType.eServer _type) { return Add(GetBytes(_type)); }
+	public Packet Add(PacketType.ClientPacketTypeEnum _type) { return Add(GetBytes(_type)); }
+	public Packet Add(PacketType.ServerPacketTypeEnum _type) { return Add(GetBytes(_type)); }
 	public Packet Add(string _type) 
 	{
 		Packet p = Add(GetBytes(_type));
@@ -52,7 +51,6 @@ public class Packet
 		return this;
 	}
 
-	//private byte[] GetBytes(bool _type) { return BitConverter.GetBytes(_type); }
 	//private byte[] GetBytes(char _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(short _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(ushort _type) { return BitConverter.GetBytes(_type); }
@@ -60,6 +58,6 @@ public class Packet
 	private byte[] GetBytes(uint _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(long _type) { return BitConverter.GetBytes(_type); }
 	private byte[] GetBytes(string _type) { return Encoding.Unicode.GetBytes((string)(object)_type); }
-	private byte[] GetBytes(PacketType.eClient _type) { return BitConverter.GetBytes((ushort)_type); }
-	private byte[] GetBytes(PacketType.eServer _type) { return BitConverter.GetBytes((ushort)_type); }
+	private byte[] GetBytes(PacketType.ClientPacketTypeEnum _type) { return BitConverter.GetBytes((ushort)_type); }
+	private byte[] GetBytes(PacketType.ServerPacketTypeEnum _type) { return BitConverter.GetBytes((ushort)_type); }
 }

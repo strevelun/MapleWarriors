@@ -14,7 +14,7 @@ public class FrameCounter : MonoBehaviour
 		DontDestroyOnLoad(gameObject);
 	}
 
-	void Update()
+	private void Update()
 	{
 		m_deltaTime += (Time.unscaledDeltaTime - m_deltaTime) * 0.1f;
 	}

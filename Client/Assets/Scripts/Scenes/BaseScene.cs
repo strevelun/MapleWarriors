@@ -8,27 +8,12 @@ using UnityEngine.UI;
 public abstract class BaseScene : MonoBehaviour
 {
 	public bool IsLoading { get; set; } = false;
-	public Define.eScene SceneType { get; protected set; } = Define.eScene.None;
+	public Define.SceneEnum SceneType { get; protected set; } = Define.SceneEnum.None;
 
 	[SerializeField]
-	Image m_fadeInOut = null, m_loadingImage = null;
+	private Image m_fadeInOut = null, m_loadingImage = null;
 
 	protected float m_fadeInSecond = 0.5f, m_fadeOutSecond = 0.5f, m_loadingImageSecond = 1f;
-
-	void Start()
-	{
-		
-	}
-
-	void Update()
-	{
-
-	}
-
-	void OnDestroy()
-	{
-		
-	}
 
 	protected virtual void Init()
 	{
@@ -61,9 +46,7 @@ public abstract class BaseScene : MonoBehaviour
 	protected void StartFadeCoroutine()
 	{
 		if (m_loadingImage != null)
-		{
 			StartCoroutine(LoadingCoroutine());
-		}
 		else
 			StartCoroutine(FadeInCoroutine());
 	}
@@ -109,7 +92,6 @@ public abstract class BaseScene : MonoBehaviour
 			yield return null;
 		}
 		m_fadeInOut.color = new Color(0, 0, 0, 0);
-		//Debug.Log("FadeInOut");
 		InputManager.Inst.SetInputEnabled(true);
 		GameManager.Inst.StageLoading = false;
 	}

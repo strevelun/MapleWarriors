@@ -20,7 +20,7 @@ public class Define
 	public const int RoomTitleMaxCount = 15;
 	public const float MaxExpelTime = 5f;
 
-	public enum eScene
+	public enum SceneEnum
 	{
 		None,
 		Login,
@@ -29,14 +29,13 @@ public class Define
 		InGame
 	}
 
-	public enum eStage
+	public enum StageEnum
 	{
 		None,
 		Test,
-
 	}
 
-	public enum eUIPopup
+	public enum UIPopupEnum
 	{
 		UILoginFailPopup_WrongInput,
 		UILoginFailPopup_AlreadyLoggedIn,
@@ -53,13 +52,13 @@ public class Define
 		UIEnterRoomNopePopup,
 	}
 
-	public enum eUIChat
+	public enum UIChatEnum
 	{
 		UILobbyChat,
 		UIRoomChat,
 	}
 
-	public enum eUI
+	public enum UIEnum
 	{
 		UILobby_RoomList,
 		UILobby_RoomList_Block,
@@ -79,39 +78,39 @@ public class Define
 		#endregion
 	}
 
-	public enum eUIBtn
+	public enum UIBtnEnum
 	{
 		MapChoiceBtn,
 	}
 
-	public enum eRoomUserState
+	public enum RoomUserStateEnum
 	{
 		None,
 		Ready,
 		Standby
 	}
 
-	public enum eGameMap
+	public enum GameMapEnum
 	{
 		Map0,
 		Map1,
 	}
 
-	public enum eCharacterChoice
+	public enum CharacterChoiceEnum
 	{
 		None,
 		Player1,
 		Player2
 	}
 
-	public enum eRoomState
+	public enum RoomStateEnum
 	{
 		None,
 		Standby,
 		InGame,
 	}
 
-	public enum eSkill
+	public enum SkillEnum
 	{
 		None,
 		Slash,
@@ -120,7 +119,7 @@ public class Define
 		Skill2,
 	}
 
-	public enum eSkillType
+	public enum SkillTypeEnum
 	{
 		None,
 		Melee,
@@ -128,7 +127,7 @@ public class Define
 		Auto
 	}
 
-	public enum eDir
+	public enum DirEnum
 	{
 		None,
 		Up = 1, // 0001

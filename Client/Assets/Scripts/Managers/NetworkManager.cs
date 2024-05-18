@@ -21,7 +21,7 @@ public class NetworkManager
 	}
 
 	public Connection MyConnection { get; private set; } = null;
-	bool m_shutdown = false;
+	private bool m_shutdown = false;
 
 	public bool Init(string _serverIp, int _port)
 	{
@@ -30,7 +30,7 @@ public class NetworkManager
 		return true;
 	}
 
-	bool Connect(string _serverIp, int _port)
+	private bool Connect(string _serverIp, int _port)
 	{
 		IPAddress ip = IPAddress.Parse(_serverIp);
 		IPEndPoint endPoint = new IPEndPoint(ip, _port);
@@ -48,7 +48,7 @@ public class NetworkManager
 		} 
 		catch (SocketException e)
 		{
-			UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIConnectFailPopup, "서버와 연결할 수 없습니다.\n(오류코드 : " + e.SocketErrorCode + ")");
+			UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UIConnectFailPopup, "서버와 연결할 수 없습니다.\n(오류코드 : " + e.SocketErrorCode + ")");
 			return false;
 		}
 		return true;

@@ -6,15 +6,9 @@ using UnityEngine;
 public class ActionQueue : MonoBehaviour
 {
 	private static ActionQueue s_inst = null;
-	public static ActionQueue Inst
-	{
-		get
-		{
-			return s_inst;
-		}
-	}
+	public static ActionQueue Inst{ get { return s_inst; } }
 
-	Queue<Action> m_action = new Queue<Action>();
+	private readonly Queue<Action> m_action = new Queue<Action>();
 
 	private void Awake()
 	{
@@ -29,7 +23,6 @@ public class ActionQueue : MonoBehaviour
 			Action action = Dequeue();
 			if (action == null) break;
 
-			//Debug.Log("Invoke");
 			action.Invoke();
 		}
 	}
@@ -37,7 +30,6 @@ public class ActionQueue : MonoBehaviour
 	public void Enqueue(Action _action)
 	{
 		if (SceneManagerEx.Inst.CurScene.IsLoading) return;
-		//Debug.Log("Enqueue");
 
 		m_action.Enqueue(_action);
 	}

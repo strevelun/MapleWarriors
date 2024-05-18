@@ -6,17 +6,17 @@ using UnityEngine.UI;
 
 public class LobbyScene : BaseScene
 {
-	UIPage m_userListPage;
-	UIPage m_roomListPage;
+	private UIPage m_userListPage;
+	private UIPage m_roomListPage;
 
 	protected override void Init()
 	{
 		base.Init();
 
 		Screen.SetResolution(1280, 720, false);
-		SceneType = Define.eScene.Lobby;
+		SceneType = Define.SceneEnum.Lobby;
 
-        UIScene uiScene = UIManager.Inst.SetSceneUI(Define.eScene.Lobby);
+        UIScene uiScene = UIManager.Inst.SetSceneUI(Define.SceneEnum.Lobby);
 		{
 			GameObject obj = Util.FindChild(uiScene.gameObject, false, "CreateRoomBtn");
 			Button btn = obj.GetComponent<Button>();
@@ -27,14 +27,14 @@ public class LobbyScene : BaseScene
 		}
 
 		{
-			UIChat uichat = UIManager.Inst.AddUI(Define.eUIChat.UILobbyChat);
-			uichat.Init(LobbyPacketMaker.SendChat, Define.eUIChat.UILobbyChat);
+			UIChat uichat = UIManager.Inst.AddUI(Define.UIChatEnum.UILobbyChat);
+			uichat.Init(LobbyPacketMaker.SendChat, Define.UIChatEnum.UILobbyChat);
 		}
 
 		{
-            GameObject parentObj = UIManager.Inst.AddUI(Define.eUI.UILobby_RoomList);
+            GameObject parentObj = UIManager.Inst.AddUI(Define.UIEnum.UILobby_RoomList);
 			m_roomListPage = parentObj.GetComponent<UIPage>();
-			m_roomListPage.Init(Define.RoomListPageMax, Define.RoomListMaxItemInPage, "UI/Scene/Lobby/", Define.eUI.UILobby_RoomList, "Content");
+			m_roomListPage.Init(Define.RoomListPageMax, Define.RoomListMaxItemInPage, "UI/Scene/Lobby/", Define.UIEnum.UILobby_RoomList, "Content");
 
 			GameObject obj = Util.FindChild(parentObj, false, "PrevBtn");
             Button btn = obj.GetComponent<Button>();
@@ -43,7 +43,7 @@ public class LobbyScene : BaseScene
             btn = obj.GetComponent<Button>();
             btn.onClick.AddListener(OnRoomListNextBtnClicked);
 
-			obj = UIManager.Inst.AddUI(Define.eUI.UILobby_RoomList_Block);
+			obj = UIManager.Inst.AddUI(Define.UIEnum.UILobby_RoomList_Block);
 			obj.transform.SetParent(parentObj.transform);
 			RectTransform rectTransform = obj.GetComponent<RectTransform>();
 			rectTransform.offsetMin = Vector2.zero;
@@ -51,9 +51,9 @@ public class LobbyScene : BaseScene
 		}
 
 		{
-			GameObject parentObj = UIManager.Inst.AddUI(Define.eUI.UILobby_UserList);
+			GameObject parentObj = UIManager.Inst.AddUI(Define.UIEnum.UILobby_UserList);
 			m_userListPage = parentObj.GetComponent<UIPage>();
-			m_userListPage.Init(Define.UserListPageMax, Define.UserListMaxItemInPage, "UI/Scene/Lobby/", Define.eUI.UILobby_UserList, "Content");
+			m_userListPage.Init(Define.UserListPageMax, Define.UserListMaxItemInPage, "UI/Scene/Lobby/", Define.UIEnum.UILobby_UserList, "Content");
 
 			GameObject obj = Util.FindChild(parentObj, false, "PrevBtn");
 			Button btn = obj.GetComponent<Button>();
@@ -64,12 +64,12 @@ public class LobbyScene : BaseScene
 		}
 
 		{
-			UIPopup popup = UIManager.Inst.AddUI(Define.eUIPopup.UICreateRoomPopup);
+			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UICreateRoomPopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
 				if (string.IsNullOrWhiteSpace(popup.InputField.text)) return;
 
-				UIManager.Inst.HidePopupUI(Define.eUIPopup.UICreateRoomPopup);
+				UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UICreateRoomPopup);
 				Packet pkt = LobbyPacketMaker.CreateRoom(popup.InputField.text);
 				popup.InputField.text = string.Empty;
 				NetworkManager.Inst.Send(pkt);
@@ -77,33 +77,33 @@ public class LobbyScene : BaseScene
 			popup.SetButtonAction("CancelBtn", () => 
 			{
 				popup.InputField.text = string.Empty;
-				UIManager.Inst.HidePopupUI(Define.eUIPopup.UICreateRoomPopup); 
+				UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UICreateRoomPopup); 
 			});
 		}		
 		
 		{
-			UIPopup popup = UIManager.Inst.AddUI(Define.eUIPopup.UICreateRoomFailPopup);
+			UIPopup popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UICreateRoomFailPopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
-				UIManager.Inst.HidePopupUI(Define.eUIPopup.UICreateRoomFailPopup);
+				UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UICreateRoomFailPopup);
 			});
 
-			popup = UIManager.Inst.AddUI(Define.eUIPopup.UIEnterRoomFullPopup);
+			popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UIEnterRoomFullPopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
-				UIManager.Inst.HidePopupUI(Define.eUIPopup.UIEnterRoomFullPopup);
+				UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UIEnterRoomFullPopup);
 			});
 
-			popup = UIManager.Inst.AddUI(Define.eUIPopup.UIEnterRoomInGamePopup);
+			popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UIEnterRoomInGamePopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
-				UIManager.Inst.HidePopupUI(Define.eUIPopup.UIEnterRoomInGamePopup);
+				UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UIEnterRoomInGamePopup);
 			});
 
-			popup = UIManager.Inst.AddUI(Define.eUIPopup.UIEnterRoomNopePopup);
+			popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UIEnterRoomNopePopup);
 			popup.SetButtonAction("OKBtn", () =>
 			{
-				UIManager.Inst.HidePopupUI(Define.eUIPopup.UIEnterRoomNopePopup);
+				UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UIEnterRoomNopePopup);
 			});
 		}
 
@@ -122,43 +122,35 @@ public class LobbyScene : BaseScene
 		base.Clear();
 	}
 
-    void Start()
+	private void Start()
     {
         Init(); 
 	}
 
-    void Update()
-    {
-	}
-
-	IEnumerator UpdateLobbyInfoCoroutine()
+	private IEnumerator UpdateLobbyInfoCoroutine()
 	{
 		while(true)
 		{
 			yield return new WaitForSeconds(Define.LobbyUpdateTime);
 			UpdateLobbyInfo();
-			//Debug.Log("º¸³¿");
-			//Packet pkt = LobbyPacketMaker.Test();
-			//NetworkManager.Inst.Send(pkt);
 		}
 	}
 
-	void UpdateLobbyInfo()
+	private void UpdateLobbyInfo()
 	{
-		//if (m_userListPage.BtnClickCount != 0) return;
 		Packet pkt = LobbyPacketMaker.UpdateLobbyInfo(m_userListPage.CurPage, m_roomListPage.CurPage);
 		NetworkManager.Inst.Send(pkt);
 	}
 
-	void OnRoomListPrevBtnClicked()
+	private void OnRoomListPrevBtnClicked()
     {
 		if (m_roomListPage.CurPage <= 0) return;
 
 		Packet pkt = LobbyPacketMaker.RoomListGetPageInfo(m_roomListPage.CurPage - 1);
 		NetworkManager.Inst.Send(pkt);
-    }   
-    
-    void OnRoomListNextBtnClicked()
+    }
+
+	private void OnRoomListNextBtnClicked()
 	{
 		if (m_roomListPage.ActiveItemCount < Define.RoomListMaxItemInPage) return;
 		if (m_roomListPage.CurPage >= Define.RoomListPageMax - 1) return;
@@ -167,7 +159,7 @@ public class LobbyScene : BaseScene
 		NetworkManager.Inst.Send(pkt);
 	}
 
-	void OnUserListPrevBtnClicked()
+	private void OnUserListPrevBtnClicked()
 	{
 		if (m_userListPage.CurPage <= 0) return;
 
@@ -175,7 +167,7 @@ public class LobbyScene : BaseScene
 		NetworkManager.Inst.Send(pkt);
 	}
 
-	void OnUserListNextBtnClicked()
+	private void OnUserListNextBtnClicked()
 	{
 		Debug.Log(m_userListPage.ActiveItemCount);
 		if (m_userListPage.ActiveItemCount < Define.UserListMaxItemInPage) return;
@@ -183,15 +175,14 @@ public class LobbyScene : BaseScene
 
 		Packet pkt = LobbyPacketMaker.UserListGetPageInfo(m_userListPage.CurPage + 1);
 		NetworkManager.Inst.Send(pkt);
-		//Debug.Log("NextBtn");
 	}
 
-	void OnCreateBtnClicked()
+	private void OnCreateBtnClicked()
 	{
-		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UICreateRoomPopup);
+		UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UICreateRoomPopup);
 	}
 
-	void OnExitBtnClicked()
+	private void OnExitBtnClicked()
 	{
 		NetworkManager.Inst.Disconnect();
 	}

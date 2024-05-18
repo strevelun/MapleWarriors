@@ -10,18 +10,18 @@ public class InGameConsole : MonoBehaviour
 	private static InGameConsole s_inst = null;
 	public static InGameConsole Inst { get { return s_inst; } }
 
-	TextMeshProUGUI m_text;
-	ScrollRect m_scrollRect;
-	Scrollbar m_scrollbar;
+	private TextMeshProUGUI m_text;
+	private ScrollRect m_scrollRect;
+	private Scrollbar m_scrollbar;
 
-	const int MaxLine = 150;
-	int curLineCnt = 0;
+	private const int MaxLine = 150;
+	private int curLineCnt = 0;
 
-	Coroutine m_scrollbarDownCoroutine = null;
+	private Coroutine m_scrollbarDownCoroutine = null;
 
-	bool m_inGame = false;
+	private bool m_inGame = false;
 
-	void Start()
+	private void Start()
 	{
 		s_inst = this;
 	}
@@ -31,7 +31,6 @@ public class InGameConsole : MonoBehaviour
 		m_scrollbar = Util.FindChild(_objInGameConsole, false, "Scrollbar").GetComponent<Scrollbar>();
 		GameObject textObj = Util.FindChild(_objInGameConsole, true, "Text");
 		m_scrollRect = _objInGameConsole.GetComponent<ScrollRect>();
-		//GameObject textObj.transform.parent;
 		m_text = textObj.GetComponent<TextMeshProUGUI>();
 		m_inGame = true;
 	}
@@ -60,16 +59,10 @@ public class InGameConsole : MonoBehaviour
 		m_inGame = false;
 	}
 
-	IEnumerator SetScrollbarDownCoroutine()
+	private IEnumerator SetScrollbarDownCoroutine()
 	{
-		//Canvas.ForceUpdateCanvases();
-		yield return null;
+		yield return new WaitForEndOfFrame();
 		m_scrollbar.value = 0f;
 		m_scrollbarDownCoroutine = null;
-	}
-
-	private void OnDestroy()
-	{
-		
 	}
 }

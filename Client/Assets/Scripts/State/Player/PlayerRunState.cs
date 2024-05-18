@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerRunState : ICreatureState
 {
-	PlayerController m_pc = null;
-	MyPlayerController m_mpc = null;
+	private PlayerController m_pc = null;
+	private MyPlayerController m_mpc = null;
 
 	public bool CanEnter(CreatureController _cs)
 	{
@@ -26,7 +26,6 @@ public class PlayerRunState : ICreatureState
 			m_pc = _cs as PlayerController;
 			m_pc.Anim.SetBool("Run", true);
 		}
-		//InGameConsole.Inst.Log("PlayerRunState");
 	}
 
 	public void Update()
@@ -49,18 +48,7 @@ public class PlayerRunState : ICreatureState
 	}
 
 	public void FixedUpdate()
-	{
-		/*
-		if (m_mpc)
-		{
-			m_mpc.HandleInputMovement();
-			m_mpc.UpdateMove(Time.fixedDeltaTime);
-		}
-		else
-		{
-			m_pc.UpdateMove(Time.fixedDeltaTime);
-		}
-		*/
+	{ 
 	}
 
 	public void Exit()

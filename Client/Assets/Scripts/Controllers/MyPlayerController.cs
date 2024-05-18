@@ -8,7 +8,7 @@ using static Define;
 
 public class MyPlayerController : PlayerController
 {
-	enum eAttackDir
+	private enum AttackDirEnum
 	{
 		None,
 		LeftUp,
@@ -21,21 +21,15 @@ public class MyPlayerController : PlayerController
 		RightDown
 	}
 
-	//bool m_bMove = false;
-	bool m_bIsKeyDown = false;
-	bool m_bIsKeyUp = false;
+	private bool m_bIsKeyDown = false;
+	private bool m_bIsKeyUp = false;
 
-	//bool m_bEndMove = false;
-	bool[] m_endMoveCheck = new bool[4];
+	private byte LastByteDir = 0;
 
-	byte LastByteDir = 0;
+	private CinemachineVirtualCamera m_vcam;
+	private int m_cameraIdx = 0;
 
-	CinemachineVirtualCamera m_vcam;
-	int m_cameraIdx = 0;
-
-	//int m_testMovingCnt = 0;
-
-	void Start()
+	private void Start()
 	{
 		GameObject camObj = GameObject.Find("CM vcam1");
 		m_vcam = camObj.GetComponent<CinemachineVirtualCamera>();
@@ -49,10 +43,7 @@ public class MyPlayerController : PlayerController
 
 		base.Update();
 
-
 		CurSkill.Update(CellPos, LastDir);
-
-		//HandleInputMovement();
 	}
 
 	protected override void FixedUpdate()
@@ -67,7 +58,7 @@ public class MyPlayerController : PlayerController
 		m_nickname.GetComponent<Image>().color = new Color(69 / 255f, 144 / 255f, 255 / 255f, 190 / 255f);
 	}
 
-	IEnumerator MovingCoroutine()
+	private IEnumerator MovingCoroutine()
 	{
 		while (true)
 		{
@@ -100,91 +91,65 @@ public class MyPlayerController : PlayerController
 		if (!InputManager.Inst.InputEnabled) return;
 		if (IsDead) return;
 
-		/*
-		if(ByteDir == 0 && m_bMove) // 스킬사용 후 이동 체크
-		{
-			if(Input.GetKey(KeyCode.W))
-				ByteDir |= (byte)eDir.Up;
-			if (Input.GetKey(KeyCode.S))
-				ByteDir |= (byte)eDir.Down;
-			if (Input.GetKey(KeyCode.A))
-				ByteDir |= (byte)eDir.Left;
-			if (Input.GetKey(KeyCode.D))
-				ByteDir |= (byte)eDir.Right;
-
-			Packet pkt = InGamePacketMaker.BeginMove(transform.position, ByteDir);
-			UDPCommunicator.Inst.SendAll(pkt);
-		}
-		*/
-
-		//Debug.Log("InputDownMovement");
 		if (Input.GetKeyDown(KeyCode.W))
 		{
 			m_bIsKeyDown = true;
-			ByteDir |= (byte)eDir.Up;
+			ByteDir |= (byte)DirEnum.Up;
 		}
 		if (Input.GetKeyDown(KeyCode.S))
 		{
 			m_bIsKeyDown = true;
-			ByteDir |= (byte)eDir.Down;
+			ByteDir |= (byte)DirEnum.Down;
 		}
 		if (Input.GetKeyDown(KeyCode.A))
 		{
 			m_bIsKeyDown = true;
-			ByteDir |= (byte)eDir.Left;
+			ByteDir |= (byte)DirEnum.Left;
 		}
 		if (Input.GetKeyDown(KeyCode.D))
 		{
 			m_bIsKeyDown = true;
-			ByteDir |= (byte)eDir.Right;
-			//InGameConsole.Inst.Log("DDDDDfdsfasfewtwertwrtwrDDDDDfdsfasfewtwertwrtwrDDDDDfdsfasfewtwertwrtwrDDDDDfdsfasfewtwertwrtwr");
+			ByteDir |= (byte)DirEnum.Right;
 		}
-
-		//if (m_bIsKeyDown) m_bMove = true;
 
 		byte temp;
 		if (Input.GetKeyUp(KeyCode.W))
 		{
 			m_bIsKeyUp = true;
-			temp = (byte)eDir.Up;
+			temp = (byte)DirEnum.Up;
 			ByteDir &= (byte)~temp;
 		}
 		if (Input.GetKeyUp(KeyCode.S))
 		{
 			m_bIsKeyUp = true;
-			temp = (byte)eDir.Down;
+			temp = (byte)DirEnum.Down;
 			ByteDir &= (byte)~temp;
 		}
 		if (Input.GetKeyUp(KeyCode.A))
 		{
 			m_bIsKeyUp = true;
-			temp = (byte)eDir.Left;
+			temp = (byte)DirEnum.Left;
 			ByteDir &= (byte)~temp;
 		}
 		if (Input.GetKeyUp(KeyCode.D))
 		{
 			m_bIsKeyUp = true;
-			temp = (byte)eDir.Right;
+			temp = (byte)DirEnum.Right;
 			ByteDir &= (byte)~temp;
 		}
 	}
 
 	public void HandleInputMovement()
 	{
-		if (m_bIsKeyUp && ByteDir == (byte)eDir.None)
+		if (m_bIsKeyUp && ByteDir == (byte)DirEnum.None)
 		{
-			long endTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
 			m_bIsKeyUp = false;
 			if (GameManager.Inst.PlayerCnt > 1)
 			{
-				//InGameConsole.Inst.Log("EndMove 직전");
 				Packet pkt = InGamePacketMaker.EndMove(transform.position);
 				UDPCommunicator.Inst.SendAll(pkt);
-				//m_bEndMove = true;
 			}
 		}
-
 
 		if (LastByteDir != 0 || m_bIsKeyDown || m_bIsKeyUp) // ByteDir가 0이 아니면서 m_bIsKeyUp이면 방향이 바뀐 것.
 		{
@@ -193,10 +158,7 @@ public class MyPlayerController : PlayerController
 			m_bIsKeyDown = false;
 			m_bIsKeyUp = false;
 			LastByteDir = 0;
-			//m_bEndMove = false;
 		}
-
-		//if (ByteDir == 0) m_bMove = false;
 
 		if (ByteDir != 0)
 		{
@@ -223,15 +185,13 @@ public class MyPlayerController : PlayerController
 		if (Input.GetMouseButtonDown(0))
 		{
 			LastByteDir = ByteDir;
-			//ByteDir = 0;
 			if (ByteDir != 0)
 			{
 				Packet pkt = InGamePacketMaker.EndMove(transform.position); 
 				UDPCommunicator.Inst.SendAll(pkt);
-				//m_bEndMove = true;
 			}
 
-			if (CurSkill.GetSkillType() == eSkillType.Melee)
+			if (CurSkill.GetSkillType() == SkillTypeEnum.Melee)
 			{
 				List<MonsterController> targets = new List<MonsterController>();
 				bool activated = CurSkill.Activate(targets);
@@ -293,38 +253,31 @@ public class MyPlayerController : PlayerController
 		if (!GameManager.Inst.GameStart) return;
 		if (!InputManager.Inst.InputEnabled) return;
 
-		// 스킬이펙트 재생 중 스킬 바꾸면 움직이는 버그
-
-		eSkill curSkill = eSkill.None;
+		SkillEnum curSkill = SkillEnum.None;
 
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
-			curSkill = eSkill.Slash;
+			curSkill = SkillEnum.Slash;
 		}
 		else if(Input.GetKeyDown(KeyCode.Alpha2))
 		{
-			curSkill = eSkill.Blast;
+			curSkill = SkillEnum.Blast;
 		}
 		else if (Input.GetKeyDown(KeyCode.Alpha3))
 		{
-			curSkill = eSkill.Skill1;
+			curSkill = SkillEnum.Skill1;
 		}
 		else if (Input.GetKeyDown(KeyCode.Alpha4))
 		{
-			curSkill = eSkill.Skill2;
+			curSkill = SkillEnum.Skill2;
 		}
-		/*
-		else if (Input.GetKeyDown(KeyCode.Alpha5))
-		{
-			curSkill = eSkill.Skill3;
-		}
-		*/
-		if (curSkill != eSkill.None && curSkill != m_eCurSkill)
+
+		if (curSkill != SkillEnum.None && curSkill != m_eCurSkill)
 		{
 			GameObject objSkillPanel = UIManager.Inst.SceneUI.FindUI("SkillPanel");
 			GameObject chosen = Util.FindChild(objSkillPanel.transform.GetChild(((int)curSkill) - 1).gameObject, false, "Chosen");
 			chosen.SetActive(true);
-			chosen = Util.FindChild(objSkillPanel.transform.GetChild(((int)CurSkill.eCurSkill) - 1).gameObject, false, "Chosen");
+			chosen = Util.FindChild(objSkillPanel.transform.GetChild(((int)CurSkill.CurSkill) - 1).gameObject, false, "Chosen");
 			chosen.SetActive(false);
 
 			m_eCurSkill = curSkill;
@@ -339,7 +292,7 @@ public class MyPlayerController : PlayerController
 
 		CurSkill.RemoveAimTiles();
 		ByteDir = 0;
-		Dir = eDir.None;
+		Dir = DirEnum.None;
 	}
 
 	public override void OnChangeStage()

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class MonsterAttackState : ICreatureState
 {
-	MonsterController m_mc;
-	bool m_animStart = false;
-	bool m_hit = false;
-	AnimatorStateInfo m_stateInfo;
-	List<PlayerController> m_targets;
+	private MonsterController m_mc;
+	private bool m_animStart = false;
+	private bool m_hit = false;
+	private AnimatorStateInfo m_stateInfo;
+	private List<PlayerController> m_targets;
 
 	public MonsterAttackState(List<PlayerController> _targets)
 	{
@@ -17,12 +17,10 @@ public class MonsterAttackState : ICreatureState
 
 	public bool CanEnter(CreatureController _cs)
 	{
-		// 이동 중에는 불가능
-
 		return true;
 	}
 
-	// 몬스터는 어택 도중 쳐맞을 수 있다. -> 바로 Hit애니 재생 후 체력 감소
+	// 몬스터는 어택 도중 맞을 수 있다. -> 바로 Hit애니 재생 후 체력 감소
 	public void Enter(CreatureController _cs)
 	{
 		m_mc = _cs as MonsterController;
@@ -52,7 +50,7 @@ public class MonsterAttackState : ICreatureState
 	}
 
 	// 몬스터가 AttackSTate일때 맞으면 Attack 끝까지 재생
-	void UpdateAnimation()
+	private void UpdateAnimation()
 	{
 		m_stateInfo = m_mc.Anim.GetCurrentAnimatorStateInfo(0);
 
@@ -62,14 +60,12 @@ public class MonsterAttackState : ICreatureState
 		if (m_animStart && !m_stateInfo.IsName("Attack"))
 		{
 			m_mc.ChangeState(new MonsterIdleState());
-			//Debug.Log($"몬스터 어택 끝 : {m_mc.Dir}");
 			return;
 		}
 	}
 
-	void Attack()
+	private void Attack()
 	{
-
 		if (m_mc.AttackEffect)
 		{
 			if(m_stateInfo.normalizedTime >= 0.5f)

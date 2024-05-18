@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class UDPBuffer : MonoBehaviour
 {
-	object m_lock = new object();
-	PacketReader m_reader = new PacketReader();
-	byte[] m_buffer = new byte[Define.BufferMax];
-	int m_readPos = 0;
-	int m_writePos = 0;
-	int m_writtenBytes = 0;
+	private readonly object m_lock = new object();
+	private readonly PacketReader m_reader = new PacketReader();
+	private readonly byte[] m_buffer = new byte[Define.BufferMax];
+	private int m_readPos = 0;
+	private int m_writePos = 0;
+	private int m_writtenBytes = 0;
 
 	public bool Active { get; set; } = false;
 
@@ -27,7 +27,7 @@ public class UDPBuffer : MonoBehaviour
 		DontDestroyOnLoad(this);
 	}
 
-	void Update()
+	private void Update()
     {
 		OnBufferReadable();
 	}
@@ -73,13 +73,5 @@ public class UDPBuffer : MonoBehaviour
 		{
 			m_writtenBytes += _recvBytes;
 		}
-}
-	/*
-	public void Clear()
-	{
-		m_readable = false;
-		m_writePos = 0;
-		m_readPos = 0;
 	}
-	*/
 }

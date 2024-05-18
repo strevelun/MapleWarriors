@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MonsterRunState : ICreatureState
 {
-	MonsterController m_mc = null;
+	private MonsterController m_mc = null;
 
 	public bool CanEnter(CreatureController _cs)
 	{

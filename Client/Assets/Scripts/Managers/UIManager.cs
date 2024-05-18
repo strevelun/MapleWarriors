@@ -18,15 +18,14 @@ public class UIManager
 			return s_inst;
 		}
 	}
-	// 씬 전환 시 밀기
 
-	int m_order = 10;
+	private int m_order = 10;
 
 	public UIScene SceneUI { private set; get; }
-	Dictionary<string, UIPopup> m_dicPopup = new Dictionary<string, UIPopup>();
-	Dictionary<string, UIPopup> m_dicPopupInDestructible = new Dictionary<string, UIPopup>();
-	Dictionary<Define.eUIChat, UIChat> m_dicUIChat = new Dictionary<Define.eUIChat, UIChat>();
-	Dictionary<Define.eUI, GameObject> m_dicUI = new Dictionary<Define.eUI, GameObject>();
+	private readonly Dictionary<string, UIPopup> m_dicPopup = new Dictionary<string, UIPopup>();
+	private readonly Dictionary<string, UIPopup> m_dicPopupInDestructible = new Dictionary<string, UIPopup>();
+	private readonly Dictionary<Define.UIChatEnum, UIChat> m_dicUIChat = new Dictionary<Define.UIChatEnum, UIChat>();
+	private readonly Dictionary<Define.UIEnum, GameObject> m_dicUI = new Dictionary<Define.UIEnum, GameObject>();
 
 	public GameObject Root
 	{
@@ -57,7 +56,7 @@ public class UIManager
 			c.sortingOrder = 0;
 	}
 
-	public UIScene SetSceneUI(Define.eScene _sceneName)
+	public UIScene SetSceneUI(Define.SceneEnum _sceneName)
 	{
 		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
 
@@ -67,18 +66,17 @@ public class UIManager
 	}
 
 	#region PopupUI
-	public UIPopup FindPopupUI(Define.eUIPopup _prefabName)
+	public UIPopup FindPopupUI(Define.UIPopupEnum _prefabName)
 	{
 		string name = _prefabName.ToString();
-		UIPopup popup;
-		m_dicPopup.TryGetValue(name, out popup);
+		m_dicPopup.TryGetValue(name, out UIPopup popup);
 		if(!popup) m_dicPopupInDestructible.TryGetValue(name, out popup);
 		if (!popup) return null;
 		
 		return popup;
 	}
 
-	public UIPopup AddUI(Define.eUIPopup _prefabName, bool _isOnScene = true)
+	public UIPopup AddUI(Define.UIPopupEnum _prefabName, bool _isOnScene = true)
 	{
 		string name = _prefabName.ToString();
 		UIPopup uiPopup = FindPopupUI(_prefabName);
@@ -113,7 +111,7 @@ public class UIManager
 		return uiPopup;
 	}
 
-	public void ShowPopupUI(Define.eUIPopup _prefabName)
+	public void ShowPopupUI(Define.UIPopupEnum _prefabName)
 	{
 		UIPopup popup = FindPopupUI(_prefabName);
 		if (!popup) return;
@@ -125,7 +123,7 @@ public class UIManager
 		obj.SetActive(true);
 	}
 
-	public void ShowPopupUI(Define.eUIPopup _prefabName, string _description)
+	public void ShowPopupUI(Define.UIPopupEnum _prefabName, string _description)
 	{
 		UIPopup popup = FindPopupUI(_prefabName);
 		if (!popup) return;
@@ -141,7 +139,7 @@ public class UIManager
 		obj.SetActive(true);
 	}
 
-	public void HidePopupUI(Define.eUIPopup _prefabName)
+	public void HidePopupUI(Define.UIPopupEnum _prefabName)
 	{
 		UIPopup popup = FindPopupUI(_prefabName);
 		if (!popup) return;
@@ -151,10 +149,9 @@ public class UIManager
 	#endregion
 
 	#region ChatUI
-	public UIChat AddUI(Define.eUIChat _eChat)
+	public UIChat AddUI(Define.UIChatEnum _eChat)
 	{
-		UIChat chat;
-		if (m_dicUIChat.TryGetValue(_eChat, out chat)) return chat;
+		if (m_dicUIChat.TryGetValue(_eChat, out UIChat chat)) return chat;
 
 		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
 		GameObject obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/" + _eChat.ToString(), UIManager.Inst.SceneUI.gameObject.transform);
@@ -164,51 +161,42 @@ public class UIManager
 		return chat;
 	}
 
-	public UIChat FindUI(Define.eUIChat _eChat)
+	public UIChat FindUI(Define.UIChatEnum _eChat)
 	{
-		UIChat chat;
-		if (!m_dicUIChat.TryGetValue(_eChat, out chat)) return null;
+		if (!m_dicUIChat.TryGetValue(_eChat, out UIChat chat)) return null;
 
 		return chat;
 	}
 	#endregion
 
-	public GameObject AddUI(Define.eUI _eUI)
+	public GameObject AddUI(Define.UIEnum _eUI)
 	{
-		GameObject obj;
-		if (m_dicUI.TryGetValue(_eUI, out obj)) return null;
+		if (m_dicUI.ContainsKey(_eUI)) return null;
 
 		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
-		obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/" + _eUI.ToString(), SceneUI.gameObject.transform);
+		GameObject obj = ResourceManager.Inst.Instantiate("UI/Scene/" + curSceneType + "/" + _eUI.ToString(), SceneUI.gameObject.transform);
 
 		m_dicUI.Add(_eUI, obj);
 		return obj;
 	}
 
-	public GameObject AddUI(Define.eUI _eUI, GameObject _uiObj)
+	public GameObject AddUI(Define.UIEnum _eUI, GameObject _uiObj)
 	{
-		GameObject obj;
-		if (m_dicUI.TryGetValue(_eUI, out obj)) return null;
+		if (m_dicUI.TryGetValue(_eUI, out GameObject obj)) return null;
 
 		m_dicUI.Add(_eUI, _uiObj);
 		return obj;
 	}
 
-	public GameObject FindUI(Define.eUI _eUI)
+	public GameObject FindUI(Define.UIEnum _eUI)
 	{
-		GameObject obj;
-		if (!m_dicUI.TryGetValue(_eUI, out obj)) return null;
+		if (!m_dicUI.TryGetValue(_eUI, out GameObject obj)) return null;
 
 		return obj;
 	}
 
 	public void Clear()
 	{
-		foreach(UIPopup popup in m_dicPopup.Values)
-		{
-			// 씬 전환시 Clear()가 호출되는데 수동으로 해줘야하나
-			//ResourceManager.Inst.Destroy(popup.gameObject);
-		}
 		m_dicPopup.Clear();
 		m_dicUIChat.Clear();
 		m_dicUI.Clear();

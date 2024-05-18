@@ -7,7 +7,7 @@ using static Define;
 public class SkillData
 {
 	[JsonConverter(typeof(StringEnumConverter))]
-	public eSkillType type;
+	public SkillTypeEnum type;
 	public string name;
     public int MP;
     public int hitCount;

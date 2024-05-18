@@ -11,15 +11,14 @@ public static class RoomPacketHandler
 		string nickname = _reader.GetString();
 		string chat = _reader.GetString();
 
-		UIChat uichat = UIManager.Inst.FindUI(Define.eUIChat.UIRoomChat);
+		UIChat uichat = UIManager.Inst.FindUI(Define.UIChatEnum.UIRoomChat);
 		uichat.AddChat(nickname, chat);
-		uichat.SetScrollbarDown();
 	}
 
-	public static void ExitRoom(PacketReader _reader)
+	public static void ExitRoom()
 	{
 		UserData.Inst.IsRoomOwner = false;
-		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.eScene.Lobby);
+		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.SceneEnum.Lobby);
 		Debug.Log("ExitRoom");
 	}	
 	
@@ -29,7 +28,7 @@ public static class RoomPacketHandler
 		int prevOwnerIdx = _reader.GetByte(); 
 		int nextOwnerIdx = _reader.GetByte();
 
-		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
+		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_Users);
 		GameObject slot = objRoomUsers.transform.GetChild(idx).gameObject;
 		slot.GetComponent<UIButton>().IsActive = false;
 
@@ -60,11 +59,11 @@ public static class RoomPacketHandler
 			obj.transform.GetChild(0).gameObject.SetActive(false);
 			obj.transform.GetChild(1).gameObject.SetActive(false);
 
-			obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_StandbyBtn);
+			obj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_StandbyBtn);
 			obj.SetActive(false);
-			obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_ReadyBtn);
+			obj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_ReadyBtn);
 			obj.SetActive(false);
-			obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_StartBtn);
+			obj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_StartBtn);
 			obj.SetActive(true);
 
 			UserData.Inst.RoomOwnerSlot = nextOwnerIdx;
@@ -73,7 +72,7 @@ public static class RoomPacketHandler
 		if(UserData.Inst.MyRoomSlot == nextOwnerIdx)
 		{
 			UserData.Inst.IsRoomOwner = true;
-			GameObject parentObj = UIManager.Inst.FindUI(Define.eUI.UIRoom_GamePanel);
+			GameObject parentObj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_GamePanel);
 			obj = Util.FindChild(parentObj, false, "MapChoiceBtn");
 			UIButton uibtn = obj.GetComponent<UIButton>();
 			uibtn.IsActive = true;
@@ -86,7 +85,7 @@ public static class RoomPacketHandler
 		int idx = _reader.GetByte();
 		string nickname = _reader.GetString();
 
-		GameObject obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
+		GameObject obj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_Users);
 		GameObject slot = obj.transform.GetChild(idx).gameObject;
 		obj = Util.FindChild(slot, false, "CharacterBtn"); // 기본 캐릭터
 		obj.SetActive(true);
@@ -104,16 +103,22 @@ public static class RoomPacketHandler
 		int idx;
 		bool isOwner;
 		string nickname;
-		Define.eRoomUserState eState;
-		Define.eCharacterChoice eChoice;
+		Define.RoomUserStateEnum eState;
+		Define.CharacterChoiceEnum eChoice;
+		int roomID = _reader.GetByte();
 		string roomTitle = _reader.GetString();
 		int roomOwnerIdx = _reader.GetByte();
 		int numOfUsers = _reader.GetByte();
 		GameObject obj;
 		Transform t;
-		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
+		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_Users);
 
 		UserData.Inst.RoomOwnerSlot = roomOwnerIdx;
+
+		GameObject titleObj = UIManager.Inst.SceneUI.FindUI("Title");
+		titleObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{roomTitle}";
+		GameObject roomIDObj = UIManager.Inst.SceneUI.FindUI("RoomID");
+		roomIDObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{roomID}";
 
 		for (int i=0; i<numOfUsers; ++i)
 		{
@@ -121,8 +126,8 @@ public static class RoomPacketHandler
 			idx = _reader.GetByte();
 			isOwner = _reader.GetBool(); // 방장은 따로 표시
 			nickname = _reader.GetString();
-			eState = (Define.eRoomUserState)_reader.GetByte() - 1;
-			eChoice = (Define.eCharacterChoice)_reader.GetByte();
+			eState = (Define.RoomUserStateEnum)_reader.GetByte() - 1;
+			eChoice = (Define.CharacterChoiceEnum)_reader.GetByte();
 
 			GameObject slot = objRoomUsers.transform.GetChild(idx).gameObject;
 			if (connectionID == UserData.Inst.ConnectionID) // 본인
@@ -156,29 +161,27 @@ public static class RoomPacketHandler
 
 		byte mapID = _reader.GetByte();
 
-		GameObject parentObj = UIManager.Inst.FindUI(Define.eUI.UIRoom_GamePanel);
+		GameObject parentObj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_GamePanel);
 		obj = Util.FindChild(parentObj, false, "MapChoiceBtn");
 		obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadImage($"MapProfile/map_{mapID}");
 	}
 
-	public static void StartGame_Success(PacketReader _reader)
+	public static void StartGame_Success()
 	{
-		// 방 멤버들은 방장이 맵을 바꾸면 바뀐 
-		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.eScene.InGame);
+		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.SceneEnum.InGame);
 	}
 
-	public static void StartGame_Fail(PacketReader _reader)
+	public static void StartGame_Fail()
 	{
-		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIGameStartFailPopup);
+		UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UIGameStartFailPopup);
 	}
 
-	// 방장이 본인에게 양도되는 패킷이 온 후에 Ready 패킷이 도착한다면
 	public static void RoomReady(PacketReader _reader)
 	{
 		int roomUserIdx = _reader.GetByte();
 		int connectionID = _reader.GetUShort();
 
-		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
+		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_Users);
 		GameObject slot = objRoomUsers.transform.GetChild(roomUserIdx).gameObject;
 		GameObject obj = Util.FindChild(slot, false, "UserState");
 		obj.transform.GetChild(0).gameObject.SetActive(true); // 0 : Ready
@@ -186,18 +189,18 @@ public static class RoomPacketHandler
 
 		if(connectionID == UserData.Inst.ConnectionID)
 		{
-			obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_ReadyBtn);
+			obj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_ReadyBtn);
 			UIButton btn = obj.GetComponent<UIButton>();
 			obj.SetActive(false);
 			btn.IsActive = true;
-			obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_StandbyBtn);
+			obj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_StandbyBtn);
 			obj.SetActive(true);
 		}
 	}	
 	
-	public static void RoomReady_Fail(PacketReader _reader)
+	public static void RoomReady_Fail()
 	{
-		GameObject obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_ReadyBtn);
+		GameObject obj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_ReadyBtn);
 		UIButton btn = obj.GetComponent<UIButton>();
 		btn.IsActive = true;
 	}
@@ -207,7 +210,7 @@ public static class RoomPacketHandler
 		int roomUserIdx = _reader.GetByte();
 		int connectionID = _reader.GetUShort();
 
-		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
+		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_Users);
 		GameObject slot = objRoomUsers.transform.GetChild(roomUserIdx).gameObject;
 		GameObject obj = Util.FindChild(slot, false, "UserState");
 		obj.transform.GetChild(0).gameObject.SetActive(false); // 0 : Ready
@@ -215,18 +218,18 @@ public static class RoomPacketHandler
 
 		if (connectionID == UserData.Inst.ConnectionID)
 		{
-			obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_StandbyBtn);
+			obj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_StandbyBtn);
 			UIButton btn = obj.GetComponent<UIButton>();
 			obj.SetActive(false);
 			btn.IsActive = true;
-			obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_ReadyBtn);
+			obj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_ReadyBtn);
 			obj.SetActive(true);
 		}
 	}
 	
-	public static void RoomStandby_Fail(PacketReader _reader)
+	public static void RoomStandby_Fail()
 	{
-		GameObject obj = UIManager.Inst.FindUI(Define.eUI.UIRoom_StandbyBtn);
+		GameObject obj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_StandbyBtn);
 		UIButton btn = obj.GetComponent<UIButton>();
 		btn.IsActive = true;
 	}
@@ -235,7 +238,7 @@ public static class RoomPacketHandler
 	{
 		byte mapID = _reader.GetByte();
 
-		GameObject parentObj = UIManager.Inst.FindUI(Define.eUI.UIRoom_GamePanel);
+		GameObject parentObj = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_GamePanel);
 		GameObject obj = Util.FindChild(parentObj, false, "MapChoiceBtn");
 		obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadImage($"MapProfile/map_{mapID}");
 	}
@@ -245,7 +248,7 @@ public static class RoomPacketHandler
 		byte roomUserIdx = _reader.GetByte();
 		byte characterChoice = _reader.GetByte();
 
-		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.eUI.UIRoom_Users);
+		GameObject objRoomUsers = UIManager.Inst.FindUI(Define.UIEnum.UIRoom_Users);
 		GameObject slot = objRoomUsers.transform.GetChild(roomUserIdx).gameObject;
 		GameObject obj = Util.FindChild(slot, false, "CharacterBtn");
 		obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadSprite($"Player/player{characterChoice}");

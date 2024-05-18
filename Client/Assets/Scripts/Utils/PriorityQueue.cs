@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class PriorityQueue<T> where T : IComparable<T>
 {
-	List<T> m_data;
-	bool m_minHeap;
+	private readonly List<T> m_data;
+	private readonly bool m_minHeap;
 
 	public PriorityQueue(bool _minHeap = false)
 	{
@@ -91,8 +91,6 @@ public class PriorityQueue<T> where T : IComparable<T>
 
 	private void ChangeItems(int _a, int _b)
 	{
-		T temp = m_data[_a];
-		m_data[_a] = m_data[_b];
-		m_data[_b] = temp;
+		(m_data[_a], m_data[_b]) = (m_data[_b], m_data[_a]);
 	}
 }

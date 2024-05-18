@@ -16,10 +16,10 @@ public class UDPCommunicator
 		}
 	}
 
-	Socket m_socket;
-	SocketAsyncEventArgs m_recvArgs;
-	UDPBuffer m_udpBuffer;
-	bool m_isRecv;
+	private Socket m_socket;
+	private SocketAsyncEventArgs m_recvArgs;
+	private UDPBuffer m_udpBuffer;
+	private bool m_isRecv;
 
 	public Dictionary<int, IPEndPoint> DicSendInfo { get; private set; } = new Dictionary<int, IPEndPoint>();
 
@@ -52,27 +52,22 @@ public class UDPCommunicator
 	{
 		m_isRecv = true;
 		m_udpBuffer.Active = true;
-		//InGameConsole.Inst.Log($"현재 저의 포트는 [{(m_socket.LocalEndPoint as IPEndPoint).Port}]");
 	}
 
 	public void Send(Packet _pkt, int _slot)
 	{
-		//InGameConsole.Inst.Log("Send");
 		IPEndPoint ep;
 		if (!DicSendInfo.TryGetValue(_slot, out ep)) return;
 
-		int sendbyte = m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
-		//InGameConsole.Inst.Log(m_socket.LocalEndPoint.ToString());
+		m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
 		//InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
 	}
 
 	public void SendAll(Packet _pkt)
 	{
-		//InGameConsole.Inst.Log($"SendAll : {DicSendInfo.Count}");
 		foreach (IPEndPoint ep in DicSendInfo.Values)
 		{
-			int sendbyte = m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
-		//	InGameConsole.Inst.Log(m_socket.LocalEndPoint.ToString());
+			m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
 			//InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
 		}
 	}
@@ -143,7 +138,6 @@ public class UDPCommunicator
 
 	public void Disconnect()
 	{
-		InGameConsole.Inst?.Log("UDP Disconnect");
 		ClearIngameInfo();
 		m_recvArgs.Completed -= new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
 		m_recvArgs.Dispose();

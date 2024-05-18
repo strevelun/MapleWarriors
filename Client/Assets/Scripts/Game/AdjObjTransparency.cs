@@ -4,17 +4,11 @@ using UnityEngine;
 
 public class AdjObjTransparency : MonoBehaviour
 {
-    SpriteRenderer m_sr;
+	private SpriteRenderer m_sr;
 
     void Start()
     {
         m_sr = GetComponent<SpriteRenderer>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
 	private void OnTriggerEnter2D(Collider2D _collision)

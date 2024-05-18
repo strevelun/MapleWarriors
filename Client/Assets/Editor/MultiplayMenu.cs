@@ -15,24 +15,6 @@ public class MultiplayMenu
 		PerformWin64Build(1);
 	}
 
-	[MenuItem("Run Multiplayer(Win64)/2 Players")]
-	static void PerformWin64Build2()
-	{
-		PerformWin64Build(2);
-	}
-
-	[MenuItem("Run Multiplayer(Win64)/3 Players")]
-	static void PerformWin64Build3()
-	{
-		PerformWin64Build(3);
-	}
-
-	[MenuItem("Run Multiplayer(Win64)/4 Players")]
-	static void PerformWin64Build4()
-	{
-		PerformWin64Build(4);
-	}
-
 	static void PerformWin64Build(int playerCount)
 	{
 		EditorUserBuildSettings.SwitchActiveBuildTarget(

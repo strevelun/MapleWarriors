@@ -6,10 +6,8 @@ using UnityEngine;
 
 public class UIPopup : MonoBehaviour
 {
-	Dictionary<string, UIButton> m_dicButton = new Dictionary<string, UIButton>();
+	private readonly Dictionary<string, UIButton> m_dicButton = new Dictionary<string, UIButton>();
 	public TMP_InputField InputField { get; private set; } = null;
-
-
 	public bool IsDestroyedOnLoad { private set; get; } = false;
 
 	private void Awake()
@@ -27,8 +25,7 @@ public class UIPopup : MonoBehaviour
 
     public void SetButtonAction(string _buttonName, Action _action)
 	{
-		UIButton btn;
-		if(m_dicButton.TryGetValue(_buttonName, out btn))
+		if(m_dicButton.TryGetValue(_buttonName, out UIButton btn))
 		{
 			btn.Init(_action);
 		}

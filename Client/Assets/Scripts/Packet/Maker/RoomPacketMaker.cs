@@ -8,7 +8,7 @@ public static class RoomPacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.ExitRoom);
+			.Add(PacketType.ClientPacketTypeEnum.ExitRoom);
 		return pkt;
 	}
 
@@ -16,7 +16,7 @@ public static class RoomPacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.StartGame);
+			.Add(PacketType.ClientPacketTypeEnum.StartGame);
 		return pkt;
 	}
 
@@ -24,7 +24,7 @@ public static class RoomPacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.RoomReady);
+			.Add(PacketType.ClientPacketTypeEnum.RoomReady);
 		return pkt;
 	}
 
@@ -32,7 +32,7 @@ public static class RoomPacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.eClient.RoomStandby);
+			.Add(PacketType.ClientPacketTypeEnum.RoomStandby);
 		return pkt;
 	}
 
@@ -40,7 +40,7 @@ public static class RoomPacketMaker
 	{
 		Packet packet = new Packet();
 		packet
-			.Add(PacketType.eClient.RoomChat)
+			.Add(PacketType.ClientPacketTypeEnum.RoomChat)
 			.Add(_text);
 		return packet;
 	}
@@ -49,7 +49,7 @@ public static class RoomPacketMaker
 	{
 		Packet packet = new Packet();
 		packet
-			.Add(PacketType.eClient.ReqRoomUsersInfo);
+			.Add(PacketType.ClientPacketTypeEnum.ReqRoomUsersInfo);
 		return packet;
 	}
 
@@ -57,7 +57,7 @@ public static class RoomPacketMaker
 	{
 		Packet packet = new Packet();
 		packet
-			.Add(PacketType.eClient.RoomMapChoice)
+			.Add(PacketType.ClientPacketTypeEnum.RoomMapChoice)
 			.Add((byte)_mapID);
 		return packet;
 	}
@@ -66,7 +66,7 @@ public static class RoomPacketMaker
 	{
 		Packet packet = new Packet();
 		packet
-			.Add(PacketType.eClient.RoomCharacterChoice)
+			.Add(PacketType.ClientPacketTypeEnum.RoomCharacterChoice)
 			.Add((byte)_idx);
 		return packet;
 	}

@@ -12,16 +12,15 @@ public class LoginScene : BaseScene
 	{
 		base.Init();
 
-
 		Application.runInBackground = true;
 		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = 60;
 		Screen.SetResolution(1280, 720, false);
-		SceneType = Define.eScene.Login;
+		SceneType = Define.SceneEnum.Login;
 		GameObject obj, child;
 		UIButton uiBtn;
 
-		obj = UIManager.Inst.SetSceneUI(Define.eScene.Login).gameObject;
+		obj = UIManager.Inst.SetSceneUI(Define.SceneEnum.Login).gameObject;
 		if (obj)
 		{
 			child = Util.FindChild(obj, true, "Input");
@@ -33,29 +32,27 @@ public class LoginScene : BaseScene
 				uiBtn.Init(() => OnLoginButtonClicked());
 			}
 		}
-		UIPopup popup = UIManager.Inst.AddUI(Define.eUIPopup.UILoginFailPopup_WrongInput);
-		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.eUIPopup.UILoginFailPopup_WrongInput));
+		UIPopup popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UILoginFailPopup_WrongInput);
+		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UILoginFailPopup_WrongInput));
 
-		popup = UIManager.Inst.AddUI(Define.eUIPopup.UILoginFailPopup_AlreadyLoggedIn);
-		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.eUIPopup.UILoginFailPopup_AlreadyLoggedIn));
+		popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UILoginFailPopup_AlreadyLoggedIn);
+		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UILoginFailPopup_AlreadyLoggedIn));
 		
-		popup = UIManager.Inst.AddUI(Define.eUIPopup.UILoginFailPopup_Full);
-		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.eUIPopup.UILoginFailPopup_Full));
+		popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UILoginFailPopup_Full);
+		popup.SetButtonAction("OKBtn", () => UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UILoginFailPopup_Full));
 
-		popup = UIManager.Inst.AddUI(Define.eUIPopup.UIConnectFailPopup);
+		popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UIConnectFailPopup);
 		popup.SetButtonAction("OKBtn", () => OnConnectFailButtonClicked());
 
-		popup = UIManager.Inst.AddUI(Define.eUIPopup.UIDisconnectPopup, false);
+		popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UIDisconnectPopup, false);
 		popup.SetButtonAction("OKBtn", () => { 
 			//UIManager.Inst.HidePopupUI(Define.eUIPopup.UIDisconnectPopup);
 			Quit();
 		});
 
-		//NetworkManager.Inst.Init("119.67.216.164", 30001); // 포트포워딩
+		//NetworkManager.Inst.Init("119.67.216.164", 30001);
 		NetworkManager.Inst.Init("192.168.219.104", 30001);
 		//NetworkManager.Inst.Connect("118.32.36.41", 30001); // gpm
-
-		//InputManager.Inst.KeyAction += OnKeyboardEnter;
 
 		UDPCommunicator.Inst.Init();
 
@@ -69,34 +66,28 @@ public class LoginScene : BaseScene
 		base.Clear();
 	}
 
-	void Start()
+	private void Start()
 	{
 		Init();
 	}
 
-	void Update()
-	{
-		//base.Update();
-	}
-
-	void OnLoginButtonClicked()
+	private void OnLoginButtonClicked()
 	{
 		if (string.IsNullOrEmpty(m_input.text) || m_input.text.Contains(" "))
 		{
-			UIManager.Inst.ShowPopupUI(Define.eUIPopup.UILoginFailPopup_WrongInput);
+			UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UILoginFailPopup_WrongInput);
 			return;
 		}
 
 		UserData.Inst.Nickname = m_input.text;
-		//Debug.Log("just sent : " + UserData.Inst.Nickname);
 		int port = UDPCommunicator.Inst.GetPort();
-		Packet packet = LoginPacketMaker.LoginReq(port, NetworkManager.Inst.MyConnection.LocalEndPoint.Address.GetAddressBytes(), NetworkManager.Inst.MyConnection.LocalEndPoint.Port);
+		Packet packet = LoginPacketMaker.LoginReq(port, NetworkManager.Inst.MyConnection.LocalEndPoint.Address.GetAddressBytes());
 		NetworkManager.Inst.Send(packet);
 	}
 
-	void OnConnectFailButtonClicked()
+	private void OnConnectFailButtonClicked()
 	{
-		UIManager.Inst.HidePopupUI(Define.eUIPopup.UIConnectFailPopup);
+		UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UIConnectFailPopup);
 		Quit();
 	}
 

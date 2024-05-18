@@ -7,11 +7,9 @@ using static Define;
 
 public static class LobbyPacketHandler
 {
-	public static void Test(PacketReader _reader)
+	public static void Test()
 	{
-		long ticks = _reader.GetInt64();
-
-		//Debug.Log($"패킷 시간차 : {UserData.Inst.ticks} - {ticks} = {(UserData.Inst.ticks - ticks)}ms");
+		//long ticks = _reader.GetInt64();
 	}
 
 	public static void LobbyChat(PacketReader _reader)
@@ -19,21 +17,17 @@ public static class LobbyPacketHandler
 		string nickname = _reader.GetString();
 		string chat = _reader.GetString();
 
-		UIChat uichat = UIManager.Inst.FindUI(Define.eUIChat.UILobbyChat);
+		UIChat uichat = UIManager.Inst.FindUI(Define.UIChatEnum.UILobbyChat);
 		uichat.AddChat(nickname, chat);
-		uichat.SetScrollbarDown();
 	}
 
 	public static void LobbyUpdateInfo_UserList(PacketReader _reader)
 	{
-		// TODO : UIPage로 로직 옮기기
-		// 룸으로 들어간 후 이 패킷이 온다면
 		if (SceneManagerEx.Inst.CurScene.IsLoading == true) return;
 
 		TextMeshProUGUI tmp;
 
-
-		GameObject userListObj = UIManager.Inst.FindUI(Define.eUI.UILobby_UserList);
+		GameObject userListObj = UIManager.Inst.FindUI(Define.UIEnum.UILobby_UserList);
 		GameObject uiPageObj = Util.FindChild(userListObj, false, "Page");
 		if (uiPageObj == null)
 		{
@@ -62,15 +56,15 @@ public static class LobbyPacketHandler
 				tmp.text = _reader.GetString();
 				obj = Util.FindChild(item, false, "Location");
 				tmp = obj.GetComponent<TextMeshProUGUI>();
-				Define.eScene eScene = (Define.eScene)_reader.GetByte();
+				Define.SceneEnum eScene = (Define.SceneEnum)_reader.GetByte();
 				string sceneName = "";
 				switch (eScene)
 				{
-					case Define.eScene.Lobby:
+					case Define.SceneEnum.Lobby:
 						sceneName = "로비";
 						break;
-					case Define.eScene.Room:
-					case Define.eScene.InGame:
+					case Define.SceneEnum.Room:
+					case Define.SceneEnum.InGame:
 						roomID = _reader.GetByte();
 						sceneName = roomID + "번방";
 						break;
@@ -97,7 +91,7 @@ public static class LobbyPacketHandler
 
 		byte page = _reader.GetByte();
 
-		GameObject roomListObj = UIManager.Inst.FindUI(Define.eUI.UILobby_RoomList);
+		GameObject roomListObj = UIManager.Inst.FindUI(Define.UIEnum.UILobby_RoomList);
 		GameObject uiPageObj = Util.FindChild(roomListObj, false, "Page");
 		tmp = uiPageObj.GetComponent<TextMeshProUGUI>();
 		tmp.text = "페이지 : " + page;
@@ -121,7 +115,7 @@ public static class LobbyPacketHandler
 				uint id = _reader.GetUInt32();
 				uibtn.Init(() =>
 				{
-					GameObject go = UIManager.Inst.FindUI(Define.eUI.UILobby_RoomList_Block);
+					GameObject go = UIManager.Inst.FindUI(Define.UIEnum.UILobby_RoomList_Block);
 					go.SetActive(true);
 
 					Debug.Log($"버튼 클릭 : {id}");
@@ -140,14 +134,14 @@ public static class LobbyPacketHandler
 				tmp.text = _reader.GetByte().ToString() + "/4";
 				obj = Util.FindChild(item, false, "State");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-				Define.eRoomState eState = (Define.eRoomState)_reader.GetByte();
+				Define.RoomStateEnum eState = (Define.RoomStateEnum)_reader.GetByte();
 				string sceneName = "";
 				switch (eState)
 				{
-					case Define.eRoomState.Standby:
+					case Define.RoomStateEnum.Standby:
 						sceneName = "대기";
 						break;
-					case Define.eRoomState.InGame:
+					case Define.RoomStateEnum.InGame:
 						sceneName = "게임중";
 						break;
 				}
@@ -162,46 +156,44 @@ public static class LobbyPacketHandler
 			}
 		}
 		uiPage.ActiveItemCount = activeCount;
-		//Debug.Log("LobbyUpdateInfo_RoomList : " + roomCount);
 	}	
 	
-	// TODO : CreateRoom_Success
-	public static void CreateRoom_Success(PacketReader _reader)
+	public static void CreateRoom_Success()
 	{
 		UserData.Inst.IsRoomOwner = true;
-		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.eScene.Room);
+		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.SceneEnum.Room);
 	}
 
-	public static void CreateRoom_Fail(PacketReader _reader)
+	public static void CreateRoom_Fail()
 	{
-		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UICreateRoomFailPopup);
+		UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UICreateRoomFailPopup);
 	}
 
-	public static void EnterRoom_Success(PacketReader _reader)
+	public static void EnterRoom_Success()
 	{
 		UserData.Inst.IsRoomOwner = false;
 		// 씬 전환 후 룸에 있는 슬롯 갱신
-		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.eScene.Room);
+		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.SceneEnum.Room);
 	}
 
-	public static void EnterRoom_Full(PacketReader _reader)
+	public static void EnterRoom_Full()
 	{
-		GameObject go = UIManager.Inst.FindUI(Define.eUI.UILobby_RoomList_Block);
+		GameObject go = UIManager.Inst.FindUI(Define.UIEnum.UILobby_RoomList_Block);
 		go.SetActive(false);
-		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIEnterRoomFullPopup);
+		UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UIEnterRoomFullPopup);
 	}
 
-	public static void EnterRoom_InGame(PacketReader _reader)
+	public static void EnterRoom_InGame()
 	{
-		GameObject go = UIManager.Inst.FindUI(Define.eUI.UILobby_RoomList_Block);
+		GameObject go = UIManager.Inst.FindUI(Define.UIEnum.UILobby_RoomList_Block);
 		go.SetActive(false);
-		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIEnterRoomInGamePopup);
+		UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UIEnterRoomInGamePopup);
 	}
 
-	public static void EnterRoom_NoRoom(PacketReader _reader)
+	public static void EnterRoom_NoRoom()
 	{
-		GameObject go = UIManager.Inst.FindUI(Define.eUI.UILobby_RoomList_Block);
+		GameObject go = UIManager.Inst.FindUI(Define.UIEnum.UILobby_RoomList_Block);
 		go.SetActive(false);
-		UIManager.Inst.ShowPopupUI(Define.eUIPopup.UIEnterRoomNopePopup);
+		UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UIEnterRoomNopePopup);
 	}
 }
