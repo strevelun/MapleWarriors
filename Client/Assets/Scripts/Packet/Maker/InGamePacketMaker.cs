@@ -19,14 +19,12 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet BeginMove(Vector3 _vecStartPos, byte _byteDir)
+	public static Packet BeginMove(byte _byteDir)
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.ServerPacketTypeEnum.BeginMove)
 			.Add((byte)UserData.Inst.MyRoomSlot)
-			.Add((int)(_vecStartPos.x * 1000000))
-			.Add((int)(_vecStartPos.y * 1000000))
 			.Add(_byteDir);
 
 		return pkt;

@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class Connection 
 {
-	private Socket m_socket;
+	private readonly Socket m_socket;
 
-	private SocketAsyncEventArgs m_recvArgs = new SocketAsyncEventArgs();
-	private RingBuffer m_ringBuffer;
+	private readonly SocketAsyncEventArgs m_recvArgs = new SocketAsyncEventArgs();
+	private readonly RingBuffer m_ringBuffer;
 
     public IPEndPoint LocalEndPoint { get; set; }
 
@@ -30,8 +30,7 @@ public class Connection
 
 	public void RegisterRecv()
     {
-        ArraySegment<byte> seg;
-        m_ringBuffer.SetWriteSegment(out seg);
+        m_ringBuffer.SetWriteSegment(out ArraySegment<byte> seg);
       
         m_recvArgs.SetBuffer(seg.Array, seg.Offset, seg.Count);
 

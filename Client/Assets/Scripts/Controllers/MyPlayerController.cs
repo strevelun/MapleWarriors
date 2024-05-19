@@ -153,7 +153,7 @@ public class MyPlayerController : PlayerController
 
 		if (LastByteDir != 0 || m_bIsKeyDown || m_bIsKeyUp) // ByteDir가 0이 아니면서 m_bIsKeyUp이면 방향이 바뀐 것.
 		{
-			Packet pkt = InGamePacketMaker.BeginMove(transform.position, ByteDir);
+			Packet pkt = InGamePacketMaker.BeginMove(ByteDir);
 			UDPCommunicator.Inst.SendAll(pkt);
 			m_bIsKeyDown = false;
 			m_bIsKeyUp = false;

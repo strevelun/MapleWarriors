@@ -56,8 +56,7 @@ public class UDPCommunicator
 
 	public void Send(Packet _pkt, int _slot)
 	{
-		IPEndPoint ep;
-		if (!DicSendInfo.TryGetValue(_slot, out ep)) return;
+		if (!DicSendInfo.TryGetValue(_slot, out IPEndPoint ep)) return;
 
 		m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
 		//InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
@@ -74,8 +73,7 @@ public class UDPCommunicator
 
 	public void RegisterRecv()
 	{
-		ArraySegment<byte> seg;
-		m_udpBuffer.SetWriteSegment(out seg);
+		m_udpBuffer.SetWriteSegment(out ArraySegment<byte> seg);
 
 		m_recvArgs.SetBuffer(seg.Array, seg.Offset, seg.Count);
 

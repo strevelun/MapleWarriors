@@ -31,10 +31,8 @@ public class PlayerController : CreatureController
 	private TextMeshProUGUI m_positionTMP;
 	private string m_strNickname;
 
-	[SerializeField]
 	private readonly Vector2 m_nameTagOffset = new Vector2(0.5f, 1.5f);
 	private RectTransform m_nameTagUI;
-	[SerializeField]
 	private readonly Vector2 m_positionTagOffset = new Vector2(0.5f, 2f);
 	private RectTransform m_positionTagUI;
 
@@ -173,7 +171,7 @@ public class PlayerController : CreatureController
 		m_nicknameTMP.text = m_strNickname;
 	}
 
-	public void BeginMovePosition(float _startXPos, float _startYPos, byte _byteDir)
+	public void BeginMovePosition(byte _byteDir)
 	{
 		SetByteDir(_byteDir);
 		//transform.position = new Vector2(_startXPos, _startYPos);

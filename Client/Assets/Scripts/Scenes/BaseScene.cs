@@ -81,7 +81,7 @@ public abstract class BaseScene : MonoBehaviour
 		}
 		m_fadeInOut.color = new Color(0, 0, 0, 1);
 
-		if (_action != null) _action.Invoke();
+		_action?.Invoke();
 		yield return new WaitForSeconds(1f);
 
 		fadeCnt = 0f;

@@ -93,12 +93,10 @@ public static class InGamePacketHandler
 	public static void BeginMove(PacketReader _reader)
 	{
 		byte roomSlot = _reader.GetByte();
-		float xpos = _reader.GetInt32() / 1000000.0f;
-		float ypos = _reader.GetInt32() / 1000000.0f;
 		byte dir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc.BeginMovePosition(xpos, ypos, dir);
+		pc.BeginMovePosition(dir);
 	}
 
 	public static void Moving(PacketReader _reader)
