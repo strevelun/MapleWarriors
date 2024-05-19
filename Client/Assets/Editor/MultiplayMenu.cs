@@ -9,18 +9,18 @@ using UnityEditor;
 public class MultiplayMenu
 {
 #if UNITY_EDITOR
-	[MenuItem("Run Multiplayer(Win64)/1 Player")]
-	static void PerformWin64Build1()
+	[MenuItem("Run Multiplayer(Win64)/ºôµå")]
+	private static void PerformWin64Build1()
 	{
 		PerformWin64Build(1);
 	}
 
-	static void PerformWin64Build(int playerCount)
+	private static void PerformWin64Build(int _playerCount)
 	{
 		EditorUserBuildSettings.SwitchActiveBuildTarget(
 			BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows);
 
-		for (int i = 1; i <= playerCount; i++)
+		for (int i = 1; i <= _playerCount; i++)
 		{
 			BuildPipeline.BuildPlayer(GetScenePaths(),
 				"Builds/Win64/" + GetProjectName() + i.ToString() + "/" + GetProjectName() + i.ToString() + ".exe",
@@ -28,13 +28,13 @@ public class MultiplayMenu
 		}
 	}
 
-	static string GetProjectName()
+	private static string GetProjectName()
 	{
 		string[] s = Application.dataPath.Split('/');
 		return s[s.Length - 2];
 	}
 
-	static string[] GetScenePaths()
+	private static string[] GetScenePaths()
 	{
 		string[] scenes = new string[EditorBuildSettings.scenes.Length];
 

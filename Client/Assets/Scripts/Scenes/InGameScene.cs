@@ -134,7 +134,7 @@ public class InGameScene : BaseScene
 			}
 			else if (GameManager.Inst.GameOver)
 			{
-				InGameConsole.Inst.Log("Annihilated º¸³¿");
+				//InGameConsole.Inst.Log("Annihilated º¸³¿");
 				Packet pkt = InGamePacketMaker.Annihilated();
 				UDPCommunicator.Inst.SendAll(pkt);
 			}

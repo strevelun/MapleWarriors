@@ -160,6 +160,7 @@ public class RoomScene : BaseScene
 	{
 		UIButton uibtn = _obj.GetComponent<UIButton>();
 		if (uibtn.IsActive == false) return;
+		if (!UserData.Inst.IsRoomOwner) return;
 
 		UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UIMapChoicePopup);
 	}
@@ -168,6 +169,7 @@ public class RoomScene : BaseScene
 	{
 		UIButton uibtn = _obj.GetComponent<UIButton>();
 		if (uibtn.IsActive == false) return;
+		if (uibtn.name.CompareTo($"{UserData.Inst.MyRoomSlot}") != 0) return;
 
 		UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UICharacterChoicePopup);
 	}

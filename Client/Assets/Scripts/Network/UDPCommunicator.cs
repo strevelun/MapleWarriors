@@ -120,7 +120,7 @@ public class UDPCommunicator
 
 	public void AddSendInfo(int _slot, string _ip, int _port)
 	{
-		InGameConsole.Inst.Log($"AddSendInfo : {DicSendInfo.Count}");
+		//InGameConsole.Inst.Log($"AddSendInfo : {DicSendInfo.Count}");
 		DicSendInfo.Add(_slot, new IPEndPoint(IPAddress.Parse(_ip), _port));
 	}
 

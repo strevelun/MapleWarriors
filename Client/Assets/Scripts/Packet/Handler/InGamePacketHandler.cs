@@ -78,7 +78,7 @@ public static class InGamePacketHandler
 				pc.SetNickname(nickname);
 
 				UDPCommunicator.Inst.AddSendInfo(idx, ip, port);
-				InGameConsole.Inst.Log($"{nickname}, port : {port}, ip : {ip}");
+				//InGameConsole.Inst.Log($"{nickname}, port : {port}, ip : {ip}");
 			}
 			ObjectManager.Inst.AddPlayer(idx, player);
 		}
@@ -159,7 +159,7 @@ public static class InGamePacketHandler
 	public static void InGameExit(PacketReader _reader)
 	{
 		byte leftUserIdx = _reader.GetByte();
-		InGameConsole.Inst.Log($"InGameExit : {leftUserIdx}");
+		InGameConsole.Inst.Log($"InGameExit : {leftUserIdx} ³ª°¨");
 		byte nextRoomOwnerIdx = _reader.GetByte();
 
 		if (UserData.Inst.MyRoomSlot == nextRoomOwnerIdx)
@@ -322,7 +322,7 @@ public static class InGamePacketHandler
 	public static void NextStage()
 	{
 		GameManager.Inst.OnChangeStage();
-		InGameConsole.Inst.Log("NextStage");
+		//InGameConsole.Inst.Log("NextStage");
 	}
 
 	public static void MapClear()
