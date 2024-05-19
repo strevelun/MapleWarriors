@@ -17,7 +17,7 @@ public abstract class BaseScene : MonoBehaviour
 
 	protected virtual void Init()
 	{
-		UIManager.Inst.ClearAll();
+		UIManager.Inst.Clear();
 		SceneManagerEx.Inst.CurScene = FindObjectOfType<BaseScene>();
 	}
 
