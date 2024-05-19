@@ -162,6 +162,7 @@ public class GameManager
 	public void OnChangeStage()
 	{
 		if (!GameStart) return;
+		if (!StageClear) return;
 
 		m_inGameScene.SetClearImageVisible(false);
 		GameStart = false;
