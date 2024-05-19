@@ -176,7 +176,7 @@ public class PlayerController : CreatureController
 	public void BeginMovePosition(float _startXPos, float _startYPos, byte _byteDir)
 	{
 		SetByteDir(_byteDir);
-		transform.position = new Vector2(_startXPos, _startYPos);
+		//transform.position = new Vector2(_startXPos, _startYPos);
 	}
 
 	public void EndMovePosition(float _destXPos, float _destYPos)
