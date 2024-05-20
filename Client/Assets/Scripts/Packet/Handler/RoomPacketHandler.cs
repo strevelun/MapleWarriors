@@ -105,7 +105,7 @@ public static class RoomPacketHandler
 		string nickname;
 		Define.RoomUserStateEnum eState;
 		Define.CharacterChoiceEnum eChoice;
-		int roomID = _reader.GetByte();
+		int roomID = _reader.GetUShort();
 		string roomTitle = _reader.GetString();
 		int roomOwnerIdx = _reader.GetByte();
 		int numOfUsers = _reader.GetByte();

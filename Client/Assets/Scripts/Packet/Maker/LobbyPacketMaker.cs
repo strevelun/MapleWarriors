@@ -56,11 +56,11 @@ public static class LobbyPacketMaker
 		return pkt;
 	}
 
-	public static Packet EnterRoom(uint _id)
+	public static Packet EnterRoom(int _id)
 	{
 		Packet pkt = new Packet();
 		pkt.Add(PacketType.ClientPacketTypeEnum.EnterRoom)
-			.Add(_id);
+			.Add((ushort)_id);
 		return pkt;
 	}
 }

@@ -112,7 +112,7 @@ public static class LobbyPacketHandler
 			{
 				obj = Util.FindChild(item, false, "Id");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-				uint id = _reader.GetUInt32();
+				int id = _reader.GetUShort();
 				uibtn.Init(() =>
 				{
 					GameObject go = UIManager.Inst.FindUI(Define.UIEnum.UILobby_RoomList_Block);
@@ -172,7 +172,7 @@ public static class LobbyPacketHandler
 	public static void EnterRoom_Success()
 	{
 		UserData.Inst.IsRoomOwner = false;
-		// ¾À ÀüÈ¯ ÈÄ ·ë¿¡ ÀÖ´Â ½½·Ô °»½Å
+		UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UIFindRoomPopup);
 		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.SceneEnum.Room);
 	}
 

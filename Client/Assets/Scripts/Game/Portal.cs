@@ -26,15 +26,12 @@ public class Portal : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D _collision)
 	{
-        if (!GameManager.Inst.CheckMapClear()) return;
-
 		++m_cntPlayer;
         InGameConsole.Inst.Log($"현재 포탈에 {m_cntPlayer} 명");
 	}
 
 	private void OnTriggerExit2D(Collider2D _collision)
 	{
-		if (!GameManager.Inst.CheckMapClear()) return;
 		if (m_cntPlayer <= 0) return;
 
 		--m_cntPlayer;

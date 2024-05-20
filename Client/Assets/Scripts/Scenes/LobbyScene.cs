@@ -24,6 +24,9 @@ public class LobbyScene : BaseScene
 			obj = Util.FindChild(uiScene.gameObject, false, "ExitBtn");
 			btn = obj.GetComponent<Button>();
 			btn.onClick.AddListener(OnExitBtnClicked);
+			obj = Util.FindChild(uiScene.gameObject, false, "FindRoomBtn");
+			btn = obj.GetComponent<Button>();
+			btn.onClick.AddListener(OnFindRoomBtnClicked);
 		}
 
 		{
@@ -105,6 +108,21 @@ public class LobbyScene : BaseScene
 			{
 				UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UIEnterRoomNopePopup);
 			});
+
+			popup = UIManager.Inst.AddUI(Define.UIPopupEnum.UIFindRoomPopup);
+			popup.SetButtonAction("OKBtn", () =>
+			{
+				if (string.IsNullOrWhiteSpace(popup.InputField.text)) return;
+				if (!int.TryParse(popup.InputField.text.Trim(), out int result)) return;
+
+				Packet pkt = LobbyPacketMaker.EnterRoom(result);
+				NetworkManager.Inst.Send(pkt);
+			});
+			popup.SetButtonAction("CancelBtn", () =>
+			{
+				popup.InputField.text = string.Empty;
+				UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UIFindRoomPopup);
+			});
 		}
 
 		StartCoroutine(UpdateLobbyInfoCoroutine());
@@ -185,5 +203,10 @@ public class LobbyScene : BaseScene
 	private void OnExitBtnClicked()
 	{
 		NetworkManager.Inst.Disconnect();
+	}
+
+	private void OnFindRoomBtnClicked()
+	{
+		UIManager.Inst.ShowPopupUI(Define.UIPopupEnum.UIFindRoomPopup);
 	}
 }

@@ -50,6 +50,7 @@ public class Define
 		UIEnterRoomFullPopup,
 		UIEnterRoomInGamePopup,
 		UIEnterRoomNopePopup,
+		UIFindRoomPopup,
 	}
 
 	public enum UIChatEnum
