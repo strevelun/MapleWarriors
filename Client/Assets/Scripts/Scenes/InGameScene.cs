@@ -23,8 +23,6 @@ public class InGameScene : BaseScene
 
 		InGameConsole.Inst.Init(ingameConsole);
 
-		Packet pkt = InGamePacketMaker.ReqInitInfo();
-		NetworkManager.Inst.Send(pkt);
 		IsLoading = false;
 
 		InputManager.Inst.SetInputEnabled(false);
@@ -33,6 +31,9 @@ public class InGameScene : BaseScene
 		GameManager.Inst.Init(this);
 
 		StartCoroutine(RoomOwnerLogic());
+
+		Packet pkt = InGamePacketMaker.ReqInitInfo();
+		NetworkManager.Inst.Send(pkt);
 	}
 
 	public override void Clear()
@@ -44,7 +45,8 @@ public class InGameScene : BaseScene
 
 		InGameConsole.Inst.GameOver();
 		GameManager.Inst.Clear();
-		UDPCommunicator.Inst.ClearIngameInfo();
+		//UDPCommunicator.Inst.ClearIngameInfo();
+		UDPCommunicator.Inst.Disconnect();
 	}
 
 	private void Start()

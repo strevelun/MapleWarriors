@@ -21,12 +21,23 @@ public class UDPCommunicator
 	private UDPBuffer m_udpBuffer;
 	private bool m_isRecv;
 
+	public int MyPort { get; private set; }
 	public Dictionary<int, IPEndPoint> DicSendInfo { get; private set; } = new Dictionary<int, IPEndPoint>();
 
 	public bool Init()
 	{
-		m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-		m_socket.Bind(new IPEndPoint(IPAddress.Any, 0));
+		try
+		{
+			m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+			m_socket.SendTo(new byte[] { 0 }, new IPEndPoint(IPAddress.Parse(Define.ServerIP), Define.ServerPort));
+		}
+		catch(SocketException _ex)
+		{
+			Debug.Log(_ex.ToString());
+			return false;
+		}
+		IPEndPoint localEndPoint = m_socket.LocalEndPoint as IPEndPoint;
+		MyPort = localEndPoint.Port;
 
 		GameObject udpBuffer = GameObject.Find("UDPBuffer");
 		if (!udpBuffer) return false;
@@ -34,18 +45,11 @@ public class UDPCommunicator
 		m_udpBuffer = udpBuffer.GetComponent<UDPBuffer>();
 		if (!m_udpBuffer) return false;
 
-
 		m_recvArgs = new SocketAsyncEventArgs();
 		m_recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
 		RegisterRecv();
 
 		return true;
-	}
-
-	public int GetPort()
-	{
-		IPEndPoint localEndPoint = m_socket.LocalEndPoint as IPEndPoint;
-		return localEndPoint.Port;
 	}
 
 	public void Start()
@@ -68,6 +72,16 @@ public class UDPCommunicator
 		{
 			m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
 			//InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
+		}
+	}
+
+	public void SendAwake()
+	{
+		if (DicSendInfo.Count == 0) return;
+
+		foreach (IPEndPoint ep in DicSendInfo.Values)
+		{
+			m_socket.SendTo(new byte[] { 0 }, new IPEndPoint(IPAddress.Parse(ep.Address.ToString()), ep.Port));
 		}
 	}
 

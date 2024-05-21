@@ -6,7 +6,7 @@ using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
 public class RoomScene : BaseScene
-{
+{ 
 	protected override void Init()
 	{
 		base.Init();

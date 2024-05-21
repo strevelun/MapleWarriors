@@ -50,11 +50,11 @@ public class LoginScene : BaseScene
 			Quit();
 		});
 
-		//NetworkManager.Inst.Init("119.67.216.164", 30001);
-		NetworkManager.Inst.Init("192.168.219.104", 30001);
-		//NetworkManager.Inst.Connect("118.32.36.41", 30001); // gpm
-
+		NetworkManager.Inst.Init(Define.ServerIP, Define.ServerPort);
 		UDPCommunicator.Inst.Init();
+
+		GameObject natUpdater = new GameObject("NATUpdater");
+		natUpdater.AddComponent<NATUpdater>();
 
 		InputManager.Inst.SetInputEnabled(false);
 		IsLoading = false;
@@ -80,8 +80,7 @@ public class LoginScene : BaseScene
 		}
 
 		UserData.Inst.Nickname = m_input.text;
-		int port = UDPCommunicator.Inst.GetPort();
-		Packet packet = LoginPacketMaker.LoginReq(port, NetworkManager.Inst.MyConnection.LocalEndPoint.Address.GetAddressBytes());
+		Packet packet = LoginPacketMaker.LoginReq(UDPCommunicator.Inst.MyPort, NetworkManager.Inst.MyConnection.LocalEndPoint.Address.GetAddressBytes());
 		NetworkManager.Inst.Send(packet);
 	}
 

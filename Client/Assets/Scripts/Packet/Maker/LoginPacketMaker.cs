@@ -3,13 +3,13 @@
 
 public static class LoginPacketMaker
 {
-	public static Packet LoginReq(int _udpPort, byte[] _ipBytes)
+	public static Packet LoginReq(int _port, byte[] _ipBytes)
 	{
 		Packet packet = new Packet();
 		packet
 			.Add(PacketType.ClientPacketTypeEnum.LoginReq)
 			.Add(UserData.Inst.Nickname)
-			.Add((ushort)_udpPort)
+			.Add((ushort)_port)
 			.Add(_ipBytes[0])
 			.Add(_ipBytes[1])
 			.Add(_ipBytes[2])

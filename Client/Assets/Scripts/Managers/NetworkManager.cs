@@ -40,11 +40,10 @@ public class NetworkManager
 		try
 		{
 			socket.Connect(endPoint);
-			MyConnection = new Connection(socket);
-			IPEndPoint localEndPoint = socket.LocalEndPoint as IPEndPoint;
-			byte[] addrBytes = localEndPoint.Address.GetAddressBytes();
-			int internalPort = localEndPoint.Port;
-			MyConnection.LocalEndPoint = localEndPoint;
+			MyConnection = new Connection(socket)
+			{
+				LocalEndPoint = socket.LocalEndPoint as IPEndPoint
+			};
 		} 
 		catch (SocketException e)
 		{

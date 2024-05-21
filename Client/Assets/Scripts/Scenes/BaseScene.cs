@@ -17,7 +17,6 @@ public abstract class BaseScene : MonoBehaviour
 
 	protected virtual void Init()
 	{
-		UIManager.Inst.Clear();
 		SceneManagerEx.Inst.CurScene = FindObjectOfType<BaseScene>();
 	}
 
@@ -42,6 +41,7 @@ public abstract class BaseScene : MonoBehaviour
     Application.Quit();
 #endif
 	}
+
 
 	protected void StartFadeCoroutine()
 	{

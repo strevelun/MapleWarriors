@@ -15,10 +15,10 @@ public static class PacketHandler
 			{
 		
 				case PacketType.ServerPacketTypeEnum.LoginFailure_AlreadyLoggedIn:
-					LoginPacketHandler.LoginFailure_AlreadyLoggedIn(_reader);
+					LoginPacketHandler.LoginFailure_AlreadyLoggedIn();
 					break;
 				case PacketType.ServerPacketTypeEnum.LoginFailure_Full:
-					LoginPacketHandler.LoginFailure_Full(_reader);
+					LoginPacketHandler.LoginFailure_Full();
 					break;
 				case PacketType.ServerPacketTypeEnum.LoginSuccess:
 					LoginPacketHandler.LoginSuccess(_reader);

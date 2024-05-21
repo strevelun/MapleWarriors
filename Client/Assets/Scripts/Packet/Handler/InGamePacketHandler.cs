@@ -1,6 +1,4 @@
 using Cinemachine;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -37,25 +35,28 @@ public static class InGamePacketHandler
 		}
 		GameManager.Inst.SetMonsterCnt(activeCnt);
 
+		string myIP = "";
+		int j;
+		for (j = 0; j < 4; ++j)
+		{
+			myIP += _reader.GetByte();
+			if (j < 3) myIP += ".";
+		}
+
+		//string myPrivateIP = NetworkManager.Inst.MyConnection.LocalEndPoint.Address.ToString();
+		tmp.text += $"{UserData.Inst.Nickname} [{myIP}, {UDPCommunicator.Inst.MyPort}]\n";
+
 		List<int> idxList = new List<int>();
 		MyPlayerController mpc;
-
+		int port;
+		string ip, privateIP;
 		for (int i = 0; i < numOfUsers; ++i)
 		{
 			int connectionID = _reader.GetUShort();
 			int idx = _reader.GetByte();
 			string nickname = _reader.GetString();
 			byte characterChoice = _reader.GetByte();
-			ushort port = _reader.GetUShort();
-			string ip = "";
-			for (int j = 0; j < 4; ++j)
-			{
-				ip += _reader.GetByte();
-				if (j < 3) ip += ".";
-			}
-
-			tmp.text += $"{nickname} [{ip}, {port}]\n";
-
+		
 			player = ResourceManager.Inst.Instantiate($"Creature/Player_{characterChoice}"); // 플레이어 선택
 			player.name = $"Player_{characterChoice}_{idx}"; // slot 넘버로
 
@@ -76,9 +77,33 @@ public static class InGamePacketHandler
 				pc.Idx = idx;
 				idxList.Add(idx);
 				pc.SetNickname(nickname);
+				port = _reader.GetUShort();
 
-				UDPCommunicator.Inst.AddSendInfo(idx, ip, port);
-				//InGameConsole.Inst.Log($"{nickname}, port : {port}, ip : {ip}");
+				ip = "";
+				for (j = 0; j < 4; ++j)
+				{
+					ip += _reader.GetByte();
+					if (j < 3) ip += ".";
+				}
+
+				privateIP = "";
+				for (j = 0; j < 4; ++j)
+				{
+					privateIP += _reader.GetByte();
+					if (j < 3) privateIP += ".";
+				}
+
+				if (myIP.CompareTo(ip) == 0)
+				{
+					UDPCommunicator.Inst.AddSendInfo(idx, privateIP, port);
+					tmp.text += $"{nickname} [{privateIP}, {port}]\n";
+				}
+				else
+				{
+					UDPCommunicator.Inst.AddSendInfo(idx, ip, port);
+					tmp.text += $"{nickname} [{ip}, {port}]\n";
+				}
+
 			}
 			ObjectManager.Inst.AddPlayer(idx, player);
 		}
