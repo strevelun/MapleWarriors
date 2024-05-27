@@ -20,8 +20,8 @@ public class Define
 	public const int RoomTitleMaxCount = 15;
 	public const float MaxExpelTime = 5f;
 
-	//public const string ServerIP = "119.67.216.164";
-	public const string ServerIP = "192.168.219.104";
+	//public const string ServerIP = "110.9.1.110";
+	public const string ServerIP = "192.168.55.24";
 	public const int ServerPort = 30001;
 
 	public enum SceneEnum

@@ -21,7 +21,13 @@ public static class PacketHandler
 					LoginPacketHandler.LoginFailure_Full();
 					break;
 				case PacketType.ServerPacketTypeEnum.LoginSuccess:
-					LoginPacketHandler.LoginSuccess(_reader);
+					LoginPacketHandler.LoginSuccess();
+					break;
+				case PacketType.ServerPacketTypeEnum.CheckedClientInfo:
+					LoginPacketHandler.CheckedClientInfo();
+					break;
+				case PacketType.ServerPacketTypeEnum.ConnectionID:
+					LoginPacketHandler.ConnectionID(_reader);
 					break;
 			}
 		}

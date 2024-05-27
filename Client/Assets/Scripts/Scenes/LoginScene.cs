@@ -1,12 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LoginScene : BaseScene
 {
 	private TMP_InputField m_input;
+
+	private Coroutine udpCoroutine;
 
 	protected override void Init()
 	{
@@ -53,9 +57,6 @@ public class LoginScene : BaseScene
 		NetworkManager.Inst.Init(Define.ServerIP, Define.ServerPort);
 		UDPCommunicator.Inst.Init();
 
-		GameObject natUpdater = new GameObject("NATUpdater");
-		natUpdater.AddComponent<NATUpdater>();
-
 		InputManager.Inst.SetInputEnabled(false);
 		IsLoading = false;
 		StartFadeCoroutine();
@@ -69,6 +70,29 @@ public class LoginScene : BaseScene
 	private void Start()
 	{
 		Init();
+	}
+
+	private IEnumerator ConnectToServerUDP()
+	{
+		byte[] pkt = BitConverter.GetBytes(UserData.Inst.ConnectionID);
+
+		while (true)
+		{
+			UDPCommunicator.Inst.Send(pkt, Define.ServerIP, Define.ServerPort);
+			yield return new WaitForSeconds(1f);
+		}
+	}
+
+	public void StartConnectToServerUDP()
+	{
+		if (udpCoroutine != null) return;
+
+		udpCoroutine = StartCoroutine(ConnectToServerUDP());
+	}
+
+	public void StopConnectToServerUDP()
+	{
+		StopCoroutine(udpCoroutine);
 	}
 
 	private void OnLoginButtonClicked()

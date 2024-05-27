@@ -13,9 +13,23 @@ public static class LoginPacketHandler
 		Debug.Log("LoginFailure_Full");
 	}
 
-	public static void LoginSuccess(PacketReader _reader)
+	public static void LoginSuccess()
 	{
-		UserData.Inst.ConnectionID = _reader.GetUShort();
 		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.SceneEnum.Lobby);
+	}
+
+	public static void CheckedClientInfo()
+	{
+		LoginScene scene = SceneManagerEx.Inst.CurScene as LoginScene;
+		scene.StopConnectToServerUDP();
+		Debug.Log("CheckedClientInfo");
+	}
+
+	public static void ConnectionID(PacketReader _reader)
+	{
+		UserData.Inst.ConnectionID = _reader.GetUInt32();
+		LoginScene scene = SceneManagerEx.Inst.CurScene as LoginScene;
+		scene.StartConnectToServerUDP();
+		Debug.Log($"ConnectionID : {UserData.Inst.ConnectionID}");
 	}
 }

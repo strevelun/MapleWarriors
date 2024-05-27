@@ -53,6 +53,9 @@ public class PacketType
 		StageClear,
 		Annihilated,
 		PlayerHit,
+		CheckedClientInfo,
+		SendAwake,
+		ConnectionID,
 		Max,
 	}
 

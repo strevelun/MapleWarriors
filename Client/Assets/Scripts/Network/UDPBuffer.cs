@@ -36,9 +36,9 @@ public class UDPBuffer : MonoBehaviour
 	{
 		lock (m_lock)
 		{
-			while (m_writtenBytes != 0)
+			while (m_writtenBytes > 0)
 			{
-				m_reader.SetBuffer(m_buffer, m_readPos);
+				m_reader.SetBuffer(m_buffer, m_readPos); // UDP 여부
 				if (Active) PacketHandler.Handle(m_reader);
 				MoveReadPos(m_reader.Size);
 			}

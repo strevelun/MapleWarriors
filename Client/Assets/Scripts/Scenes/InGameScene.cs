@@ -31,9 +31,13 @@ public class InGameScene : BaseScene
 		GameManager.Inst.Init(this);
 
 		StartCoroutine(RoomOwnerLogic());
+		StartCoroutine(GameStartLogic());
 
 		Packet pkt = InGamePacketMaker.ReqInitInfo();
 		NetworkManager.Inst.Send(pkt);
+
+		GameObject natUpdater = new GameObject("NATUpdater");
+		natUpdater.AddComponent<NATUpdater>();
 	}
 
 	public override void Clear()
@@ -45,8 +49,7 @@ public class InGameScene : BaseScene
 
 		InGameConsole.Inst.GameOver();
 		GameManager.Inst.Clear();
-		//UDPCommunicator.Inst.ClearIngameInfo();
-		UDPCommunicator.Inst.Disconnect();
+		UDPCommunicator.Inst.ClearIngameInfo();
 	}
 
 	private void Start()
@@ -58,55 +61,7 @@ public class InGameScene : BaseScene
 	{
 		GameManager.Inst.UpdateTimer(Time.deltaTime);
 
-		if (!GameManager.Inst.GameStart && !GameManager.Inst.StageLoading && !GameManager.Inst.AllClear && GameManager.Inst.PlayerAliveCnt != 0)
-		{
-			if (GameManager.Inst.IsTimerOn())
-			{
-				GameManager.Inst.CheckStartTimer();	
-				return;
-			}
-
-			if(!UserData.Inst.IsRoomOwner)
-			{
-
-				Packet pkt = InGamePacketMaker.Ready();
-				UDPCommunicator.Inst.Send(pkt, UserData.Inst.RoomOwnerSlot);
-			}
-			else
-			{
-				bool start = GameManager.Inst.StartGame();
-				if(start)
-				{
-					int timer = (int)(GameManager.Inst.Timer * 1000000); 
-					int startTime = timer + 2 * 1000000; 
-					Packet pkt = InGamePacketMaker.Start(timer, startTime);
-					UDPCommunicator.Inst.SendAll(pkt);
-					GameManager.Inst.StartTime = startTime / 1000000f;
-					StartCoroutine(UpdateMonstersInfo());
-				}
-			}
-			return;
-		}
-
-		if (UserData.Inst.IsRoomOwner)
-		{
-			if (MapManager.Inst.CurStage == MapManager.Inst.MaxStage) // 맵 클리어
-			{
-				if (GameManager.Inst.CheckMapClear())
-				{
-					OnMapClear();
-				}
-			}
-			else if (!m_clear.activeSelf && !m_wasted.activeSelf && GameManager.Inst.CheckMapClear()) // 스테이지 클리어
-			{
-				OnStageClear();
-			}
-			
-			if (!m_wasted.activeSelf && !m_clear.activeSelf && GameManager.Inst.CheckGameOver()) // 전멸
-			{
-				OnAnnihilated();
-			}
-		}
+		CheckGameState();
 	}
 
 	protected override void OnApplicationQuit()
@@ -154,6 +109,47 @@ public class InGameScene : BaseScene
 				UDPCommunicator.Inst.SendAll(pkt);
 			}
 
+			yield return new WaitForSeconds(0.1f);
+		}
+	}
+
+	private IEnumerator GameStartLogic()
+	{
+		while (true)
+		{
+			if (GameManager.Inst.GameStart || GameManager.Inst.CheckGameOver() ||  GameManager.Inst.StageLoading || GameManager.Inst.AllClear)
+			{
+				yield return null;
+				continue;
+			}
+
+			if (GameManager.Inst.IsTimerOn())
+			{
+				//Debug.Log(GameManager.Inst.CheckGameOver());
+				GameManager.Inst.CheckStartTimer();
+				yield return null;
+				continue;
+			}
+
+			if (!UserData.Inst.IsRoomOwner)
+			{
+				Packet pkt = InGamePacketMaker.Ready();
+				UDPCommunicator.Inst.Send(pkt, UserData.Inst.RoomOwnerSlot);
+			}
+			else
+			{
+				bool start = GameManager.Inst.StartGame();
+				if (start)
+				{
+					Debug.Log("Start!");
+					int timer = (int)(GameManager.Inst.Timer * 1000000);
+					int startTime = timer + 2 * 1000000;
+					Packet pkt = InGamePacketMaker.Start(timer, startTime);
+					UDPCommunicator.Inst.SendAll(pkt);
+					GameManager.Inst.StartTime = startTime / 1000000f;
+					StartCoroutine(UpdateMonstersInfo());
+				}
+			}
 			yield return new WaitForSeconds(0.1f);
 		}
 	}
@@ -210,6 +206,29 @@ public class InGameScene : BaseScene
 	public void SetWastedImageVisible(bool _visible)
 	{
 		m_wasted.SetActive(_visible);
+	}
+
+	private void CheckGameState()
+	{
+		if (UserData.Inst.IsRoomOwner)
+		{
+			if (MapManager.Inst.CurStage == MapManager.Inst.MaxStage) // 맵 클리어
+			{
+				if (GameManager.Inst.CheckMapClear())
+				{
+					OnMapClear();
+				}
+			}
+			else if (!m_clear.activeSelf && !m_wasted.activeSelf && GameManager.Inst.CheckMapClear()) // 스테이지 클리어
+			{
+				OnStageClear();
+			}
+
+			if (!m_wasted.activeSelf && !m_clear.activeSelf && GameManager.Inst.GameStart && GameManager.Inst.CheckGameOver()) // 전멸
+			{
+				OnAnnihilated();
+			}
+		}
 	}
 
 	public void OnMapClear()

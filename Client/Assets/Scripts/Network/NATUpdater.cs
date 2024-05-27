@@ -6,7 +6,6 @@ public class NATUpdater : MonoBehaviour
 {
     private void Start()
     {
-        DontDestroyOnLoad(this);
 		StartCoroutine(UpdateNAT());
     }
 
@@ -14,7 +13,8 @@ public class NATUpdater : MonoBehaviour
 	{
 		while (true)
 		{
-			UDPCommunicator.Inst.SendAwake();
+			Packet pkt = InGamePacketMaker.SendAwake();
+			UDPCommunicator.Inst.SendAll(pkt);
 			yield return new WaitForSeconds(30f);
 		}
 	}

@@ -256,4 +256,12 @@ public static class InGamePacketMaker
 		
 		return pkt;
 	}
+
+	public static Packet SendAwake()
+	{
+		Packet pkt = new Packet();
+		pkt
+			.Add(PacketType.ServerPacketTypeEnum.SendAwake);
+		return pkt;
+	}
 }

@@ -53,7 +53,6 @@ public class GameManager
 
 	public bool CheckGameOver()
 	{
-		if (!GameStart) return false;
 		if (PlayerCnt == 0) return true;
 		if (PlayerAliveCnt == 0) return true;
 

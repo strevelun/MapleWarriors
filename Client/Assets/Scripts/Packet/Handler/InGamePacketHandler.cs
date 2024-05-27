@@ -33,6 +33,7 @@ public static class InGamePacketHandler
 				++activeCnt;
 			}
 		}
+
 		GameManager.Inst.SetMonsterCnt(activeCnt);
 
 		string myIP = "";
@@ -113,6 +114,9 @@ public static class InGamePacketHandler
 		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
 
 		GameManager.Inst.SetOtherPlayerSlot(idxList);
+
+		Packet pkt = InGamePacketMaker.SendAwake();
+		UDPCommunicator.Inst.SendAll(pkt);
 	}
 
 	public static void BeginMove(PacketReader _reader)
@@ -121,7 +125,7 @@ public static class InGamePacketHandler
 		byte dir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc.BeginMovePosition(dir);
+		pc?.BeginMovePosition(dir);
 	}
 
 	public static void Moving(PacketReader _reader)
@@ -132,7 +136,7 @@ public static class InGamePacketHandler
 		byte byteDir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc.Moving(xpos, ypos, byteDir);
+		pc?.Moving(xpos, ypos, byteDir);
 	}
 
 	public static void EndMove(PacketReader _reader)
@@ -142,7 +146,7 @@ public static class InGamePacketHandler
 		float ypos = _reader.GetInt32() / 1000000.0f;
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc.EndMovePosition(xpos, ypos);
+		pc?.EndMovePosition(xpos, ypos);
 	}
 
 	public static void BeginMoveMonster(PacketReader _reader)

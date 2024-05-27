@@ -16,7 +16,7 @@ public class UserData
 	}
 
 	public string Nickname;
-	public int ConnectionID;
+	public uint ConnectionID;
 	public bool IsRoomOwner;
 	public int RoomOwnerSlot;
 	public int MyRoomSlot;
