@@ -15,7 +15,7 @@ public abstract class BaseScene : MonoBehaviour
 
 	protected float m_fadeInSecond = 0.5f, m_fadeOutSecond = 0.5f, m_loadingImageSecond = 1f;
 
-	protected virtual void Init()
+	public virtual void Init()
 	{
 		SceneManagerEx.Inst.CurScene = FindObjectOfType<BaseScene>();
 	}

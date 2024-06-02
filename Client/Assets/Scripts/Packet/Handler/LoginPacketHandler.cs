@@ -18,10 +18,11 @@ public static class LoginPacketHandler
 		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.SceneEnum.Lobby);
 	}
 
-	public static void CheckedClientInfo()
+	public static void CheckedClientInfo(PacketReader _reader)
 	{
 		LoginScene scene = SceneManagerEx.Inst.CurScene as LoginScene;
 		scene.StopConnectToServerUDP();
+		UserData.Inst.MyPort = _reader.GetUShort();
 		Debug.Log("CheckedClientInfo");
 	}
 

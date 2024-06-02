@@ -3,7 +3,7 @@
 
 public static class LoginPacketMaker
 {
-	public static Packet LoginReq(int _port, byte[] _ipBytes)
+	public static Packet LoginReq(byte[] _ipBytes)
 	{
 		Packet packet = new Packet();
 		packet

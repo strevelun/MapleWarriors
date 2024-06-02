@@ -21,7 +21,6 @@ public class UDPCommunicator
 	private UDPBuffer m_udpBuffer;
 	private bool m_isRecv;
 
-	public int MyPort { get; private set; }
 	public Dictionary<int, IPEndPoint> DicSendInfo { get; private set; } = new Dictionary<int, IPEndPoint>();
 
 	public bool Init()
@@ -65,6 +64,7 @@ public class UDPCommunicator
 	public void Send(byte[] _pkt, string _ip, int _port)
 	{
 		m_socket.SendTo(_pkt, new IPEndPoint(IPAddress.Parse(_ip), _port));
+		Debug.Log((m_socket.LocalEndPoint as IPEndPoint).Port);
 	}
 
 	public void Send(Packet _pkt, int _slot)

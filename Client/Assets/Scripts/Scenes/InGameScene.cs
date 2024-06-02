@@ -8,7 +8,7 @@ public class InGameScene : BaseScene
 	[SerializeField]
 	private GameObject m_allClear, m_clear, m_wasted;
 
-	protected override void Init()
+	public override void Init()
 	{
 		base.Init();
 
@@ -50,11 +50,6 @@ public class InGameScene : BaseScene
 		InGameConsole.Inst.GameOver();
 		GameManager.Inst.Clear();
 		UDPCommunicator.Inst.ClearIngameInfo();
-	}
-
-	private void Start()
-	{
-		Init();
 	}
 
 	private void Update()
@@ -147,14 +142,14 @@ public class InGameScene : BaseScene
 					Packet pkt = InGamePacketMaker.Start(timer, startTime);
 					UDPCommunicator.Inst.SendAll(pkt);
 					GameManager.Inst.StartTime = startTime / 1000000f;
-					StartCoroutine(UpdateMonstersInfo());
+					StartCoroutine(UpdateCreaturesInfo());
 				}
 			}
 			yield return new WaitForSeconds(0.1f);
 		}
 	}
 
-	private IEnumerator UpdateMonstersInfo()
+	private IEnumerator UpdateCreaturesInfo()
 	{
 		while(true)
 		{
@@ -165,7 +160,7 @@ public class InGameScene : BaseScene
 				continue;
 			}
 
-			Packet pkt = InGamePacketMaker.AllMonstersInfo();
+			Packet pkt = InGamePacketMaker.AllCreaturesInfo();
 			UDPCommunicator.Inst.SendAll(pkt);
 		}
 	}

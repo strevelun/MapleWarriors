@@ -17,7 +17,7 @@ public class PacketReader
 		{
 			if (m_buffer == null) return 0;
 
-			int size = 0;
+			int size;
 			if (m_startOffset + Define.PacketSize > Define.BufferMax)
 			{
 				byte first = m_buffer.Array[m_startOffset];

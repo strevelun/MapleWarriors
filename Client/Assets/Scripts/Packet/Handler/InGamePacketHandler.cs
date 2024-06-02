@@ -12,7 +12,6 @@ public static class InGamePacketHandler
 		int numOfUsers = _reader.GetByte();
 		GameObject player;
 		GameObject camObj = GameObject.Find("CM vcam1");
-		UDPCommunicator.Inst.Start();
 
 		CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
 
@@ -45,7 +44,7 @@ public static class InGamePacketHandler
 		}
 
 		//string myPrivateIP = NetworkManager.Inst.MyConnection.LocalEndPoint.Address.ToString();
-		tmp.text += $"{UserData.Inst.Nickname} [{myIP}, {UDPCommunicator.Inst.MyPort}]\n";
+		tmp.text += $"{UserData.Inst.Nickname} [{myIP}, {UserData.Inst.MyPort}]\n";
 
 		List<int> idxList = new List<int>();
 		MyPlayerController mpc;
@@ -125,7 +124,7 @@ public static class InGamePacketHandler
 		byte dir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc?.BeginMovePosition(dir);
+		if(pc) pc.BeginMovePosition(dir);
 	}
 
 	public static void Moving(PacketReader _reader)
@@ -136,7 +135,7 @@ public static class InGamePacketHandler
 		byte byteDir = _reader.GetByte();
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc?.Moving(xpos, ypos, byteDir);
+		if (pc) pc.Moving(xpos, ypos, byteDir);
 	}
 
 	public static void EndMove(PacketReader _reader)
@@ -146,7 +145,7 @@ public static class InGamePacketHandler
 		float ypos = _reader.GetInt32() / 1000000.0f;
 
 		PlayerController pc = ObjectManager.Inst.FindPlayer(roomSlot);
-		pc?.EndMovePosition(xpos, ypos);
+		if (pc) pc.EndMovePosition(xpos, ypos);
 	}
 
 	public static void BeginMoveMonster(PacketReader _reader)
@@ -304,7 +303,7 @@ public static class InGamePacketHandler
 
 	public static void AllCreaturesInfo(PacketReader _reader)
 	{
-		ushort count = _reader.GetUShort();
+		int count = _reader.GetByte();
 		MonsterController mc;
 		int idx, num;
 
@@ -317,7 +316,7 @@ public static class InGamePacketHandler
 			mc.Hit(hp);
 		}
 
-		ushort playerCnt = _reader.GetUShort();
+		int playerCnt = _reader.GetByte();
 		PlayerController pc;
 
 		for (int i = 0; i < playerCnt; ++i)

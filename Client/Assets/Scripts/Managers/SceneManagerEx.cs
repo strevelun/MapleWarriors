@@ -19,18 +19,14 @@ public class SceneManagerEx
 
 	public void LoadScene(Define.SceneEnum _type)
     {
-		if(!CurScene.IsLoading)
-		{
-			CurScene.IsLoading = true;
-			CurScene.Clear();
-		}
+		CurScene.IsLoading = true;
+		CurScene.Clear();
         SceneManager.LoadScene(GetSceneName(_type));
     }
 
 	public void LoadSceneWithFadeOut(Define.SceneEnum _type)
 	{
-		CurScene.IsLoading = true;
-		CurScene.Clear();
+		CurScene.Init();
 		CurScene.StartFadeInOutCoroutine(() => LoadScene(_type));
 	}
 

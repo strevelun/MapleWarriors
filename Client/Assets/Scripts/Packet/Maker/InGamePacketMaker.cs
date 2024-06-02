@@ -82,12 +82,12 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet Attack(byte _who, List<MonsterController> _targets, SkillEnum _skill) // 매개변수 : Attack 번호
+	public static Packet Attack(byte _who, List<MonsterController> _targets, SkillEnum _skill) 
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.ServerPacketTypeEnum.Attack)
-			.Add((byte)_who)
+			.Add(_who)
 			.Add((ushort)_targets.Count)
 			.Add((byte)_skill);
 
@@ -96,13 +96,13 @@ public static class InGamePacketMaker
 			pkt
 				.Add((byte)mc.Idx)
 				.Add((byte)mc.Num)
-				.Add((ushort)mc.HP); // 동시 타격시 순서보장 x
+				.Add((ushort)mc.HP); 
 		}
 
 		return pkt;
 	}	
 
-	public static Packet AttackReq(Vector2Int _mouseCellPos, SkillEnum _skill) // 매개변수 : Attack 번호
+	public static Packet AttackReq(Vector2Int _mouseCellPos, SkillEnum _skill) 
 	{
 		Packet pkt = new Packet();
 		pkt
@@ -115,7 +115,7 @@ public static class InGamePacketMaker
 		return pkt;
 	}	
 	
-	public static Packet RangedAttack(byte _who, List<MonsterController> _targets, SkillEnum _skill, Vector2Int _where) // 매개변수 : Attack 번호
+	public static Packet RangedAttack(byte _who, List<MonsterController> _targets, SkillEnum _skill, Vector2Int _where)
 	{
 		Packet pkt = new Packet();
 		pkt
@@ -160,12 +160,12 @@ public static class InGamePacketMaker
 		return pkt;
 	}
 
-	public static Packet AllMonstersInfo()
+	public static Packet AllCreaturesInfo()
 	{
 		Packet pkt = new Packet();
 		pkt
 			.Add(PacketType.ServerPacketTypeEnum.AllCreaturesInfo)
-			.Add((ushort)ObjectManager.Inst.Monsters.Count);
+			.Add((byte)ObjectManager.Inst.Monsters.Count);
 
 		foreach (MonsterController info in ObjectManager.Inst.Monsters.Values)
 		{
@@ -175,7 +175,7 @@ public static class InGamePacketMaker
 				.Add((ushort)info.HP);
 		}
 
-		pkt.Add((ushort)ObjectManager.Inst.Players.Count);
+		pkt.Add((byte)ObjectManager.Inst.Players.Count);
 
 		foreach (PlayerController info in ObjectManager.Inst.Players.Values)
 		{

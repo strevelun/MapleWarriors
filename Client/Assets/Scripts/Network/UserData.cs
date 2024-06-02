@@ -20,4 +20,5 @@ public class UserData
 	public bool IsRoomOwner;
 	public int RoomOwnerSlot;
 	public int MyRoomSlot;
+	public int MyPort;
 }

@@ -24,7 +24,7 @@ public static class PacketHandler
 					LoginPacketHandler.LoginSuccess();
 					break;
 				case PacketType.ServerPacketTypeEnum.CheckedClientInfo:
-					LoginPacketHandler.CheckedClientInfo();
+					LoginPacketHandler.CheckedClientInfo(_reader);
 					break;
 				case PacketType.ServerPacketTypeEnum.ConnectionID:
 					LoginPacketHandler.ConnectionID(_reader);

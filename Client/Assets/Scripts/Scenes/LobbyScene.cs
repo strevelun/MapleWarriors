@@ -9,7 +9,7 @@ public class LobbyScene : BaseScene
 	private UIPage m_userListPage;
 	private UIPage m_roomListPage;
 
-	protected override void Init()
+	public override void Init()
 	{
 		base.Init();
 
@@ -138,11 +138,6 @@ public class LobbyScene : BaseScene
 	public override void Clear()
 	{
 		base.Clear();
-	}
-
-	private void Start()
-    {
-        Init(); 
 	}
 
 	private IEnumerator UpdateLobbyInfoCoroutine()

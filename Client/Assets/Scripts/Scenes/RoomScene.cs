@@ -6,8 +6,8 @@ using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
 public class RoomScene : BaseScene
-{ 
-	protected override void Init()
+{
+	public override void Init()
 	{
 		base.Init();
 
@@ -200,10 +200,5 @@ public class RoomScene : BaseScene
 
 		Packet pkt = RoomPacketMaker.RoomStandby();
 		NetworkManager.Inst.Send(pkt);
-	}
-
-	private void Start()
-    {
-		Init();
 	}
 }

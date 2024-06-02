@@ -16,10 +16,10 @@ public class ObjectManager
 	}
 
 	private readonly Dictionary<int, PlayerController> m_dicPlayerObj = new Dictionary<int, PlayerController>();
-	private readonly Dictionary<string, MonsterController> m_dicMonsterObj = new Dictionary<string, MonsterController>();
+	private readonly Dictionary<int, MonsterController> m_dicMonsterObj = new Dictionary<int, MonsterController>();
 
 	public IReadOnlyDictionary<int, PlayerController> Players => m_dicPlayerObj;
-	public IReadOnlyDictionary<string, MonsterController> Monsters => m_dicMonsterObj;
+	public IReadOnlyDictionary<int, MonsterController> Monsters => m_dicMonsterObj;
 
 	private int m_monsterNum = 0;
 
@@ -32,11 +32,13 @@ public class ObjectManager
 
 	public void AddMonster(GameObject _obj, int _idx)
 	{
-		_obj.name = $"{_idx}_{++m_monsterNum}";
+		++m_monsterNum;
+		int key = (_idx << 16) | m_monsterNum;
+		_obj.name = $"{_idx}_{m_monsterNum}";
 		MonsterController mc = _obj.GetComponent<MonsterController>();
 		mc.Num = m_monsterNum;
 
-		m_dicMonsterObj.Add(_obj.name, mc);
+		m_dicMonsterObj.Add(key, mc);
 	}
 
 	public PlayerController FindPlayer(int _idx)
@@ -50,7 +52,8 @@ public class ObjectManager
 	public MonsterController FindMonster(int _idx, int _num)
 	{
 		MonsterController mc;
-		m_dicMonsterObj.TryGetValue($"{_idx}_{_num}", out mc);
+		int key = (_idx << 16) | _num;
+		m_dicMonsterObj.TryGetValue(key, out mc);
 
 		return mc;
 	}

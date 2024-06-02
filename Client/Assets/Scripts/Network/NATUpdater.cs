@@ -6,16 +6,18 @@ public class NATUpdater : MonoBehaviour
 {
     private void Start()
     {
-		StartCoroutine(UpdateNAT());
+		//StartCoroutine(UpdateNAT());
     }
 
-	private IEnumerator UpdateNAT()
-	{
+	//private IEnumerator UpdateNAT()
+	//{
+		/*
 		while (true)
 		{
 			Packet pkt = InGamePacketMaker.SendAwake();
 			UDPCommunicator.Inst.SendAll(pkt);
-			yield return new WaitForSeconds(30f);
+			yield return new WaitForSeconds(5f);
 		}
-	}
+		*/
+	//}
 }

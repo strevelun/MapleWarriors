@@ -168,7 +168,12 @@ public static class RoomPacketHandler
 
 	public static void StartGame_Success()
 	{
+
+
 		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.SceneEnum.InGame);
+
+		UDPCommunicator.Inst.Start();
+
 	}
 
 	public static void StartGame_Fail()

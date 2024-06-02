@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +11,7 @@ public class LoginScene : BaseScene
 
 	private Coroutine udpCoroutine;
 
-	protected override void Init()
+	public override void Init()
 	{
 		base.Init();
 
@@ -104,7 +103,7 @@ public class LoginScene : BaseScene
 		}
 
 		UserData.Inst.Nickname = m_input.text;
-		Packet packet = LoginPacketMaker.LoginReq(UDPCommunicator.Inst.MyPort, NetworkManager.Inst.MyConnection.LocalEndPoint.Address.GetAddressBytes());
+		Packet packet = LoginPacketMaker.LoginReq(NetworkManager.Inst.MyConnection.LocalEndPoint.Address.GetAddressBytes());
 		NetworkManager.Inst.Send(packet);
 	}
 
