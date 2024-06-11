@@ -21,4 +21,5 @@ public class UserData
 	public int RoomOwnerSlot;
 	public int MyRoomSlot;
 	public int MyPort;
+	public int MapID;
 }

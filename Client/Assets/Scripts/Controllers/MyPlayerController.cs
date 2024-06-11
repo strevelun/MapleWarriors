@@ -31,10 +31,8 @@ public class MyPlayerController : PlayerController
 
 	private void Start()
 	{
-		GameObject camObj = GameObject.Find("CM vcam1");
-		m_vcam = camObj.GetComponent<CinemachineVirtualCamera>();
-
 		StartCoroutine(MovingCoroutine());
+		Init(Idx + 1, 1);
 	}
 
 	protected override void Update()
@@ -56,6 +54,10 @@ public class MyPlayerController : PlayerController
 		base.Init(_cellXPos, _cellYPos);
 
 		m_nickname.GetComponent<Image>().color = new Color(69 / 255f, 144 / 255f, 255 / 255f, 190 / 255f);
+
+		GameObject camObj = MapManager.Inst.CamObj;
+		if (camObj) m_vcam = camObj.GetComponent<CinemachineVirtualCamera>();
+		SetCameraFollowMe();
 	}
 
 	private IEnumerator MovingCoroutine()

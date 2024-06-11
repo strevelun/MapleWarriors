@@ -87,7 +87,7 @@ public static class PacketHandler
 					RoomPacketHandler.RoomUsersInfo(_reader);
 					break;
 				case PacketType.ServerPacketTypeEnum.StartGame_Success:
-					RoomPacketHandler.StartGame_Success();
+					RoomPacketHandler.StartGame_Success(_reader);
 					break;
 				case PacketType.ServerPacketTypeEnum.StartGame_Fail:
 					RoomPacketHandler.StartGame_Fail();
@@ -116,9 +116,6 @@ public static class PacketHandler
 		{
 			switch (type)
 			{
-				case PacketType.ServerPacketTypeEnum.ResInitInfo:
-					InGamePacketHandler.ResInitInfo(_reader);
-					break;
 				case PacketType.ServerPacketTypeEnum.BeginMove:
 					InGamePacketHandler.BeginMove(_reader);
 					break;

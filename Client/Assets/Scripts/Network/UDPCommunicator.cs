@@ -28,8 +28,6 @@ public class UDPCommunicator
 		try
 		{
 			m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-			//Send(new byte[] { 0 }, Define.ServerIP, Define.ServerPort);
-			//MyPort = (m_socket.LocalEndPoint as IPEndPoint).Port;
 		}
 		catch(SocketException _ex)
 		{

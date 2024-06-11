@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,8 @@ public class PlayerController : CreatureController
 		Walking,
 		Attack
 	}
+
+	public int CharacterChoice { get; set; } = 0;
 
 	public Skill CurSkill { get; protected set; } = null;
 
@@ -49,6 +52,11 @@ public class PlayerController : CreatureController
 	[SerializeField]
 	private Vector2 m_hpBarUIOffset;
 
+	private void Start()
+	{
+		Init(Idx + 1, 1);
+	}
+
 	protected override void Update()
 	{
 		base.Update();
@@ -71,6 +79,8 @@ public class PlayerController : CreatureController
 		base.Init(_cellXPos, _cellYPos);
 
 		SetPosition(_cellXPos, _cellYPos);
+
+		//name = $"Player_{CharacterChoice}_{Idx}";
 
 		MaxSpeed = 4f;
 		CurSpeed = MaxSpeed;
@@ -129,6 +139,8 @@ public class PlayerController : CreatureController
 		HitObj = Util.FindChild(gameObject, true, "Hit");
 		HitObj.SetActive(false);
 
+		m_nicknameTMP.text = m_strNickname;
+
 		ChangeState(new PlayerIdleState());
 	}
 
@@ -168,7 +180,6 @@ public class PlayerController : CreatureController
 	public void SetNickname(string _nickname)
 	{
 		m_strNickname = _nickname;
-		m_nicknameTMP.text = m_strNickname;
 	}
 
 	public void BeginMovePosition(byte _byteDir)

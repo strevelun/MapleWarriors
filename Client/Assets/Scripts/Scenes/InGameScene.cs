@@ -1,7 +1,12 @@
+using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Reflection;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Networking.Types;
 
 public class InGameScene : BaseScene
 {
@@ -12,7 +17,7 @@ public class InGameScene : BaseScene
 	{
 		base.Init();
 
-		Screen.SetResolution(1280, 720, false);
+		//Screen.SetResolution(1280, 720, false);
 		SceneType = Define.SceneEnum.InGame;
 
 		UIScene uiScene = UIManager.Inst.SetSceneUI(Define.SceneEnum.InGame);
@@ -20,6 +25,36 @@ public class InGameScene : BaseScene
 		GameObject ingameConsole = uiScene.AddUI("Ingame_Console");
 		GameObject connections = uiScene.AddUI("Connections");
 		UIManager.Inst.AddUI(Define.UIEnum.Connections, connections);
+		TextMeshProUGUI tmp = connections.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		tmp.text = string.Empty;
+
+		GameObject player;
+		PlayerController pc;
+		Define.StPlayerInfo info;
+
+		GameManager.Inst.GetPlayerInfo(UserData.Inst.MyRoomSlot, out info);
+		player = ResourceManager.Inst.Instantiate($"Creature/Player_{info.characterChoice}");
+		MyPlayerController mpc = player.AddComponent<MyPlayerController>();
+		mpc.Idx = UserData.Inst.MyRoomSlot;
+		mpc.SetNickname(info.nickname);
+		tmp.text += $"{UserData.Inst.Nickname} [{info.ip}, {info.privateIP}, {info.port}]\n";
+		ObjectManager.Inst.AddPlayer(UserData.Inst.MyRoomSlot, player);
+
+		foreach (int idx in GameManager.Inst.OtherPlayersSlot)
+		{
+			GameManager.Inst.GetPlayerInfo(idx, out info);
+			player = ResourceManager.Inst.Instantiate($"Creature/Player_{info.characterChoice}"); // 플레이어 선택
+
+			pc = player.AddComponent<PlayerController>();
+			pc.Idx = idx;
+			pc.SetNickname(info.nickname);
+			pc.name = $"Player_{info.characterChoice}_{idx}";
+			tmp.text += $"{info.nickname} [{info.ip}, {info.privateIP}, {info.port}]\n";
+
+			GameManager.Inst.AddPlayer(idx, player);
+			ObjectManager.Inst.AddPlayer(idx, player);
+		}
+
 
 		InGameConsole.Inst.Init(ingameConsole);
 
@@ -33,11 +68,25 @@ public class InGameScene : BaseScene
 		StartCoroutine(RoomOwnerLogic());
 		StartCoroutine(GameStartLogic());
 
-		Packet pkt = InGamePacketMaker.ReqInitInfo();
-		NetworkManager.Inst.Send(pkt);
+		GameObject camObj = GameObject.Find("CM vcam1");
+		//CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
+		GameObject mapObj = MapManager.Inst.Load(UserData.Inst.MapID, camObj); // TestMap : 1
 
-		GameObject natUpdater = new GameObject("NATUpdater");
-		natUpdater.AddComponent<NATUpdater>();
+		GameObject monsters = Util.FindChild(mapObj, false, "Monsters");
+		int activeCnt = 0;
+		for (int i = 0; i < monsters.transform.childCount; i++)
+		{
+			if (monsters.transform.GetChild(i).gameObject.activeSelf)
+			{
+				++activeCnt;
+			}
+		}
+
+		GameManager.Inst.SetMonsterCnt(activeCnt);
+
+		InGameConsole.Inst.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
+		InGameConsole.Inst.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
+		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
 	}
 
 	public override void Clear()
@@ -50,6 +99,11 @@ public class InGameScene : BaseScene
 		InGameConsole.Inst.GameOver();
 		GameManager.Inst.Clear();
 		UDPCommunicator.Inst.ClearIngameInfo();
+	}
+
+	private void Start()
+	{
+		Init();
 	}
 
 	private void Update()

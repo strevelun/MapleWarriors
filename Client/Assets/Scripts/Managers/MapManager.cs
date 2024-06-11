@@ -16,7 +16,7 @@ public class MapManager
 		} 
 	}
 
-	private GameObject m_camObj;
+	public GameObject CamObj { get; private set; }
 
 	private MapData m_mapData = null;
 	private int m_mapID;
@@ -45,7 +45,7 @@ public class MapManager
 		if (m_mapData != null) return null;
 
 		m_mapID = _mapID;
-		m_camObj = _camObj;
+		CamObj = _camObj;
 
 		string name;
 		m_mapData = DataManager.Inst.FindMapData((byte)m_mapID);
@@ -108,7 +108,7 @@ public class MapManager
 
 	private void CreateMapBound()
 	{
-		CinemachineConfiner confiner = m_camObj.GetComponent<CinemachineConfiner>();
+		CinemachineConfiner confiner = CamObj.GetComponent<CinemachineConfiner>();
 		GameObject collider = ResourceManager.Inst.Instantiate("Map/MapBound");
 		PolygonCollider2D polyCollider = collider.GetComponent<PolygonCollider2D>();
 		Vector2[] points = polyCollider.points;

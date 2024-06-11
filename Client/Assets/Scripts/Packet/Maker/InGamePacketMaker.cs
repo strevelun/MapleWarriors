@@ -11,14 +11,6 @@ public static class InGamePacketMaker
 		return null;
 	}
 
-	public static Packet ReqInitInfo()
-	{
-		Packet pkt = new Packet();
-		pkt
-			.Add(PacketType.ClientPacketTypeEnum.ReqInitInfo);
-		return pkt;
-	}
-
 	public static Packet BeginMove(byte _byteDir)
 	{
 		Packet pkt = new Packet();

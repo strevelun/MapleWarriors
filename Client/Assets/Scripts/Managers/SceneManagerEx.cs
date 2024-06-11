@@ -22,11 +22,10 @@ public class SceneManagerEx
 		CurScene.IsLoading = true;
 		CurScene.Clear();
         SceneManager.LoadScene(GetSceneName(_type));
-    }
+	}
 
 	public void LoadSceneWithFadeOut(Define.SceneEnum _type)
 	{
-		CurScene.Init();
 		CurScene.StartFadeInOutCoroutine(() => LoadScene(_type));
 	}
 

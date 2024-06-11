@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,7 +45,7 @@ public static class RoomPacketHandler
 		if (prevOwnerIdx != nextOwnerIdx) 
 		{
 			GameObject badge;
-			if (prevOwnerIdx < Define.RoomUserSlot)
+			if (prevOwnerIdx < Define.RoomUserSlotCnt)
 			{
 				slot = objRoomUsers.transform.GetChild(prevOwnerIdx).gameObject;
 				badge = Util.FindChild(slot, false, "OwnerBadge");
@@ -166,14 +167,68 @@ public static class RoomPacketHandler
 		obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadImage($"MapProfile/map_{mapID}");
 	}
 
-	public static void StartGame_Success()
+	public static void StartGame_Success(PacketReader _reader)
 	{
+		UserData.Inst.MapID = _reader.GetByte();
+		int numOfUsers = _reader.GetByte();
 
+		GameManager.Inst.SetPlayerCnt(numOfUsers);
+		GameManager.Inst.SetPlayerAliveCnt(numOfUsers);
 
 		SceneManagerEx.Inst.LoadSceneWithFadeOut(Define.SceneEnum.InGame);
 
 		UDPCommunicator.Inst.Start();
 
+		string myIP = "";
+		List<int> idxList = new List<int>();
+		byte characterChoice;
+		int j, idx, port;
+		string ip, privateIP, nickname;
+		for (int i = 0; i < numOfUsers; ++i)
+		{
+			idx = _reader.GetByte();
+			nickname = _reader.GetString();
+			characterChoice = _reader.GetByte();
+			port = _reader.GetUShort();
+			ip = "";
+			for (j = 0; j < 4; ++j)
+			{
+				ip += _reader.GetByte();
+				if (j < 3) ip += ".";
+			}
+			privateIP = "";
+			for (j = 0; j < 4; ++j)
+			{
+				privateIP += _reader.GetByte();
+				if (j < 3) privateIP += ".";
+			}
+
+			GameManager.Inst.SetPlayerInfo(idx, nickname, characterChoice, ip, privateIP, port);
+
+			if (UserData.Inst.MyRoomSlot == idx)
+			{
+				myIP = ip;
+				continue;
+			}
+
+			idxList.Add(idx);
+		}
+		
+		foreach (int index in idxList)
+		{
+			GameManager.Inst.GetPlayerInfo(index, out Define.StPlayerInfo info);
+
+			if (myIP.CompareTo(info.ip) == 0)
+			{
+				UDPCommunicator.Inst.AddSendInfo(index, info.privateIP, info.port);
+			}
+			else
+			{
+				UDPCommunicator.Inst.AddSendInfo(index, info.ip, info.port);
+			}
+		}
+
+		GameManager.Inst.SetOtherPlayerSlot(idxList);
 	}
 
 	public static void StartGame_Fail()

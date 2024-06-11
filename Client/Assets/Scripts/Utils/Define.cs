@@ -15,14 +15,14 @@ public class Define
 	public const int UserListMaxItemInPage = 10;
 	public const int RoomListPageMax = 50;
 	public const int RoomListMaxItemInPage = 4;
-	public const int RoomUserSlot = 4;
+	public const int RoomUserSlotCnt = 4;
 
 	public const int RoomTitleMaxCount = 15;
 	public const float MaxExpelTime = 5f;
 
 	//public const string ServerIP = "110.9.1.110";
 	public const string ServerIP = "192.168.55.24";
-	public const int ServerPort = 30001;
+	public const int ServerPort = 30002;
 
 	public enum SceneEnum
 	{
@@ -143,5 +143,15 @@ public class Define
 		UpRight = 3, // 0011
 		DownLeft = 12, // 1100
 		DownRight = 6 // 0110
+	}
+
+	public struct StPlayerInfo
+	{
+		public int idx;
+		public string nickname;
+		public int characterChoice;
+		public string ip;
+		public string privateIP;
+		public int port;
 	}
 }

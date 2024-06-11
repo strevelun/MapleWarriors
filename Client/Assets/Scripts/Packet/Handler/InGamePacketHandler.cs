@@ -5,119 +5,7 @@ using UnityEngine;
 using static Define;
 
 public static class InGamePacketHandler
-{
-	public static void ResInitInfo(PacketReader _reader)
-	{
-		int mapID = _reader.GetByte();
-		int numOfUsers = _reader.GetByte();
-		GameObject player;
-		GameObject camObj = GameObject.Find("CM vcam1");
-
-		CinemachineVirtualCamera vcam1 = camObj.GetComponent<CinemachineVirtualCamera>();
-
-		GameObject mapObj = MapManager.Inst.Load(mapID, camObj); // TestMap : 1
-		GameManager.Inst.SetPlayerCnt(numOfUsers);
-		GameManager.Inst.SetPlayerAliveCnt(numOfUsers);
-
-		GameObject connections = UIManager.Inst.FindUI(Define.UIEnum.Connections);
-		TextMeshProUGUI tmp = connections.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-		tmp.text = string.Empty;
-
-		GameObject monsters = Util.FindChild(mapObj, false, "Monsters");
-		int activeCnt = 0;
-		for (int i = 0; i < monsters.transform.childCount; i++)
-		{
-			if (monsters.transform.GetChild(i).gameObject.activeSelf)
-			{
-				++activeCnt;
-			}
-		}
-
-		GameManager.Inst.SetMonsterCnt(activeCnt);
-
-		string myIP = "";
-		int j;
-		for (j = 0; j < 4; ++j)
-		{
-			myIP += _reader.GetByte();
-			if (j < 3) myIP += ".";
-		}
-
-		//string myPrivateIP = NetworkManager.Inst.MyConnection.LocalEndPoint.Address.ToString();
-		tmp.text += $"{UserData.Inst.Nickname} [{myIP}, {UserData.Inst.MyPort}]\n";
-
-		List<int> idxList = new List<int>();
-		MyPlayerController mpc;
-		int port;
-		string ip, privateIP;
-		for (int i = 0; i < numOfUsers; ++i)
-		{
-			int connectionID = _reader.GetUShort();
-			int idx = _reader.GetByte();
-			string nickname = _reader.GetString();
-			byte characterChoice = _reader.GetByte();
-		
-			player = ResourceManager.Inst.Instantiate($"Creature/Player_{characterChoice}"); // 플레이어 선택
-			player.name = $"Player_{characterChoice}_{idx}"; // slot 넘버로
-
-			GameManager.Inst.AddPlayer(player);
-
-			if (connectionID == UserData.Inst.ConnectionID)
-			{
-				mpc = player.AddComponent<MyPlayerController>();
-				mpc.Init(i + 1, 1);
-				mpc.Idx = idx;
-				mpc.SetNickname(nickname);
-				vcam1.Follow = player.transform;
-			}
-			else
-			{
-				PlayerController pc = player.AddComponent<PlayerController>();
-				pc.Init(i + 1, 1);
-				pc.Idx = idx;
-				idxList.Add(idx);
-				pc.SetNickname(nickname);
-				port = _reader.GetUShort();
-
-				ip = "";
-				for (j = 0; j < 4; ++j)
-				{
-					ip += _reader.GetByte();
-					if (j < 3) ip += ".";
-				}
-
-				privateIP = "";
-				for (j = 0; j < 4; ++j)
-				{
-					privateIP += _reader.GetByte();
-					if (j < 3) privateIP += ".";
-				}
-
-				if (myIP.CompareTo(ip) == 0)
-				{
-					UDPCommunicator.Inst.AddSendInfo(idx, privateIP, port);
-					tmp.text += $"{nickname} [{privateIP}, {port}]\n";
-				}
-				else
-				{
-					UDPCommunicator.Inst.AddSendInfo(idx, ip, port);
-					tmp.text += $"{nickname} [{ip}, {port}]\n";
-				}
-
-			}
-			ObjectManager.Inst.AddPlayer(idx, player);
-		}
-
-		InGameConsole.Inst.Log($"플레이어 수 : {GameManager.Inst.PlayerCnt}");
-		InGameConsole.Inst.Log($"몬스터 수 : {GameManager.Inst.MonsterCnt}");
-		InGameConsole.Inst.Log($"스테이지 수 : {MapManager.Inst.MaxStage}");
-
-		GameManager.Inst.SetOtherPlayerSlot(idxList);
-
-		Packet pkt = InGamePacketMaker.SendAwake();
-		UDPCommunicator.Inst.SendAll(pkt);
-	}
-
+{ 
 	public static void BeginMove(PacketReader _reader)
 	{
 		byte roomSlot = _reader.GetByte();
@@ -193,7 +81,7 @@ public static class InGamePacketHandler
 			UserData.Inst.IsRoomOwner = true;
 		}
 
-		if(nextRoomOwnerIdx < RoomUserSlot)
+		if(nextRoomOwnerIdx < RoomUserSlotCnt)
 			InGameConsole.Inst.Log($"방장이 바뀌었습니다 : {leftUserIdx} -> {nextRoomOwnerIdx}");
 
 		UserData.Inst.RoomOwnerSlot = nextRoomOwnerIdx;
@@ -203,7 +91,7 @@ public static class InGamePacketHandler
 		PlayerController pc = ObjectManager.Inst.FindPlayer(leftUserIdx);
 		if (!pc.IsDead) GameManager.Inst.SubPlayerAliveCnt();
 
-		GameManager.Inst.RemovePlayer(pc.name);
+		GameManager.Inst.RemovePlayer(pc.Idx);
 		MapManager.Inst.RemoveAimTile(pc.CellPos.x, pc.CellPos.y);
 		ResourceManager.Inst.Destroy(pc.gameObject);
 		ObjectManager.Inst.RemovePlayer(leftUserIdx);

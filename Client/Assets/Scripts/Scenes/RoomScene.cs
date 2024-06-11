@@ -145,6 +145,11 @@ public class RoomScene : BaseScene
 		StartFadeCoroutine();
 	}
 
+	private void Start()
+	{
+		Init();
+	}
+
 	public override void Clear()
 	{
 		base.Clear();

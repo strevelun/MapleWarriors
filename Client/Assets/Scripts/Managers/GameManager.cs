@@ -2,6 +2,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Net.NetworkInformation;
 using System.Xml.Linq;
 using UnityEngine;
 
@@ -23,7 +25,8 @@ public class GameManager
 	new Vector3(4, -1),
 	new Vector3(4, -3) };
 
-	private readonly Dictionary<string, GameObject> m_playerObj = new Dictionary<string, GameObject>();
+	private readonly Dictionary<int, GameObject> m_playerObj = new Dictionary<int, GameObject>();
+	private readonly Define.StPlayerInfo[] m_playerInfo = new Define.StPlayerInfo[Define.RoomUserSlotCnt];
 
 	public bool GameStart { get; set; } = false;
 	public bool StageLoading { get; set; } = false;
@@ -35,7 +38,7 @@ public class GameManager
 	public bool GameOver { get; set; } = false;
 	public bool PlayersOnPortal { get; set; } = false;
 
-	public List<int> OtherPlayersSlot { get; private set; }
+	public List<int> OtherPlayersSlot { get; private set; } = new List<int>();
 	private bool[] m_playerReady = null;
 	private int m_playerReadyCnt = 0;
 
@@ -48,7 +51,7 @@ public class GameManager
 	{
 		Timer = 0.0f;
 		m_inGameScene = _inGameScene;
-		m_playerReady = new bool[Define.RoomUserSlot];
+		m_playerReady = new bool[Define.RoomUserSlotCnt];
 	}
 
 	public bool CheckGameOver()
@@ -77,6 +80,33 @@ public class GameManager
 
 		m_playerReady[_slot] = true;
 		++m_playerReadyCnt;
+	}
+
+	public void SetPlayerInfo(int _idx, string _nickname, int _characterChoice, string _ip, string _privateIP, int _port)
+	{
+		if (_idx < 0 || _idx >= Define.RoomUserSlotCnt) return;
+
+		Define.StPlayerInfo info = new Define.StPlayerInfo
+		{
+			idx = _idx,
+			nickname = _nickname,
+			characterChoice = _characterChoice,
+			ip = _ip,
+			privateIP = _privateIP,
+			port = _port
+		};
+
+		m_playerInfo[_idx] = info;
+	}
+
+	public bool GetPlayerInfo(int _idx, out Define.StPlayerInfo _info)
+	{
+		_info = new Define.StPlayerInfo();
+		if (_idx < 0 || _idx >= Define.RoomUserSlotCnt) return false;
+
+		_info = m_playerInfo[_idx];
+
+		return true;
 	}
 
 	public void AddPlayerAliveCnt() { ++PlayerAliveCnt; }
@@ -110,7 +140,7 @@ public class GameManager
 	{
 		if (m_playerReadyCnt < PlayerCnt - 1) return false;
 
-		for (int i = 0; i < Define.RoomUserSlot; ++i)
+		for (int i = 0; i < Define.RoomUserSlotCnt; ++i)
 			m_playerReady[i] = false;
 		m_playerReadyCnt = 0;
 		return true;
@@ -147,15 +177,15 @@ public class GameManager
 		OtherPlayersSlot = _slotList;
 	}
 
-	public void AddPlayer(GameObject _playerObj)
+	public void AddPlayer(int _idx, GameObject _playerObj)
 	{
-		m_playerObj.Add(_playerObj.name, _playerObj);
+		m_playerObj.Add(_idx, _playerObj);
 	}
 
-	public void RemovePlayer(string _playerObjName)
+	public void RemovePlayer(int _idx)
 	{
-		Debug.Log($"{_playerObjName} 삭제완료");
-		m_playerObj.Remove(_playerObjName);
+		Debug.Log($"{_idx} 삭제완료");
+		m_playerObj.Remove(_idx);
 	}
 
 	public void OnChangeStage()
