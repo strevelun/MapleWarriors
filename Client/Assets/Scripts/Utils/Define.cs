@@ -145,6 +145,16 @@ public class Define
 		DownRight = 6 // 0110
 	}
 
+	public enum MonsterEnum
+	{
+		None,
+		Slime,
+		Blue_Mushroom,
+		Dark_Stone_Golem,
+		Boss1,
+		Boss2
+	}
+
 	public struct StPlayerInfo
 	{
 		public int idx;

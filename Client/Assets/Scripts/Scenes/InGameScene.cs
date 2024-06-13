@@ -30,9 +30,8 @@ public class InGameScene : BaseScene
 
 		GameObject player;
 		PlayerController pc;
-		Define.StPlayerInfo info;
 
-		GameManager.Inst.GetPlayerInfo(UserData.Inst.MyRoomSlot, out info);
+		GameManager.Inst.GetPlayerInfo(UserData.Inst.MyRoomSlot, out Define.StPlayerInfo info);
 		player = ResourceManager.Inst.Instantiate($"Creature/Player_{info.characterChoice}");
 		MyPlayerController mpc = player.AddComponent<MyPlayerController>();
 		mpc.Idx = UserData.Inst.MyRoomSlot;
@@ -51,7 +50,7 @@ public class InGameScene : BaseScene
 			pc.name = $"Player_{info.characterChoice}_{idx}";
 			tmp.text += $"{info.nickname} [{info.ip}, {info.privateIP}, {info.port}]\n";
 
-			GameManager.Inst.AddPlayer(idx, player);
+			//GameManager.Inst.AddPlayer(idx, player);
 			ObjectManager.Inst.AddPlayer(idx, player);
 		}
 

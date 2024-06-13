@@ -25,8 +25,7 @@ public class GameManager
 	new Vector3(4, -1),
 	new Vector3(4, -3) };
 
-	private readonly Dictionary<int, GameObject> m_playerObj = new Dictionary<int, GameObject>();
-	private readonly Define.StPlayerInfo[] m_playerInfo = new Define.StPlayerInfo[Define.RoomUserSlotCnt];
+	private readonly Define.StPlayerInfo[] m_arrPlayerInfo = new Define.StPlayerInfo[Define.RoomUserSlotCnt];
 
 	public bool GameStart { get; set; } = false;
 	public bool StageLoading { get; set; } = false;
@@ -96,7 +95,7 @@ public class GameManager
 			port = _port
 		};
 
-		m_playerInfo[_idx] = info;
+		m_arrPlayerInfo[_idx] = info;
 	}
 
 	public bool GetPlayerInfo(int _idx, out Define.StPlayerInfo _info)
@@ -104,7 +103,7 @@ public class GameManager
 		_info = new Define.StPlayerInfo();
 		if (_idx < 0 || _idx >= Define.RoomUserSlotCnt) return false;
 
-		_info = m_playerInfo[_idx];
+		_info = m_arrPlayerInfo[_idx];
 
 		return true;
 	}
@@ -177,17 +176,6 @@ public class GameManager
 		OtherPlayersSlot = _slotList;
 	}
 
-	public void AddPlayer(int _idx, GameObject _playerObj)
-	{
-		m_playerObj.Add(_idx, _playerObj);
-	}
-
-	public void RemovePlayer(int _idx)
-	{
-		Debug.Log($"{_idx} 삭제완료");
-		m_playerObj.Remove(_idx);
-	}
-
 	public void OnChangeStage()
 	{
 		if (!GameStart) return;
@@ -198,10 +186,12 @@ public class GameManager
 		StageLoading = true;
 		int i = 0;
 
-		foreach (GameObject obj in m_playerObj.Values)
+		foreach (PlayerController pc in ObjectManager.Inst.Players)
 		{
-			obj.transform.position = m_positions[i++];
-			obj.GetComponent<PlayerController>().OnChangeStage();
+			if (pc == null) continue;
+
+			pc.transform.position = m_positions[i++];
+			pc.GetComponent<PlayerController>().OnChangeStage();
 		}
 
 		m_inGameScene.StartFadeInOutCoroutine(() => MapManager.Inst.LoadNextStage());
@@ -210,8 +200,10 @@ public class GameManager
 	public void ChangeCamera(CinemachineVirtualCamera _vcam, int _cameraIdx)
 	{
 		int i = 0;
-		foreach(GameObject pc in m_playerObj.Values)
+		foreach(PlayerController pc in ObjectManager.Inst.Players)
 		{
+			if (pc == null) continue;
+
 			if (i == _cameraIdx)
 			{
 				_vcam.Follow = pc.transform;
@@ -227,7 +219,6 @@ public class GameManager
 		PlayerAliveCnt = 0;
 		MonsterCnt = 0;
 		GameStart = false;
-		m_playerObj.Clear();
 		AllClear = false;
 		m_playerReadyCnt = 0;
 		StartTime = 0;

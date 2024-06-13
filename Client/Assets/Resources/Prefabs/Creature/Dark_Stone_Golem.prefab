@@ -490,7 +490,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_damageUIOffset: {x: 0.5, y: 1.5}
   m_hpBarUIOffset: {x: 0.5, y: -0.3}
-  m_locationInfoUIOffset: {x: 0.5, y: -0.6}
+  m_monsterEnum: 3
 --- !u!58 &7663738478237661238
 CircleCollider2D:
   m_ObjectHideFlags: 0

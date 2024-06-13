@@ -39,16 +39,6 @@
       "attackCellRange": 3,
       "attackRadius": 2,
       "hitTime": 0.9
-    },
-    {
-      "type": "Auto",
-      "name": "Skill3",
-      "MP": 0,
-      "hitCount": 1,
-      "attack": 10,
-      "attackCellRange": 4,
-      "attackRadius": 2,
-      "hitTime": 0.9
     }
   ]
 }

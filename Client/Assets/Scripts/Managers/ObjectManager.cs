@@ -15,64 +15,71 @@ public class ObjectManager
 		}
 	}
 
-	private readonly Dictionary<int, PlayerController> m_dicPlayerObj = new Dictionary<int, PlayerController>();
+	private readonly PlayerController[] m_arrPlayer = new PlayerController[Define.RoomUserSlotCnt];
 	private readonly Dictionary<int, MonsterController> m_dicMonsterObj = new Dictionary<int, MonsterController>();
 
-	public IReadOnlyDictionary<int, PlayerController> Players => m_dicPlayerObj;
-	public IReadOnlyDictionary<int, MonsterController> Monsters => m_dicMonsterObj;
+	public IEnumerable<PlayerController> Players => m_arrPlayer;
+	public IEnumerable<MonsterController> Monsters => m_dicMonsterObj.Values;
 
-	private int m_monsterNum = 0;
+	public int PlayerNum { get; private set; } = 0;
+	public int MonsterNum { get; private set; } = 0;
 
-	public void AddPlayer(int _keyIdx, GameObject _obj)
+	public void AddPlayer(int _idx, GameObject _obj)
 	{
-		PlayerController pc = _obj.GetComponent<PlayerController>();
+		if (_idx < 0 || _idx >= Define.RoomUserSlotCnt) return;
 
-		m_dicPlayerObj.Add(_keyIdx, pc);
+		PlayerController pc = _obj.GetComponent<PlayerController>();
+		
+		++PlayerNum;
+		m_arrPlayer[_idx] = pc;
 	}
 
 	public void AddMonster(GameObject _obj, int _idx)
 	{
-		++m_monsterNum;
-		int key = (_idx << 16) | m_monsterNum;
-		_obj.name = $"{_idx}_{m_monsterNum}";
+		++MonsterNum;
+		int key = (_idx << 16) | MonsterNum;
+		_obj.name = $"{_idx}_{MonsterNum}";
 		MonsterController mc = _obj.GetComponent<MonsterController>();
-		mc.Num = m_monsterNum;
+		mc.Num = MonsterNum;
 
 		m_dicMonsterObj.Add(key, mc);
 	}
 
 	public PlayerController FindPlayer(int _idx)
 	{
-		PlayerController pc;
-		m_dicPlayerObj.TryGetValue(_idx, out pc);
+		if (_idx < 0 || _idx >= Define.RoomUserSlotCnt) return null;
 
-		return pc;
+		return m_arrPlayer[_idx];
 	}
 
 	public MonsterController FindMonster(int _idx, int _num)
 	{
-		MonsterController mc;
 		int key = (_idx << 16) | _num;
-		m_dicMonsterObj.TryGetValue(key, out mc);
+		m_dicMonsterObj.TryGetValue(key, out MonsterController mc);
 
 		return mc;
 	}
 
 	public void RemovePlayer(int _idx)
 	{
-		if (m_dicPlayerObj.Count == 0) return;
+		if (PlayerNum == 0) return;
 
-		m_dicPlayerObj.Remove(_idx);
+		--PlayerNum;
+		m_arrPlayer[_idx] = null;
 	}
 
 	public void ClearPlayers()
 	{
-		m_dicPlayerObj.Clear();
+		if (PlayerNum == 0) return;
+
+		PlayerNum = 0;
+		for (int i = 0; i < Define.RoomUserSlotCnt; ++i)
+			m_arrPlayer[i] = null;
 	}
 
 	public void ClearMonsters()
 	{
 		m_dicMonsterObj.Clear();
-		m_monsterNum = 0;
+		MonsterNum = 0;
 	}
 }

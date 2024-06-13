@@ -17,7 +17,7 @@ public class Skill
 
 	public Skill(SkillEnum _skill)
 	{
-		m_skillData = DataManager.Inst.FindSkillData(_skill.ToString());
+		m_skillData = DataManager.Inst.FindSkillData(_skill);
 	}
 
 	public void SetSkill(SkillEnum _skill)
@@ -25,7 +25,7 @@ public class Skill
 		CurSkill = _skill;
 		RemoveAimTiles();
 
-		m_skillData = DataManager.Inst.FindSkillData(CurSkill.ToString());
+		m_skillData = DataManager.Inst.FindSkillData(CurSkill);
 		if (m_skillData.type == SkillTypeEnum.Melee && m_skillData.attackRadius >= 2) 
 			m_skillData.attackRadius = 2;
 	}
@@ -37,7 +37,7 @@ public class Skill
 
 	public string GetSkillName()
 	{
-		return m_skillData.name;
+		return m_skillData.name.ToString();
 	}
 
 	public bool Activate(List<MonsterController> _targets)

@@ -8,7 +8,8 @@ public class SkillData
 {
 	[JsonConverter(typeof(StringEnumConverter))]
 	public SkillTypeEnum type;
-	public string name;
+	[JsonConverter(typeof(StringEnumConverter))]
+	public SkillEnum name;
     public int MP;
     public int hitCount;
     public int attack;

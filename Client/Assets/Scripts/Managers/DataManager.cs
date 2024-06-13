@@ -11,9 +11,11 @@ public class DataManager : MonoBehaviour
 	private static DataManager s_inst = null;
 	public static DataManager Inst { get { return s_inst; } }
 
-	private readonly Dictionary<string, MonsterData> m_monsterData = new Dictionary<string, MonsterData>();
-	private readonly Dictionary<string, SkillData> m_skillData = new Dictionary<string, SkillData>();
+	private readonly Dictionary<Define.MonsterEnum, MonsterData> m_monsterData = new Dictionary<Define.MonsterEnum, MonsterData>();
+	private readonly Dictionary<Define.SkillEnum, SkillData> m_skillData = new Dictionary<Define.SkillEnum, SkillData>();
 	private readonly Dictionary<byte, MapData> m_mapData = new Dictionary<byte, MapData>();
+
+	public IEnumerable<MapData> MapDataValues => m_mapData.Values;
 
 	private void Awake()
 	{
@@ -22,37 +24,26 @@ public class DataManager : MonoBehaviour
 		LoadAllData();
 	}
 
-	public MonsterData FindMonsterData(string _name)
+	public MonsterData FindMonsterData(Define.MonsterEnum _name)
 	{
-		MonsterData monster = null;
-		m_monsterData.TryGetValue(_name, out monster);
+		m_monsterData.TryGetValue(_name, out MonsterData monster);
 
 		return monster;
 	}
 
 
-	public SkillData FindSkillData(string _name)
+	public SkillData FindSkillData(Define.SkillEnum _name)
 	{
-		SkillData skill = null;
-		m_skillData.TryGetValue(_name, out skill);
+		m_skillData.TryGetValue(_name, out SkillData skill);
 
 		return skill;
 	}
 
 	public MapData FindMapData(byte _id)
-	{
-		MapData map = null;
-		m_mapData.TryGetValue(_id, out map);
+	{ 
+		m_mapData.TryGetValue(_id, out MapData map);
 
 		return map;
-	}
-
-	public List<MapData> GetAllMapData()
-	{
-		List<MapData> list = new List<MapData>();
-		foreach (MapData d in m_mapData.Values)
-			list.Add(d);
-		return list;
 	}
 
 	private void LoadAllData()

@@ -21,7 +21,7 @@ public class UDPCommunicator
 	private UDPBuffer m_udpBuffer;
 	private bool m_isRecv;
 
-	public Dictionary<int, IPEndPoint> DicSendInfo { get; private set; } = new Dictionary<int, IPEndPoint>();
+	private readonly IPEndPoint[] m_arrSendInfo = new IPEndPoint[Define.RoomUserSlotCnt];
 
 	public bool Init()
 	{
@@ -54,6 +54,13 @@ public class UDPCommunicator
 		m_udpBuffer.Active = true;
 	}
 
+	private IPEndPoint FindSendInfo(int _slot)
+	{
+		if (_slot < 0 || _slot >= Define.RoomUserSlotCnt) return null;
+
+		return m_arrSendInfo[_slot];
+	}
+
 	public void Send(Packet _pkt, string _ip, int _port)
 	{
 		m_socket.SendTo(_pkt.GetBuffer(), new IPEndPoint(IPAddress.Parse(_ip), _port));
@@ -67,7 +74,8 @@ public class UDPCommunicator
 
 	public void Send(Packet _pkt, int _slot)
 	{
-		if (!DicSendInfo.TryGetValue(_slot, out IPEndPoint ep)) return;
+		IPEndPoint ep = FindSendInfo(_slot);
+		if (ep == null) return;
 
 		m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
 		//InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
@@ -75,8 +83,10 @@ public class UDPCommunicator
 
 	public void SendAll(Packet _pkt)
 	{
-		foreach (IPEndPoint ep in DicSendInfo.Values)
+		foreach (IPEndPoint ep in m_arrSendInfo)
 		{
+			if (ep == null) continue;
+
 			m_socket.SendTo(_pkt.GetBuffer(), 0, _pkt.Size, SocketFlags.None, ep);
 			//InGameConsole.Inst.Log($"[{_pkt.GetPacketType()}] {ep.Address}, {ep.Port}로 보냄 : {sendbyte}");
 		}
@@ -129,18 +139,27 @@ public class UDPCommunicator
 
 	public void AddSendInfo(int _slot, string _ip, int _port)
 	{
-		//InGameConsole.Inst.Log($"AddSendInfo : {DicSendInfo.Count}");
-		DicSendInfo.Add(_slot, new IPEndPoint(IPAddress.Parse(_ip), _port));
+		if (FindSendInfo(_slot) == null) return;
+
+		m_arrSendInfo[_slot] = new IPEndPoint(IPAddress.Parse(_ip), _port);
 	}
 
 	public void RemoveSendInfo(int _slot)
 	{
-		DicSendInfo.Remove(_slot);
+		if (FindSendInfo(_slot) == null) return;
+		
+		m_arrSendInfo[_slot] = null;
+	}
+
+	private void ClearArrSendInfo()
+	{
+		for (int i = 0; i < Define.RoomUserSlotCnt; ++i)
+			m_arrSendInfo[i] = null;
 	}
 
 	public void ClearIngameInfo()
 	{
-		DicSendInfo.Clear();
+		ClearArrSendInfo();
 		m_isRecv = false;
 		m_udpBuffer.Active = false;
 	}

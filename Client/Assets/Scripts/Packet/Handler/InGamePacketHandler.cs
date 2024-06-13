@@ -91,7 +91,7 @@ public static class InGamePacketHandler
 		PlayerController pc = ObjectManager.Inst.FindPlayer(leftUserIdx);
 		if (!pc.IsDead) GameManager.Inst.SubPlayerAliveCnt();
 
-		GameManager.Inst.RemovePlayer(pc.Idx);
+		//GameManager.Inst.RemovePlayer(pc.Idx);
 		MapManager.Inst.RemoveAimTile(pc.CellPos.x, pc.CellPos.y);
 		ResourceManager.Inst.Destroy(pc.gameObject);
 		ObjectManager.Inst.RemovePlayer(leftUserIdx);

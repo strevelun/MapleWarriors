@@ -1,12 +1,16 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Define;
 
 [System.Serializable]
 public class MonsterData 
 {
 	public int			idx;
-	public string		name;
+	[JsonConverter(typeof(StringEnumConverter))]
+	public MonsterEnum  name;
 	public int			HP;
 	public int			attack;
 	public int			attackCellRange;	

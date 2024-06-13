@@ -19,11 +19,9 @@ public class UIManager
 		}
 	}
 
-	private int m_order = 10;
-
 	public UIScene SceneUI { private set; get; }
-	private readonly Dictionary<string, UIPopup> m_dicPopup = new Dictionary<string, UIPopup>();
-	private readonly Dictionary<string, UIPopup> m_dicPopupInDestructible = new Dictionary<string, UIPopup>();
+	private readonly Dictionary<Define.UIPopupEnum, UIPopup> m_dicPopup = new Dictionary<Define.UIPopupEnum, UIPopup>();
+	private readonly Dictionary<Define.UIPopupEnum, UIPopup> m_dicPopupInDestructible = new Dictionary<Define.UIPopupEnum, UIPopup>();
 	private readonly Dictionary<Define.UIChatEnum, UIChat> m_dicUIChat = new Dictionary<Define.UIChatEnum, UIChat>();
 	private readonly Dictionary<Define.UIEnum, GameObject> m_dicUI = new Dictionary<Define.UIEnum, GameObject>();
 
@@ -42,20 +40,6 @@ public class UIManager
 		}
 	}
 
-	public void SetCanvas(GameObject _go, bool sort = true)
-	{
-		Canvas c = _go.GetComponent<Canvas>();
-		c.overrideSorting = true;
-		
-		if (sort)
-		{
-			c.sortingOrder = m_order;
-			++m_order;
-		}
-		else
-			c.sortingOrder = 0;
-	}
-
 	public UIScene SetSceneUI(Define.SceneEnum _sceneName)
 	{
 		string curSceneType = SceneManagerEx.Inst.CurScene.SceneType.ToString();
@@ -68,9 +52,8 @@ public class UIManager
 	#region PopupUI
 	public UIPopup FindPopupUI(Define.UIPopupEnum _prefabName)
 	{
-		string name = _prefabName.ToString();
-		m_dicPopup.TryGetValue(name, out UIPopup popup);
-		if(!popup) m_dicPopupInDestructible.TryGetValue(name, out popup);
+		m_dicPopup.TryGetValue(_prefabName, out UIPopup popup);
+		if(!popup) m_dicPopupInDestructible.TryGetValue(_prefabName, out popup);
 		if (!popup) return null;
 		
 		return popup;
@@ -78,7 +61,6 @@ public class UIManager
 
 	public UIPopup AddUI(Define.UIPopupEnum _prefabName, bool _isOnScene = true)
 	{
-		string name = _prefabName.ToString();
 		UIPopup uiPopup = FindPopupUI(_prefabName);
 		if (uiPopup) return uiPopup;
 		GameObject popup;
@@ -95,14 +77,14 @@ public class UIManager
 			finalPath = "UI/Popup/";
 		}
 
-		popup = ResourceManager.Inst.Instantiate(finalPath + name);
+		popup = ResourceManager.Inst.Instantiate(finalPath + _prefabName.ToString());
 		uiPopup = popup.GetComponent<UIPopup>();
 
 		if (_isOnScene)
-			m_dicPopup.Add(name, uiPopup);
+			m_dicPopup.Add(_prefabName, uiPopup);
 		else
 		{
-			m_dicPopupInDestructible.Add(name, uiPopup);
+			m_dicPopupInDestructible.Add(_prefabName, uiPopup);
 			uiPopup.SetDestroyOnLoad();
 		}
 
@@ -119,7 +101,6 @@ public class UIManager
 		GameObject obj = popup.gameObject;
 		if (obj.activeSelf) return;
 
-		SetCanvas(obj, true);
 		obj.SetActive(true);
 	}
 
@@ -135,7 +116,6 @@ public class UIManager
 		TextMeshProUGUI tmp = go.GetComponent<TextMeshProUGUI>();
 		if(tmp) tmp.text = _description;
 
-		SetCanvas(obj, true);
 		obj.SetActive(true);
 	}
 

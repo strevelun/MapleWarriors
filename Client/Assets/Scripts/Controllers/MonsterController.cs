@@ -23,6 +23,9 @@ public class MonsterController : CreatureController
 	private Vector2 m_hpBarUIOffset;
 	private readonly Vector2 m_locationInfoUIOffset = new Vector2(0.5f, -0.6f);
 
+	[SerializeField]
+	private MonsterEnum m_monsterEnum = MonsterEnum.None;
+
 	public int Num { get; set; }
 	public bool AttackReady { get; set; } = true;
 	public int VisionCellRange { get; set; }
@@ -103,7 +106,7 @@ public class MonsterController : CreatureController
 
 		SetPosition(_cellXPos, _cellYPos);
 
-		MonsterData monsterData = DataManager.Inst.FindMonsterData(gameObject.name);
+		MonsterData monsterData = DataManager.Inst.FindMonsterData(m_monsterEnum);
 		SetMonsterData(monsterData);
 
 		ObjectManager.Inst.AddMonster(gameObject, monsterData.idx);

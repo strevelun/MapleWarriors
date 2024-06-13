@@ -96,8 +96,9 @@ public class RoomScene : BaseScene
 				UIManager.Inst.HidePopupUI(Define.UIPopupEnum.UIMapChoicePopup);
 			});
 			obj = Util.FindChild(popup.gameObject, true, "Content");
-			List<MapData> data = DataManager.Inst.GetAllMapData();
-			foreach(MapData d in data)
+
+			IEnumerable<MapData> EMapData = DataManager.Inst.MapDataValues;
+			foreach(MapData d in DataManager.Inst.MapDataValues)
 			{
 				GameObject popupBtn = ResourceManager.Inst.Instantiate("UI/Scene/Room/Popup/UIMapChoicePopupButton", obj.transform);
 				popupBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"Map_{d.name}";
