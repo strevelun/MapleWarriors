@@ -267,14 +267,14 @@ public class MonsterController : CreatureController
 				
 		if (Math.Abs(CellPos.x - m_target.CellPos.x) <= 1 && Math.Abs(CellPos.y - m_target.CellPos.y) <= 1) return;
 
-		m_path = m_astar.Search(CellPos, m_target.CellPos, HitboxWidth, HitboxHeight, AttackRange);
+		m_path = m_astar.MakePath(CellPos, m_target.CellPos, HitboxWidth, HitboxHeight, AttackRange);
 		if (m_path == null)
 		{
 			ByteDir = 0;
 			return;
 		}
-		
-		if(m_path.Count > VisionCellRange * 2)
+
+		if (m_path.Count > VisionCellRange * 2) // path 경로의 수가 시야의 2배를 초과하면 움직이지 않음
 		{
 			m_path = null;
 			ByteDir = 0;
@@ -282,7 +282,7 @@ public class MonsterController : CreatureController
 		}
 
 		int closeDistLimit = HitboxWidth < HitboxHeight ? HitboxHeight : HitboxWidth;
-		if (m_path.Count <= closeDistLimit)
+		if (m_path.Count <= closeDistLimit) // 길찾기 경로 수가 자신의 몸보다 같거나 작으면 움직이지 않음
 		{
 			ByteDir = 0;
 			m_path = null;
