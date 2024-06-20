@@ -15,7 +15,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.BeginMove)
+			.Add(PacketType.ServerPacketTypeEnum.C_BeginMove)
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add(_byteDir);
 
@@ -26,7 +26,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.Moving)
+			.Add(PacketType.ServerPacketTypeEnum.C_Moving)
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecStartPos.x * 1000000))
 			.Add((int)(_vecStartPos.y * 1000000))
@@ -38,7 +38,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.EndMove)
+			.Add(PacketType.ServerPacketTypeEnum.C_EndMove)
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((int)(_vecEndPos.x * 1000000)) // 소수점 6자리 정밀도
 			.Add((int)(_vecEndPos.y * 1000000));
@@ -49,7 +49,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.MonsterAttack)
+			.Add(PacketType.ServerPacketTypeEnum.C_MonsterAttack)
 			.Add((byte)_finalTargets.Count);
 
 		foreach(PlayerController pc in _finalTargets)
@@ -66,7 +66,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.BeginMoveMonster)
+			.Add(PacketType.ServerPacketTypeEnum.C_BeginMoveMonster)
 			.Add((byte)_monsterIdx)
 			.Add((byte)_monsterNum)
 			.Add((ushort)_cellXPos)
@@ -78,7 +78,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.Attack)
+			.Add(PacketType.ServerPacketTypeEnum.C_Attack)
 			.Add(_who)
 			.Add((ushort)_targets.Count)
 			.Add((byte)_skill);
@@ -98,7 +98,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.AttackReq)
+			.Add(PacketType.ServerPacketTypeEnum.C_AttackReq)
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((short)_mouseCellPos.x)
 			.Add((short)_mouseCellPos.y)
@@ -111,7 +111,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.RangedAttack)
+			.Add(PacketType.ServerPacketTypeEnum.C_RangedAttack)
 			.Add(_who)
 			.Add((ushort)_targets.Count)
 			.Add((short)_where.x) // 음수
@@ -133,7 +133,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.RangedAttackReq)
+			.Add(PacketType.ServerPacketTypeEnum.C_RangedAttackReq)
 			.Add((byte)UserData.Inst.MyRoomSlot)
 			.Add((short)_mouseCellPos.x)
 			.Add((short)_mouseCellPos.y)
@@ -156,7 +156,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.AllCreaturesInfo)
+			.Add(PacketType.ServerPacketTypeEnum.C_AllCreaturesInfo)
 			.Add((byte)ObjectManager.Inst.MonsterNum);
 
 		foreach (MonsterController info in ObjectManager.Inst.Monsters)
@@ -183,7 +183,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.Ready)
+			.Add(PacketType.ServerPacketTypeEnum.C_Ready)
 			.Add((byte)UserData.Inst.MyRoomSlot);
 		return pkt;
 	}
@@ -192,7 +192,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.Start)
+			.Add(PacketType.ServerPacketTypeEnum.C_Start)
 			.Add(_startTime)
 			.Add(_curTime);
 		return pkt;
@@ -202,7 +202,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.NextStage);
+			.Add(PacketType.ServerPacketTypeEnum.C_NextStage);
 		return pkt;
 	}
 
@@ -210,7 +210,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.MapClear);
+			.Add(PacketType.ServerPacketTypeEnum.C_MapClear);
 		return pkt;
 	}
 
@@ -218,7 +218,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.StageClear);
+			.Add(PacketType.ServerPacketTypeEnum.C_StageClear);
 		return pkt;
 	}
 
@@ -226,7 +226,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.Annihilated);
+			.Add(PacketType.ServerPacketTypeEnum.C_Annihilated);
 		return pkt;
 	}
 
@@ -234,7 +234,7 @@ public static class InGamePacketMaker
 	{
 		Packet pkt = new Packet();
 		pkt
-			.Add(PacketType.ServerPacketTypeEnum.PlayerHit)
+			.Add(PacketType.ServerPacketTypeEnum.C_PlayerHit)
 			.Add((byte)_targets.Count)
 			.Add((byte)_mc.Idx)
 			.Add((byte)_mc.Num);
@@ -246,14 +246,6 @@ public static class InGamePacketMaker
 			pkt.Add((byte)(_targetHit[idx++] ? 1 : 0));
 		}
 		
-		return pkt;
-	}
-
-	public static Packet SendAwake()
-	{
-		Packet pkt = new Packet();
-		pkt
-			.Add(PacketType.ServerPacketTypeEnum.SendAwake);
 		return pkt;
 	}
 }

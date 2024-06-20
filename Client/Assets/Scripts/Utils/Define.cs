@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Define
 {
-	public const int BufferMax = 131072; // 65536; // 428 * 300 <= 131072
+	public const int BufferMax = 131072; // 65536; // 428 * 300 = 128400 <= 131072
 	public const int PacketBufferMax = 512;
 	public const int PacketHeaderSize = 4;
 	public const int PacketSize = 2;
@@ -24,7 +24,7 @@ public class Define
 	public const string ServerIP = "192.168.55.24";
 	public const int ServerPort = 30002;
 
-	public enum SceneEnum
+	public enum SceneEnum 
 	{
 		None,
 		Login,

@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class PacketType
 {
 	public enum ServerPacketTypeEnum : ushort
@@ -33,28 +29,28 @@ public class PacketType
 		RoomStandby_Fail,
 		RoomMapChoice,
 		RoomCharacterChoice,
-		BeginMove,
-		Moving,
-		EndMove,
-		MonsterAttack,
-		BeginMoveMonster,
 		InGameExit,
-		Attack,
-		AttackReq,
-		RangedAttack,
-		RangedAttackReq,
 		GameOver,
-		AllCreaturesInfo,
-		Ready,
-		Start,
-		NextStage,
-		MapClear,
-		StageClear,
-		Annihilated,
-		PlayerHit,
 		CheckedClientInfo,
-		SendAwake,
 		ConnectionID,
+
+		C_BeginMove,
+		C_Moving,
+		C_EndMove,
+		C_MonsterAttack,
+		C_BeginMoveMonster,
+		C_Attack,
+		C_AttackReq,
+		C_RangedAttack,
+		C_RangedAttackReq,
+		C_AllCreaturesInfo,
+		C_Ready,
+		C_Start,
+		C_NextStage,
+		C_MapClear,
+		C_StageClear,
+		C_Annihilated,
+		C_PlayerHit,
 		Max,
 	}
 

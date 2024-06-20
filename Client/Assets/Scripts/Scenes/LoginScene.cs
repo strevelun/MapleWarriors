@@ -56,6 +56,9 @@ public class LoginScene : BaseScene
 		NetworkManager.Inst.Init(Define.ServerIP, Define.ServerPort);
 		UDPCommunicator.Inst.Init();
 
+		GameObject mappingMaintainer = new GameObject("MappingMaintainer");
+		mappingMaintainer.AddComponent<MappingMaintainer>();
+
 		InputManager.Inst.SetInputEnabled(false);
 		IsLoading = false;
 		StartFadeCoroutine();

@@ -31,7 +31,6 @@ public class DataManager : MonoBehaviour
 		return monster;
 	}
 
-
 	public SkillData FindSkillData(Define.SkillEnum _name)
 	{
 		m_skillData.TryGetValue(_name, out SkillData skill);

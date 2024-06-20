@@ -116,61 +116,61 @@ public static class PacketHandler
 		{
 			switch (type)
 			{
-				case PacketType.ServerPacketTypeEnum.BeginMove:
+				case PacketType.ServerPacketTypeEnum.C_BeginMove:
 					InGamePacketHandler.BeginMove(_reader);
 					break;
-				case PacketType.ServerPacketTypeEnum.Moving:
+				case PacketType.ServerPacketTypeEnum.C_Moving:
 					InGamePacketHandler.Moving(_reader);
 					break;
-				case PacketType.ServerPacketTypeEnum.EndMove:
+				case PacketType.ServerPacketTypeEnum.C_EndMove:
 					InGamePacketHandler.EndMove(_reader);
 					break;
-				case PacketType.ServerPacketTypeEnum.MonsterAttack:
+				case PacketType.ServerPacketTypeEnum.C_MonsterAttack:
 					InGamePacketHandler.MonsterAttack(_reader);
 					break;
-				case PacketType.ServerPacketTypeEnum.BeginMoveMonster:
+				case PacketType.ServerPacketTypeEnum.C_BeginMoveMonster:
 					InGamePacketHandler.BeginMoveMonster(_reader);
 					break;	
 				case PacketType.ServerPacketTypeEnum.InGameExit:
 					InGamePacketHandler.InGameExit(_reader);
 					break;
-				case PacketType.ServerPacketTypeEnum.Attack:
+				case PacketType.ServerPacketTypeEnum.C_Attack:
 					InGamePacketHandler.Attack(_reader);
 					break;	
-				case PacketType.ServerPacketTypeEnum.AttackReq:
+				case PacketType.ServerPacketTypeEnum.C_AttackReq:
 					InGamePacketHandler.AttackReq(_reader);
 					break;	
-				case PacketType.ServerPacketTypeEnum.RangedAttack:
+				case PacketType.ServerPacketTypeEnum.C_RangedAttack:
 					InGamePacketHandler.RangedAttack(_reader);
 					break;
-				case PacketType.ServerPacketTypeEnum.RangedAttackReq:
+				case PacketType.ServerPacketTypeEnum.C_RangedAttackReq:
 					InGamePacketHandler.RangedAttackReq(_reader);
 					break;
 				case PacketType.ServerPacketTypeEnum.GameOver:
 					InGamePacketHandler.GameOver();
 					break;
-				case PacketType.ServerPacketTypeEnum.AllCreaturesInfo:
+				case PacketType.ServerPacketTypeEnum.C_AllCreaturesInfo:
 					InGamePacketHandler.AllCreaturesInfo(_reader);
 					break;
-				case PacketType.ServerPacketTypeEnum.Ready:
+				case PacketType.ServerPacketTypeEnum.C_Ready:
 					InGamePacketHandler.Ready(_reader);
 					break;
-				case PacketType.ServerPacketTypeEnum.Start:
+				case PacketType.ServerPacketTypeEnum.C_Start:
 					InGamePacketHandler.Start(_reader);
 					break;
-				case PacketType.ServerPacketTypeEnum.NextStage:
+				case PacketType.ServerPacketTypeEnum.C_NextStage:
 					InGamePacketHandler.NextStage();
 					break;
-				case PacketType.ServerPacketTypeEnum.MapClear:
+				case PacketType.ServerPacketTypeEnum.C_MapClear:
 					InGamePacketHandler.MapClear();
 					break;
-				case PacketType.ServerPacketTypeEnum.StageClear:
+				case PacketType.ServerPacketTypeEnum.C_StageClear:
 					InGamePacketHandler.StageClear();
 					break;
-				case PacketType.ServerPacketTypeEnum.Annihilated:
+				case PacketType.ServerPacketTypeEnum.C_Annihilated:
 					InGamePacketHandler.Annihilated();
 					break;
-				case PacketType.ServerPacketTypeEnum.PlayerHit:
+				case PacketType.ServerPacketTypeEnum.C_PlayerHit:
 					InGamePacketHandler.PlayerHit(_reader);
 					break;
 			}

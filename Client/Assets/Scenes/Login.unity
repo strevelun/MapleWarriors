@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 29372435}
   - component: {fileID: 29372434}
   m_Layer: 0
-  m_Name: UDPBuffer
+  m_Name: '@UDPBuffer'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
