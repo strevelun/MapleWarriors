@@ -382,7 +382,7 @@ public class CreatureController : MonoBehaviour
 			if (Math.Abs(_newY - targetY) < 0.1f)
 				_newY = targetY;
 			else
-				_newY -= (CurSpeed * Time.fixedDeltaTime);
+				_newY -= (CurSpeed * Time.deltaTime);
 		}
 		else
 		{
@@ -394,7 +394,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newY - targetY) < 0.1f)
 						_newY = targetY;
 					else
-						_newY += (CurSpeed * Time.fixedDeltaTime);
+						_newY += (CurSpeed * Time.deltaTime);
 				}
 			}
 			else if (testY >= 0.9f)
@@ -406,7 +406,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newY - targetY) < 0.1f)
 						_newY = targetY;
 					else
-						_newY -= (CurSpeed * Time.fixedDeltaTime);
+						_newY -= (CurSpeed * Time.deltaTime);
 				}
 			}
 		}
@@ -444,7 +444,7 @@ public class CreatureController : MonoBehaviour
 			if (Math.Abs(_newX - targetX) < 0.1f)
 				_newX = targetX;
 			else
-				_newX += (CurSpeed * Time.fixedDeltaTime);
+				_newX += (CurSpeed * Time.deltaTime);
 		}
 		else
 		{
@@ -456,7 +456,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newX - targetX) < 0.1f)
 						_newX = targetX;
 					else
-						_newX -= (CurSpeed * Time.fixedDeltaTime);
+						_newX -= (CurSpeed * Time.deltaTime);
 				}
 			}
 			else if (testX >= 0.9f)
@@ -468,7 +468,7 @@ public class CreatureController : MonoBehaviour
 					if (Math.Abs(_newX - targetX) < 0.1f)
 						_newX = targetX;
 					else
-						_newX += (CurSpeed * Time.fixedDeltaTime);
+						_newX += (CurSpeed * Time.deltaTime);
 				}
 			}
 		}

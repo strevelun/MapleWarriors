@@ -321,7 +321,7 @@ public class MonsterController : CreatureController
 		MapManager.Inst.RemoveMonster(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
 		MapManager.Inst.AddMonster(this);
 
-		if (dist > MaxSpeed * Time.fixedDeltaTime) return;
+		if (dist > MaxSpeed * Time.deltaTime) return;
 
 		transform.position = new Vector3(DestPos.x, -DestPos.y);
 		ByteDir = 0;
