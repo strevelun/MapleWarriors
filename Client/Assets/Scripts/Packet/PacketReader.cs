@@ -11,6 +11,8 @@ public class PacketReader
 	private int m_getPos = Define.PacketSize;
 	private int m_startOffset;
 
+	private StringBuilder m_strBuilder = new StringBuilder();
+
 	public int Size
 	{
 		get
@@ -186,8 +188,8 @@ public class PacketReader
 	}
 
 	public string GetString()
-	{		
-		string result = "";
+	{
+		m_strBuilder.Clear();
 
 		int i = m_getPos;
 		while (m_buffer.Array[i] != 0 || m_buffer.Array[(i + 1) % Define.BufferMax] != 0)
@@ -196,16 +198,16 @@ public class PacketReader
 			{
 				byte first = m_buffer.Array[m_getPos];
 				byte second = m_buffer.Array[0];
-				result += Encoding.Unicode.GetString(new byte[] { first, second });
+				m_strBuilder.Append(Encoding.Unicode.GetString(new byte[] { first, second }));
 			}
 			else
 			{
-				result += Encoding.Unicode.GetString(m_buffer.Array, i, sizeof(char));
+				m_strBuilder.Append(Encoding.Unicode.GetString(m_buffer.Array, i, sizeof(char)));
 			}
 			i = (sizeof(char) + i) % Define.BufferMax;
 		}
 
 		m_getPos = (i + sizeof(char)) % Define.BufferMax;
-		return result;
+		return m_strBuilder.ToString();
 	}
 }

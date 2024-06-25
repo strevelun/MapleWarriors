@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -183,25 +184,32 @@ public static class RoomPacketHandler
 		List<int> idxList = new List<int>();
 		byte characterChoice;
 		int j, idx, port;
+		StringBuilder ipBuilder = new StringBuilder();
+		StringBuilder privateIPBuilder = new StringBuilder();
 		string ip, privateIP, nickname;
+
 		for (int i = 0; i < numOfUsers; ++i)
 		{
 			idx = _reader.GetByte();
 			nickname = _reader.GetString();
 			characterChoice = _reader.GetByte();
 			port = _reader.GetUShort();
-			ip = "";
+
+			ipBuilder.Clear();
 			for (j = 0; j < 4; ++j)
 			{
-				ip += _reader.GetByte();
-				if (j < 3) ip += ".";
+				ipBuilder.Append(_reader.GetByte());
+				if (j < 3) ipBuilder.Append(".");
 			}
-			privateIP = "";
+			ip = ipBuilder.ToString();
+
+			privateIPBuilder.Clear();
 			for (j = 0; j < 4; ++j)
 			{
-				privateIP += _reader.GetByte();
-				if (j < 3) privateIP += ".";
+				privateIPBuilder.Append(_reader.GetByte());
+				if (j < 3) privateIPBuilder.Append(".");
 			}
+			privateIP = privateIPBuilder.ToString();
 
 			GameManager.Inst.SetPlayerInfo(idx, nickname, characterChoice, ip, privateIP, port);
 
@@ -213,7 +221,7 @@ public static class RoomPacketHandler
 
 			idxList.Add(idx);
 		}
-		
+
 		foreach (int index in idxList)
 		{
 			GameManager.Inst.GetPlayerInfo(index, out Define.StPlayerInfo info);

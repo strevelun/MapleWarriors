@@ -35,7 +35,7 @@ public class UDPCommunicator
 			return false;
 		}
 
-		GameObject udpBuffer = GameObject.Find("UDPBuffer");
+		GameObject udpBuffer = GameObject.Find("@UDPBuffer");
 		if (!udpBuffer) return false;
 
 		m_udpBuffer = udpBuffer.GetComponent<UDPBuffer>();
@@ -139,7 +139,7 @@ public class UDPCommunicator
 
 	public void AddSendInfo(int _slot, string _ip, int _port)
 	{
-		if (FindSendInfo(_slot) == null) return;
+		if (FindSendInfo(_slot) != null) return;
 
 		m_arrSendInfo[_slot] = new IPEndPoint(IPAddress.Parse(_ip), _port);
 	}
@@ -166,7 +166,6 @@ public class UDPCommunicator
 
 	public void Disconnect()
 	{
-		ClearIngameInfo();
 		m_recvArgs.Completed -= new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
 		m_recvArgs.Dispose();
 		m_recvArgs = null;

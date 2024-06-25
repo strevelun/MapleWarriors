@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking.Types;
@@ -30,13 +31,14 @@ public class InGameScene : BaseScene
 
 		GameObject player;
 		PlayerController pc;
+		StringBuilder strBuilder = new StringBuilder();
 
 		GameManager.Inst.GetPlayerInfo(UserData.Inst.MyRoomSlot, out Define.StPlayerInfo info);
 		player = ResourceManager.Inst.Instantiate($"Creature/Player_{info.characterChoice}");
 		MyPlayerController mpc = player.AddComponent<MyPlayerController>();
 		mpc.Idx = UserData.Inst.MyRoomSlot;
 		mpc.SetNickname(info.nickname);
-		tmp.text += $"{UserData.Inst.Nickname} [{info.ip}, {info.privateIP}, {info.port}]\n";
+		strBuilder.AppendLine($"{UserData.Inst.Nickname} [{info.ip}, {info.privateIP}, {info.port}]");
 		ObjectManager.Inst.AddPlayer(UserData.Inst.MyRoomSlot, player);
 
 		foreach (int idx in GameManager.Inst.OtherPlayersSlot)
@@ -48,12 +50,13 @@ public class InGameScene : BaseScene
 			pc.Idx = idx;
 			pc.SetNickname(info.nickname);
 			pc.name = $"Player_{info.characterChoice}_{idx}";
-			tmp.text += $"{info.nickname} [{info.ip}, {info.privateIP}, {info.port}]\n";
+			strBuilder.AppendLine($"{info.nickname} [{info.ip}, {info.privateIP}, {info.port}]");
 
 			//GameManager.Inst.AddPlayer(idx, player);
 			ObjectManager.Inst.AddPlayer(idx, player);
 		}
 
+		tmp.text = strBuilder.ToString();
 
 		InGameConsole.Inst.Init(ingameConsole);
 
@@ -115,6 +118,7 @@ public class InGameScene : BaseScene
 	protected override void OnApplicationQuit()
 	{
 		base.OnApplicationQuit();
+		UDPCommunicator.Inst.ClearIngameInfo();
 	}
 
 	private IEnumerator RoomOwnerLogic()
