@@ -35,13 +35,12 @@ public class MonsterAttackState : ICreatureState
 
 	public void Update()
 	{
-
+		UpdateAnimation();
+		Attack();
 	}
 
 	public void FixedUpdate()
 	{
-		UpdateAnimation();
-		Attack();
 	}
 
 	public void Exit()

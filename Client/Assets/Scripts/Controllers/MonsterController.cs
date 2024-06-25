@@ -81,6 +81,9 @@ public class MonsterController : CreatureController
 	{
 		base.Update();
 
+		BeginMove();
+		UpdateMonsterMove();
+
 		if (UserData.Inst.IsRoomOwner)
 		{
 			PeekTarget();
@@ -95,9 +98,6 @@ public class MonsterController : CreatureController
 	protected override void FixedUpdate()
 	{
 		base.FixedUpdate();
-
-		BeginMove();
-		UpdateMonsterMove();
 	}
 
 	public override void Init(int _cellXPos, int _cellYPos)
@@ -316,7 +316,7 @@ public class MonsterController : CreatureController
 
 		float dist = Vector2.Distance(transform.position, new Vector3(DestPos.x, -DestPos.y));
 
-		m_locationInfoText.text = $"{CellPos}, {DestPos}, dist : {dist}";
+		m_locationInfoText.SetText("[{0}, {1}], [{2}, {3}], dist : {4}", CellPos.x, CellPos.y, DestPos.x, DestPos.y, dist);
 
 		MapManager.Inst.RemoveMonster(LastCellPos.x, LastCellPos.y, HitboxWidth, HitboxHeight);
 		MapManager.Inst.AddMonster(this);
@@ -406,13 +406,13 @@ public class MonsterController : CreatureController
 		HP -= damage;
 		if (HP < 0) HP = 0;
 
-		m_hpbarText.text = HP.ToString();
+		m_hpbarText.SetText(HP.ToString());
 
 		m_damageObj.SetActive(true);
 		m_damageCanvasGroup.alpha = 1f;
 
 		m_damageTMP_RT.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_damageUIOffset);
-		m_damageTMP.text = damage.ToString();
+		m_damageTMP.SetText(damage.ToString());
 
 		m_hpBarSlider.value -= damage;
 
@@ -438,13 +438,13 @@ public class MonsterController : CreatureController
 		if (damage == 0) return;
 
 		HP = _hp;
-		m_hpbarText.text = HP.ToString();
+		m_hpbarText.SetText(HP.ToString());
 
 		m_damageObj.SetActive(true);
 		m_damageCanvasGroup.alpha = 1f;
 
 		m_damageTMP_RT.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_damageUIOffset);
-		m_damageTMP.text = damage.ToString();
+		m_damageTMP.SetText(damage.ToString());
 
 		m_hpBarSlider.value -= damage;
 

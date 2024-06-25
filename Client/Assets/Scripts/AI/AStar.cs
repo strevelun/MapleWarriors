@@ -78,6 +78,8 @@ public class AStar
 			for (int i = 0; i < DirLen; ++i)
 			{
 				Vector2Int nextPos = node.CurPos + m_dir[i];
+
+				if (nextPos.x < 0 || nextPos.y - _hitboxHeight < 0 || nextPos.x + _hitboxWidth >= XSize || nextPos.y >= YSize) continue;
 				if (m_visited[nextPos.y, nextPos.x]) continue;
 				if (MapManager.Inst.IsBlocked(nextPos.x, nextPos.y, _hitboxWidth, _hitboxHeight)) continue;
 				if (MapManager.Inst.IsMonsterCollision(nextPos.x, nextPos.y, _hitboxWidth, _hitboxHeight)) continue;

@@ -54,7 +54,7 @@ public class InGameConsole : MonoBehaviour
 			++curLineCnt;
 		
 		m_log.AppendLine(_text);
-		m_text.text = m_log.ToString();
+		m_text.SetText(m_log.ToString());
 
 		if (m_scrollRect.verticalNormalizedPosition <= 0.1f)
 			m_scrollRect.verticalNormalizedPosition = 0;

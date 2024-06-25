@@ -89,7 +89,7 @@ public class UIChat : MonoBehaviour
 		{
 			obj = ResourceManager.Inst.Instantiate(m_uiChatItemPath);
 			tmp = obj.GetComponent<TextMeshProUGUI>();
-			tmp.text = "[" + _nickname + "] : " + _text;
+			tmp.SetText("[" + _nickname + "] : " + _text);
 			obj.transform.SetParent(m_content.transform);
 
 			++ChatCount;
@@ -99,7 +99,7 @@ public class UIChat : MonoBehaviour
 			Transform t = m_content.transform.GetChild(0);
 			obj = t.gameObject;
 			tmp = obj.GetComponent<TextMeshProUGUI>();
-			tmp.text = "[" + _nickname + "] : " + _text;
+			tmp.SetText("[" + _nickname + "] : " + _text);
 			t.SetAsLastSibling();
 		}
 		if(m_scrollbarCoroutine == null)

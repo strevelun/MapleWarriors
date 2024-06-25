@@ -63,6 +63,10 @@ public class PlayerController : CreatureController
 	{
 		base.Update();
 
+		m_positionTMP.SetText("x = {0}, y = {1}", transform.position.x, transform.position.y);
+
+		m_nameTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_nameTagOffset);
+		m_positionTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_positionTagOffset);
 		m_sliderRect.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_hpBarUIOffset);
 	}
 
@@ -70,10 +74,6 @@ public class PlayerController : CreatureController
 	{
 		base.FixedUpdate();
 
-		m_positionTMP.text = $"x = {transform.position.x}, y = {transform.position.y}";
-
-		m_nameTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_nameTagOffset);
-		m_positionTagUI.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_positionTagOffset);
 	}
 
 	public override void Init(int _cellXPos, int _cellYPos)
@@ -253,14 +253,14 @@ public class PlayerController : CreatureController
 		HP -= _damage;
 		if (HP < 0) HP = 0;
 
-		m_hpbarText.text = HP.ToString();
+		m_hpbarText.SetText(HP.ToString());
 		m_hpBarSlider.value -= _damage;
 
 		m_damageObj.SetActive(true);
 		m_damageCanvasGroup.alpha = 1f;
 
 		m_damageTMP_RT.position = Camera.main.WorldToScreenPoint(transform.position + (Vector3)m_damageUIOffset);
-		m_damageTMP.text = _damage.ToString();
+		m_damageTMP.SetText(_damage.ToString());
 
 		if (m_damamgeCoroutine != null)
 		{
@@ -329,7 +329,7 @@ public class PlayerController : CreatureController
 		}
 
 		HP = MaxHP;
-		m_hpbarText.text = HP.ToString();
+		m_hpbarText.SetText(HP.ToString());
 		m_hpBarSlider.value = MaxHP;
 		ByteDir = 0;
 

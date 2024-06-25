@@ -171,6 +171,8 @@ public static class InGamePacketMaker
 
 		foreach (PlayerController info in ObjectManager.Inst.Players)
 		{
+			if (info == null) continue;
+
 			pkt
 				.Add((byte)info.Idx)
 				.Add((ushort)info.HP);

@@ -56,7 +56,7 @@ public class InGameScene : BaseScene
 			ObjectManager.Inst.AddPlayer(idx, player);
 		}
 
-		tmp.text = strBuilder.ToString();
+		tmp.SetText(strBuilder.ToString());
 
 		InGameConsole.Inst.Init(ingameConsole);
 

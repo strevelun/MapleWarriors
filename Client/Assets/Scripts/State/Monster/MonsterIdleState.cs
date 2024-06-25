@@ -22,14 +22,14 @@ public class MonsterIdleState : ICreatureState
 
 	public void Update()
 	{
+		m_mc.UpdateMove(Time.deltaTime);
+		m_mc.CheckMoveState();
+		m_mc.Flip();
 		m_mc.Attack();
 	}
 
 	public void FixedUpdate()
 	{
-		m_mc.UpdateMove(Time.fixedDeltaTime);
-		m_mc.CheckMoveState();
-		m_mc.Flip();
 	}
 
 	public void Exit()

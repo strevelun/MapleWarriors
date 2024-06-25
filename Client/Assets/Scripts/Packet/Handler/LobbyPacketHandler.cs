@@ -37,7 +37,7 @@ public static class LobbyPacketHandler
 
 		byte page = _reader.GetByte();
 		tmp = uiPageObj.GetComponent<TextMeshProUGUI>();
-		tmp.text = "페이지 : " + page;
+		tmp.SetText("페이지 : " + page);
 
 		UIPage uiPage = userListObj.GetComponent<UIPage>();
 		uiPage.CurPage = page;
@@ -53,7 +53,7 @@ public static class LobbyPacketHandler
 			{
 				obj = Util.FindChild(item, false, "Nickname");
 				tmp = obj.GetComponent<TextMeshProUGUI>();
-				tmp.text = _reader.GetString();
+				tmp.SetText(_reader.GetString());
 				obj = Util.FindChild(item, false, "Location");
 				tmp = obj.GetComponent<TextMeshProUGUI>();
 				Define.SceneEnum eScene = (Define.SceneEnum)_reader.GetByte();
@@ -69,7 +69,7 @@ public static class LobbyPacketHandler
 						sceneName = roomID + "번방";
 						break;
 				}
-				tmp.text = sceneName;
+				tmp.SetText(sceneName);
 
 				if (!item.activeSelf) item.SetActive(true);
 				++activeCount;
@@ -94,7 +94,7 @@ public static class LobbyPacketHandler
 		GameObject roomListObj = UIManager.Inst.FindUI(Define.UIEnum.UILobby_RoomList);
 		GameObject uiPageObj = Util.FindChild(roomListObj, false, "Page");
 		tmp = uiPageObj.GetComponent<TextMeshProUGUI>();
-		tmp.text = "페이지 : " + page;
+		tmp.SetText("페이지 : " + page);
 
 		UIPage uiPage = roomListObj.GetComponent<UIPage>();
 		uiPage.CurPage = page;
@@ -122,16 +122,16 @@ public static class LobbyPacketHandler
 					Packet pkt = LobbyPacketMaker.EnterRoom(id);
 					NetworkManager.Inst.Send(pkt);
 				});
-				tmp.text = id.ToString();
+				tmp.SetText(id.ToString());
 				obj = Util.FindChild(item, false, "Title");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-				tmp.text = _reader.GetString();
+				tmp.SetText(_reader.GetString());
 				obj = Util.FindChild(item, false, "Owner");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-				tmp.text = _reader.GetString();
+				tmp.SetText(_reader.GetString());
 				obj = Util.FindChild(item, false, "NumOfUser");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-				tmp.text = _reader.GetByte().ToString() + "/4";
+				tmp.SetText(_reader.GetByte().ToString() + "/4");
 				obj = Util.FindChild(item, false, "State");
 				tmp = obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 				Define.RoomStateEnum eState = (Define.RoomStateEnum)_reader.GetByte();
@@ -145,7 +145,7 @@ public static class LobbyPacketHandler
 						sceneName = "게임중";
 						break;
 				}
-				tmp.text = sceneName;
+				tmp.SetText(sceneName);
 
 				if (!item.activeSelf) item.SetActive(true);
 				++activeCount;

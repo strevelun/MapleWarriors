@@ -93,7 +93,7 @@ public static class RoomPacketHandler
 		obj.SetActive(true);
 		obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadSprite($"Player/player1");
 		obj = Util.FindChild(slot, false, "Nickname");
-		obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = nickname;
+		obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText(nickname);
 		obj = Util.FindChild(slot, false, "UserState");
 		obj.transform.GetChild(0).gameObject.SetActive(false); // ready
 		obj.transform.GetChild(1).gameObject.SetActive(true); // standby
@@ -118,9 +118,9 @@ public static class RoomPacketHandler
 		UserData.Inst.RoomOwnerSlot = roomOwnerIdx;
 
 		GameObject titleObj = UIManager.Inst.SceneUI.FindUI("Title");
-		titleObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{roomTitle}";
+		titleObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText(roomTitle);
 		GameObject roomIDObj = UIManager.Inst.SceneUI.FindUI("RoomID");
-		roomIDObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{roomID}";
+		roomIDObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText($"{roomID}");
 
 		for (int i=0; i<numOfUsers; ++i)
 		{
@@ -147,7 +147,7 @@ public static class RoomPacketHandler
 			obj.GetComponent<Image>().sprite = ResourceManager.Inst.LoadSprite($"Player/player{(byte)eChoice}");
 
 			obj = Util.FindChild(slot, false, "Nickname");
-			obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = nickname;
+			obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText(nickname);
 			if (isOwner)
 			{
 				obj = Util.FindChild(slot, false, "OwnerBadge");
