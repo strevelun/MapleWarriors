@@ -49,6 +49,8 @@ public class PlayerController : CreatureController
 
 	public GameObject HitObj { get; private set; }
 
+	private readonly List<MonsterController> m_targets = new List<MonsterController>();
+
 	[SerializeField]
 	private Vector2 m_hpBarUIOffset;
 
@@ -215,27 +217,27 @@ public class PlayerController : CreatureController
 		SkillTypeEnum skillType = CurSkill.GetSkillType();
 		if (skillType == SkillTypeEnum.Melee)
 		{
-			List<MonsterController> targets = new List<MonsterController>();
-			bool activated = CurSkill.Activate(targets);
+			m_targets.Clear();
+			bool activated = CurSkill.Activate(m_targets);
 			if (activated)
 			{
 				ChangeState(new PlayerAttackState(CurSkill));
-				foreach (MonsterController mc in targets)
+				foreach (MonsterController mc in m_targets)
 					mc.Hit(CurSkill);
-				Packet pkt = InGamePacketMaker.Attack(_who, targets, CurSkill.CurSkill);
+				Packet pkt = InGamePacketMaker.Attack(_who, m_targets, CurSkill.CurSkill);
 				UDPCommunicator.Inst.SendAll(pkt);
 			}
 		}
 		else if (skillType == SkillTypeEnum.Ranged)
 		{
-			List<MonsterController> targets = new List<MonsterController>();
-			bool activated = CurSkill.Activate(targets);
+			m_targets.Clear();
+			bool activated = CurSkill.Activate(m_targets);
 			if (activated)
 			{
 				ChangeState(new PlayerAttackState(CurSkill));
-				foreach (MonsterController mc in targets)
+				foreach (MonsterController mc in m_targets)
 					mc.Hit(CurSkill);
-				Packet pkt = InGamePacketMaker.RangedAttack(_who, targets, CurSkill.CurSkill, new Vector2Int(_x, _y));
+				Packet pkt = InGamePacketMaker.RangedAttack(_who, m_targets, CurSkill.CurSkill, new Vector2Int(_x, _y));
 				UDPCommunicator.Inst.SendAll(pkt);
 			}
 			SetRangedSkillObjPos(new Vector2Int(_x, _y));

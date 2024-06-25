@@ -15,6 +15,7 @@ public class AStar
 	private int[,] m_best;
 	private bool[,] m_visited;
 	private readonly Dictionary<Vector2Int, Vector2Int> m_dicParent = new Dictionary<Vector2Int, Vector2Int>();
+	private readonly List<Vector2Int> m_path = new List<Vector2Int>();
 
 	private readonly PriorityQueue<Node> m_pq = new PriorityQueue<Node>(true); // 민힙
 
@@ -44,8 +45,7 @@ public class AStar
 
 		m_dicParent.Clear();
 		m_pq.Clear();
-
-		List<Vector2Int> path = new List<Vector2Int>();
+		m_path.Clear();
 
 		m_best = new int[YSize, XSize];
 		m_visited = new bool[YSize, XSize];
@@ -109,14 +109,14 @@ public class AStar
 			while (pos != _startCellPos) 
 			{
 				if (k++ >= closeDistLimit)
-					path.Add(pos);
+					m_path.Add(pos);
 				pos = m_dicParent[pos];
 			}
-			path.Add(_startCellPos); 
-			path.Reverse();
+			m_path.Add(_startCellPos); 
+			m_path.Reverse();
 		}
 
-		return path;
+		return m_path;
 	}
 
 	private bool CheckDiagonalBlocked(int _idx, int _nextPosX, int _nextPosY, int _hitboxWidth, int _hitboxHeight)

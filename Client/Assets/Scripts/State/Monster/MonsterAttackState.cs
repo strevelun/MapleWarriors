@@ -9,6 +9,7 @@ public class MonsterAttackState : ICreatureState
 	private bool m_hit = false;
 	private AnimatorStateInfo m_stateInfo;
 	private List<PlayerController> m_targets;
+	private readonly List<bool> m_targetHit = new List<bool>();
 
 	public MonsterAttackState(List<PlayerController> _targets)
 	{
@@ -74,7 +75,7 @@ public class MonsterAttackState : ICreatureState
 
 		if (UserData.Inst.IsRoomOwner)
 		{
-			List<bool> targetHit = new List<bool>();
+			m_targetHit.Clear();
 			bool hit;
 
 			if (m_mc.FlyingAttack)
@@ -88,9 +89,9 @@ public class MonsterAttackState : ICreatureState
 						{
 							m_mc.RemoveTarget(pc);
 						}
-						targetHit.Add(hit);
+						m_targetHit.Add(hit);
 					}
-					Packet pkt = InGamePacketMaker.PlayerHit(m_mc, m_targets, targetHit);
+					Packet pkt = InGamePacketMaker.PlayerHit(m_mc, m_targets, m_targetHit);
 					UDPCommunicator.Inst.SendAll(pkt);
 					m_mc.TargetHit = false;
 				}
@@ -107,10 +108,10 @@ public class MonsterAttackState : ICreatureState
 						{
 							m_mc.RemoveTarget(pc);
 						}
-						targetHit.Add(hit);
+						m_targetHit.Add(hit);
 						pc.HitObj.SetActive(true);
 					}
-					Packet pkt = InGamePacketMaker.PlayerHit(m_mc, m_targets, targetHit);
+					Packet pkt = InGamePacketMaker.PlayerHit(m_mc, m_targets, m_targetHit);
 					UDPCommunicator.Inst.SendAll(pkt);
 				}
 			}

@@ -29,6 +29,8 @@ public class MyPlayerController : PlayerController
 	private CinemachineVirtualCamera m_vcam;
 	private int m_cameraIdx = 0;
 
+	private readonly List<MonsterController> m_targets = new List<MonsterController>();
+
 	private void Start()
 	{
 		StartCoroutine(MovingCoroutine());
@@ -195,17 +197,17 @@ public class MyPlayerController : PlayerController
 
 			if (CurSkill.GetSkillType() == SkillTypeEnum.Melee)
 			{
-				List<MonsterController> targets = new List<MonsterController>();
-				bool activated = CurSkill.Activate(targets);
+				m_targets.Clear();
+				bool activated = CurSkill.Activate(m_targets);
 
 				if (UserData.Inst.IsRoomOwner)
 				{
 					if (activated)
 					{
 						ChangeState(new PlayerAttackState(CurSkill)); 
-						foreach (MonsterController mc in targets)
+						foreach (MonsterController mc in m_targets)
 							mc.Hit(CurSkill);
-						Packet pkt = InGamePacketMaker.Attack((byte)UserData.Inst.MyRoomSlot, targets, m_eCurSkill);
+						Packet pkt = InGamePacketMaker.Attack((byte)UserData.Inst.MyRoomSlot, m_targets, m_eCurSkill);
 						UDPCommunicator.Inst.SendAll(pkt);
 					}
 				}
@@ -221,8 +223,8 @@ public class MyPlayerController : PlayerController
 			}
 			else
 			{
-				List<MonsterController> targets = new List<MonsterController>();
-				bool activated = CurSkill.Activate(targets);
+				m_targets.Clear();
+				bool activated = CurSkill.Activate(m_targets);
 				SetRangedSkillObjPos(new Vector2Int(xpos, ypos));
 
 				if (UserData.Inst.IsRoomOwner)
@@ -230,9 +232,9 @@ public class MyPlayerController : PlayerController
 					if (activated)
 					{
 						ChangeState(new PlayerAttackState(CurSkill));
-						foreach (MonsterController mc in targets)
+						foreach (MonsterController mc in m_targets)
 							mc.Hit(CurSkill);
-						Packet pkt = InGamePacketMaker.RangedAttack((byte)UserData.Inst.MyRoomSlot, targets, m_eCurSkill, new Vector2Int(xpos, ypos));
+						Packet pkt = InGamePacketMaker.RangedAttack((byte)UserData.Inst.MyRoomSlot, m_targets, m_eCurSkill, new Vector2Int(xpos, ypos));
 						UDPCommunicator.Inst.SendAll(pkt);
 					}
 				}

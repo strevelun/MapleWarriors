@@ -70,6 +70,8 @@ public class MonsterController : CreatureController
 
 	public GameObject AttackObj { get; private set; } = null;
 
+	private readonly List<PlayerController> m_finalTargets = new List<PlayerController>();
+
 	private void Start()
 	{
 		Init((int)transform.position.x, (int)transform.position.y);
@@ -466,34 +468,30 @@ public class MonsterController : CreatureController
 		if (!AttackReady) return;
 		if (m_targets.Count == 0) return;
 
-		Queue<PlayerController> targets = new Queue<PlayerController>(m_targets);
-		List<PlayerController> finalTargets = new List<PlayerController>();
+		m_finalTargets.Clear();
 
-		for (int i = 0; i < m_targets.Count; ++i)
+		foreach (PlayerController pc in m_targets)
 		{
-			PlayerController pc = targets.Peek();
-			targets.Dequeue();
-
 			Vector2Int dist = pc.CellPos - CellPos;
 			int distX = Math.Abs(dist.x);
 			int distY = Math.Abs(dist.y);
 
 			if (distX <= AttackRange && distY <= AttackRange)
 			{
-				finalTargets.Add(pc);
-				if (finalTargets.Count >= MaxHitPlayer) break;
+				m_finalTargets.Add(pc);
+				if (m_finalTargets.Count >= MaxHitPlayer) break;
 			}
 		}
 
-		if (finalTargets.Count == 0) return;
+		if (m_finalTargets.Count == 0) return;
 
-		StartFlyingAttackCoroutine(finalTargets);
-		StartRangedAttackCoroutine(finalTargets);
+		StartFlyingAttackCoroutine(m_finalTargets);
+		StartRangedAttackCoroutine(m_finalTargets);
 
-		Packet pkt = InGamePacketMaker.MonsterAttack(finalTargets, Idx, Num);
+		Packet pkt = InGamePacketMaker.MonsterAttack(m_finalTargets, Idx, Num);
 		UDPCommunicator.Inst.SendAll(pkt);
 		
-		ChangeState(new MonsterAttackState(finalTargets));
+		ChangeState(new MonsterAttackState(m_finalTargets));
 	}
 
 	public override void Die()
